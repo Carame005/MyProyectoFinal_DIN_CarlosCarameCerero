@@ -28,6 +28,11 @@ import java.time.Duration
 import java.time.Instant
 import kotlin.random.Random
 
+/**
+ * Esta pantalla debe ser cambiada a futuro
+ *
+ *
+ */
 private const val PREFS_NAME_STATS = "stats_prefs"
 private const val STATS_KEY = "stats_serialized"
 
