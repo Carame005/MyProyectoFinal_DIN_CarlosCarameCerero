@@ -1,19 +1,256 @@
 package com.example.myproyectofinal_din_carloscaramecerero.pantallas
 
+import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.myproyectofinal_din_carloscaramecerero.model.Task
+import com.example.myproyectofinal_din_carloscaramecerero.model.TaskStatus
+import com.example.myproyectofinal_din_carloscaramecerero.model.User
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import androidx.compose.material3.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Event
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.VideoLibrary
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.core.content.edit
+import java.net.URLDecoder
+import com.example.myproyectofinal_din_carloscaramecerero.utils.SummaryCard // <-- importar el componente
 
-/**
- * Pantalla de inicio de la aplicación.
- *
- * Muestra un resumen general de la aplicación, incluyendo:
- * - Bienvenida al usuario
- * - Del calendario tareas del día (si hay)
- * - Estadísticas rápidas del progreso del usuario
- * - Tareas pendientes/en proceso
- *
- */
+private const val PREFS_TASKS = "tasks_prefs"
+private const val TASKS_KEY = "tasks_serialized"
+
+private const val PREFS_EVENTS = "calendar_events_prefs"
+private const val EVENTS_KEY = "events_serialized"
+
+private const val PREFS_COLLECTIONS = "video_collections_prefs"
+private const val COLLECTIONS_KEY = "video_collections_serialized"
+
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun HomeScreen(){
-    Text("Pantalla de Inicio")
+fun HomeScreen(user: User) { // <-- ahora recibe el usuario
+    val ctx = LocalContext.current
+    val today = remember { LocalDate.now() }
+    var tasks by remember { mutableStateOf(listOf<Task>()) }
+    var eventsForToday by remember { mutableStateOf(listOf<String>()) } // título de evento
+    var collectionsCount by remember { mutableIntStateOf(0) }
+
+    // nuevo estado: sección expandida ("tasks" | "events" | "collections" | null)
+    var expandedSection by remember { mutableStateOf<String?>(null) }
+
+    // helpers de deserialización locales (sólo para resumen)
+    fun deserializeTasks(serialized: String?): List<Task> {
+        if (serialized.isNullOrEmpty()) return emptyList()
+        return try {
+            serialized.split("|||").mapNotNull { entry ->
+                val parts = entry.split("::")
+                if (parts.size < 4) return@mapNotNull null
+                val id = parts[0].toIntOrNull() ?: return@mapNotNull null
+                val title = parts[1]
+                val description = parts[2]
+                val status = try { TaskStatus.valueOf(parts[3]) } catch (_: Exception) { TaskStatus.PENDING }
+                Task(id = id, title = URLDecoder.decode(title, "UTF-8"), description = URLDecoder.decode(description, "UTF-8"), status = status)
+            }
+        } catch (_: Exception) {
+            emptyList()
+        }
+    }
+
+    data class MiniEvent(val id: Int, val date: String, val title: String, val time: String?)
+    fun deserializeEvents(serialized: String?): List<MiniEvent> {
+        if (serialized.isNullOrEmpty()) return emptyList()
+        return try {
+            serialized.split("|||").mapNotNull { entry ->
+                val parts = entry.split("::")
+                if (parts.size < 4) return@mapNotNull null
+                val id = parts[0].toIntOrNull() ?: return@mapNotNull null
+                val date = parts[1]
+                val title = parts[2]
+                val time = parts[3].ifBlank { null }
+                MiniEvent(id = id, date = date, title = title, time = time)
+            }
+        } catch (_: Exception) {
+            emptyList()
+        }
+    }
+
+    fun countCollections(serialized: String?): Int {
+        if (serialized.isNullOrEmpty()) return 0
+        return try {
+            // Cada colección separada por "###"
+            serialized.split("###").size
+        } catch (_: Exception) {
+            0
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        val prefs = ctx.getSharedPreferences(PREFS_TASKS, android.content.Context.MODE_PRIVATE)
+        tasks = deserializeTasks(prefs.getString(TASKS_KEY, null))
+
+        val prefsE = ctx.getSharedPreferences(PREFS_EVENTS, android.content.Context.MODE_PRIVATE)
+        val allEvents = deserializeEvents(prefsE.getString(EVENTS_KEY, null))
+        eventsForToday = allEvents.filter { it.date == today.toString() }.map { it.title }
+
+        val prefsC = ctx.getSharedPreferences(PREFS_COLLECTIONS, android.content.Context.MODE_PRIVATE)
+        collectionsCount = countCollections(prefsC.getString(COLLECTIONS_KEY, null))
+    }
+
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .padding(16.dp)
+    ) {
+        // Saludo y fecha: incluir nombre del usuario
+        Text(
+            text = "Bienvenido, ${user.name}",
+            fontSize = 28.sp,
+            fontWeight = FontWeight.Bold
+        )
+
+        Text(
+            text = today.format(DateTimeFormatter.ofPattern("dd MMMM yyyy")),
+            color = Color.Gray,
+            modifier = Modifier.padding(top = 4.dp, bottom = 12.dp)
+        )
+
+        // Resumen rápido: apilado verticalmente para que las cards no se compriman
+        Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            SummaryCard(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+                icon = { Icon(Icons.Default.List, contentDescription = "Tareas") },
+                title = "Tareas hoy",
+                value = tasks.size.toString(),
+                onClick = { // alternar expansión de tareas
+                    expandedSection = if (expandedSection == "tasks") null else "tasks"
+                }
+            )
+            SummaryCard(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+                icon = { Icon(Icons.Default.Event, contentDescription = "Eventos") },
+                title = "Eventos hoy",
+                value = eventsForToday.size.toString(),
+                onClick = { // alternar expansión de eventos
+                    expandedSection = if (expandedSection == "events") null else "events"
+                }
+            )
+            SummaryCard(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+                icon = { Icon(Icons.Default.VideoLibrary, contentDescription = "Colecciones") },
+                title = "Colecciones",
+                value = collectionsCount.toString(),
+                onClick = { // alternar expansión de colecciones
+                    expandedSection = if (expandedSection == "collections") null else "collections"
+                }
+            )
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        // Mostrar contenido expandido según la card seleccionada
+        when (expandedSection) {
+            "tasks" -> {
+                Text("Tareas", fontWeight = FontWeight.SemiBold)
+                Spacer(modifier = Modifier.height(6.dp))
+
+                val tasksToShow = tasks.take(12)
+                if (tasksToShow.isEmpty()) {
+                    Text("No hay tareas registradas.", color = Color.Gray)
+                } else {
+                    LazyColumn(modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f, false)) {
+                        items(tasksToShow) { t ->
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 6.dp),
+                                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                            ) {
+                                Row(modifier = Modifier
+                                    .padding(10.dp)
+                                    .fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Text(text = t.title, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                                        if (t.description.isNotBlank()) {
+                                            Text(text = t.description, color = Color.Gray, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                                        }
+                                    }
+                                    Text(text = t.status.desc, color = Color.Gray)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            "events" -> {
+                Text("Eventos de hoy", fontWeight = FontWeight.SemiBold)
+                Spacer(modifier = Modifier.height(6.dp))
+
+                if (eventsForToday.isEmpty()) {
+                    Text("No hay eventos programados para hoy.", color = Color.Gray)
+                } else {
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        eventsForToday.take(12).forEach { ev ->
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 6.dp),
+                                elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+                            ) {
+                                Row(modifier = Modifier
+                                    .padding(10.dp)
+                                    .fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(text = ev, modifier = Modifier.weight(1f))
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            "collections" -> {
+                Text("Colecciones de vídeos", fontWeight = FontWeight.SemiBold)
+                Spacer(modifier = Modifier.height(6.dp))
+                // muñón sencillo: mostrar solo el contador y un texto explicativo; puede reemplazarse por la lista completa
+                Text("Tiene $collectionsCount colecciones. Pulse 'Colecciones' otra vez para cerrar.", color = Color.Gray)
+            }
+
+            else -> {
+                // nada expandido: conservar espacio reducido para que la pantalla no se vea vacía
+                Spacer(modifier = Modifier.height(4.dp))
+            }
+        }
+
+        // ...si había más contenido original al final, se deja intacto...
+    }
 }

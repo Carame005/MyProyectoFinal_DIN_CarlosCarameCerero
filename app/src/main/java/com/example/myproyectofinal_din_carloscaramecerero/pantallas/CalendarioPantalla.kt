@@ -1,6 +1,11 @@
 package com.example.myproyectofinal_din_carloscaramecerero.pantallas
 
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.app.TimePickerDialog
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
@@ -48,7 +53,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.YearMonth
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import com.example.myproyectofinal_din_carloscaramecerero.utils.AddButtonBlue
 import com.example.myproyectofinal_din_carloscaramecerero.utils.PrimaryBlue
@@ -57,27 +65,123 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.snapshotFlow
 import androidx.core.content.edit
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import kotlin.random.Random
 
-// <-- Nuevas constantes y helpers para persistencia de eventos -->
+// Nuevo modelo de evento (id, fecha, título, hora opcional "HH:mm")
+data class CalendarEvent(val id: Int, val date: LocalDate, val title: String, val time: String?)
+
+// Constantes de persistencia y notificación
 private const val PREFS_EVENTS = "calendar_events_prefs"
 private const val EVENTS_KEY = "events_serialized"
+private const val NOTIF_CHANNEL_ID = "calendar_events_channel"
+private const val NOTIF_CHANNEL_NAME = "Eventos del calendario"
 
-private fun serializeEvents(events: List<Pair<LocalDate, String>>): String =
-    events.joinToString("|||") { "${it.first}::${it.second.replace("::", " ")}" }
+private fun serializeEvents(events: List<CalendarEvent>): String =
+    events.joinToString("|||") {
+        val timePart = it.time ?: ""
+        "${it.id}::${it.date}::${it.title.replace("::", " ")}::${timePart}"
+    }
 
 @RequiresApi(Build.VERSION_CODES.O)
-private fun deserializeEvents(serialized: String?): List<Pair<LocalDate, String>> {
+private fun deserializeEvents(serialized: String?): List<CalendarEvent> {
     if (serialized.isNullOrEmpty()) return emptyList()
     return try {
         serialized.split("|||").mapNotNull { entry ->
             val parts = entry.split("::")
-            if (parts.size < 2) return@mapNotNull null
-            val date = try { LocalDate.parse(parts[0]) } catch (_: Exception) { return@mapNotNull null }
-            val title = parts.subList(1, parts.size).joinToString("::")
-            Pair(date, title)
+            if (parts.size < 4) return@mapNotNull null
+            val id = parts[0].toIntOrNull() ?: return@mapNotNull null
+            val date = try { LocalDate.parse(parts[1]) } catch (_: Exception) { return@mapNotNull null }
+            val title = parts[2]
+            val time = parts[3].ifBlank { null }
+            CalendarEvent(id = id, date = date, title = title, time = time)
         }
     } catch (_: Exception) {
         emptyList()
+    }
+}
+
+// BroadcastReceiver que muestra la notificación cuando suena la alarma
+class AlarmReceiver : BroadcastReceiver() {
+    override fun onReceive(context: Context, intent: Intent) {
+        val eventId = intent.getIntExtra("eventId", 0)
+        val title = intent.getStringExtra("title") ?: "Evento"
+        val date = intent.getStringExtra("date") ?: ""
+        val time = intent.getStringExtra("time") ?: ""
+
+        ensureNotificationChannel(context)
+
+        val notif = NotificationCompat.Builder(context, NOTIF_CHANNEL_ID)
+            .setSmallIcon(android.R.drawable.ic_dialog_info)
+            .setContentTitle("Recordatorio: $title")
+            .setContentText("Fecha: $date ${if (time.isNotBlank()) "Hora: $time" else ""}")
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setAutoCancel(true)
+            .build()
+
+        NotificationManagerCompat.from(context).notify(eventId, notif)
+    }
+}
+
+private fun ensureNotificationChannel(context: Context) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as android.app.NotificationManager
+        val channel = nm.getNotificationChannel(NOTIF_CHANNEL_ID)
+        if (channel == null) {
+            val newChannel = android.app.NotificationChannel(
+                NOTIF_CHANNEL_ID,
+                NOTIF_CHANNEL_NAME,
+                android.app.NotificationManager.IMPORTANCE_DEFAULT
+            )
+            nm.createNotificationChannel(newChannel)
+        }
+    }
+}
+
+private fun scheduleAlarm(context: Context, event: CalendarEvent) {
+    if (event.time.isNullOrBlank()) return
+    try {
+        val localTime = LocalTime.parse(event.time)
+        val dateTime = LocalDateTime.of(event.date, localTime)
+        val triggerAt = dateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        if (triggerAt <= System.currentTimeMillis()) return // no programar pasado
+
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(context, AlarmReceiver::class.java).apply {
+            putExtra("eventId", event.id)
+            putExtra("title", event.title)
+            putExtra("date", event.date.toString())
+            putExtra("time", event.time ?: "")
+        }
+        val pending = PendingIntent.getBroadcast(
+            context,
+            event.id,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE else 0
+        )
+        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAt, pending)
+    } catch (_: Exception) {
+        // ignore parse errors
+    }
+}
+
+private fun cancelAlarm(context: Context, eventId: Int) {
+    try {
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(context, AlarmReceiver::class.java)
+        val pending = PendingIntent.getBroadcast(
+            context,
+            eventId,
+            intent,
+            PendingIntent.FLAG_NO_CREATE or if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE else 0
+        )
+        if (pending != null) {
+            alarmManager.cancel(pending)
+            pending.cancel()
+        }
+    } catch (_: Exception) {
+        // ignore
     }
 }
 
@@ -90,9 +194,12 @@ fun CalendarioScreen() {
     val today = remember { LocalDate.now() }
     var currentMonth by remember { mutableStateOf(YearMonth.from(today)) }
     var selectedDate by remember { mutableStateOf(today) }
-    val eventsMap = remember { mutableStateListOf<Pair<LocalDate, String>>() }
+
+    // ahora guardamos CalendarEvent
+    val eventsMap = remember { mutableStateListOf<CalendarEvent>() }
     var showAddDialog by remember { mutableStateOf(false) }
     var newEventText by remember { mutableStateOf("") }
+    var newEventTime by remember { mutableStateOf<String?>(null) } // "HH:mm" o null
     var showEvents by remember { mutableStateOf(false) }
 
     // Cargar eventos al componer
@@ -101,9 +208,12 @@ fun CalendarioScreen() {
         val loaded = deserializeEvents(prefs.getString(EVENTS_KEY, null))
         eventsMap.clear()
         eventsMap.addAll(loaded)
+        // (re)programar alarmas de eventos con hora futura
+        ensureNotificationChannel(context)
+        loaded.forEach { ev -> scheduleAlarm(context, ev) }
     }
 
-    // Guardar automáticamente cuando cambian los eventos (observando snapshot del listado)
+    // Guardar automáticamente cuando cambian los eventos
     LaunchedEffect(Unit) {
         snapshotFlow { eventsMap.toList() }.collect { list ->
             val prefs = context.getSharedPreferences(PREFS_EVENTS, Context.MODE_PRIVATE)
@@ -120,7 +230,7 @@ fun CalendarioScreen() {
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight()
-                .padding(bottom = 120.dp) // aumentado para reservar más espacio al botón flotante
+                .padding(bottom = 120.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -151,13 +261,14 @@ fun CalendarioScreen() {
                 }
             }
 
-            Spacer(modifier = Modifier.height(4.dp)) // reducido
+            Spacer(modifier = Modifier.height(4.dp))
 
             CalendarioGrid(
                 currentMonth = currentMonth,
                 selectedDate = selectedDate,
                 today = today,
-                events = eventsMap.toList(),
+                // adaptamos events para el grid
+                events = eventsMap.map { Pair(it.date, it.title) }, // CalendarioGrid solo usa fecha para marcadores
                 onDateSelected = { date ->
                     if (date == selectedDate) {
                         showEvents = !showEvents
@@ -167,10 +278,10 @@ fun CalendarioScreen() {
                     }
                 },
                 modifier = Modifier
-                    .height(260.dp) // altura fija para evitar que el grid se estire y quede cubierto
+                    .height(260.dp)
             )
 
-            Spacer(modifier = Modifier.height(6.dp)) // reducido
+            Spacer(modifier = Modifier.height(6.dp))
 
             if (showEvents) {
                 Text(
@@ -178,66 +289,69 @@ fun CalendarioScreen() {
                     fontWeight = FontWeight.SemiBold
                 )
 
-                val eventsForDay = eventsMap.filter { it.first == selectedDate }.map { it.second }
+                val eventsForDay = eventsMap.filter { it.date == selectedDate }
 
-                // Lista scrollable de eventos (con botón para eliminar cada evento)
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f),
-                    content = {
-                        if (eventsForDay.isEmpty()) {
-                            item {
-                                Text(
-                                    "No hay eventos",
-                                    color = Color.Gray,
-                                    modifier = Modifier.padding(top = 6.dp)
-                                )
-                            }
-                        } else {
-                            items(eventsForDay) { title ->
-                                Card(
+                ) {
+                    if (eventsForDay.isEmpty()) {
+                        item {
+                            Text(
+                                "No hay eventos",
+                                color = Color.Gray,
+                                modifier = Modifier.padding(top = 6.dp)
+                            )
+                        }
+                    } else {
+                        items(eventsForDay, key = { it.id }) { ev ->
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 6.dp),
+                                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                            ) {
+                                Row(
                                     modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(top = 6.dp),
-                                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                                        .padding(10.dp)
+                                        .fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
-                                    Row(
-                                        modifier = Modifier
-                                            .padding(10.dp)
-                                            .fillMaxWidth(),
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.SpaceBetween
-                                    ) {
-                                        Row(verticalAlignment = Alignment.CenterVertically) {
-                                            Box(
-                                                modifier = Modifier
-                                                    .size(10.dp)
-                                                    .background(color = PrimaryBlue, shape = MaterialTheme.shapes.small)
-                                            )
-                                            Spacer(modifier = Modifier.size(8.dp))
-                                            Text(text = title)
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Box(
+                                            modifier = Modifier
+                                                .size(10.dp)
+                                                .background(color = PrimaryBlue, shape = MaterialTheme.shapes.small)
+                                        )
+                                        Spacer(modifier = Modifier.size(8.dp))
+                                        Column {
+                                            Text(text = ev.title)
+                                            if (!ev.time.isNullOrBlank()) {
+                                                Text(text = "Hora: ${ev.time}", color = Color.Gray)
+                                            }
                                         }
+                                    }
 
-                                        // Icono de papelera para eliminar el evento (persistencia automática)
-                                        IconButton(onClick = {
-                                            // eliminar la primera coincidencia (fecha + título)
-                                            eventsMap.remove(Pair(selectedDate, title))
-                                        }) {
-                                            Icon(
-                                                imageVector = Icons.Filled.Delete,
-                                                contentDescription = "Eliminar evento",
-                                                tint = Color(0xFFB00020)
-                                            )
-                                        }
+                                    // Icono de papelera para eliminar el evento (y cancelar alarma)
+                                    IconButton(onClick = {
+                                        eventsMap.remove(ev)
+                                        cancelAlarm(context, ev.id)
+                                    }) {
+                                        Icon(
+                                            imageVector = Icons.Filled.Delete,
+                                            contentDescription = "Eliminar evento",
+                                            tint = Color(0xFFB00020)
+                                        )
                                     }
                                 }
                             }
                         }
                     }
-                )
+                }
 
-                Spacer(modifier = Modifier.height(8.dp)) // reducido
+                Spacer(modifier = Modifier.height(8.dp))
             }
         }
 
@@ -257,7 +371,7 @@ fun CalendarioScreen() {
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = Icons.Default.Add,
+                    imageVector = Icons.Filled.Add,
                     contentDescription = "Añadir evento",
                     tint = Color.White,
                     modifier = Modifier.size(32.dp)
@@ -267,14 +381,31 @@ fun CalendarioScreen() {
     }
 
     if (showAddDialog) {
+        // TimePicker: abrir desde Android TimePickerDialog; almacenamos newEventTime en formato "HH:mm"
+        val ctx = LocalContext.current
+        val now = LocalTime.now()
+        fun showTimePicker() {
+            TimePickerDialog(ctx, { _, hour, minute ->
+                newEventTime = String.format("%02d:%02d", hour, minute)
+            }, now.hour, now.minute, true).show()
+        }
+
         AlertDialog(
             onDismissRequest = { showAddDialog = false },
             confirmButton = {
                 TextButton(onClick = {
                     if (newEventText.isNotBlank()) {
-                        eventsMap.add(Pair(selectedDate, newEventText.trim()))
+                        val newEv = CalendarEvent(
+                            id = Random.nextInt(Int.MIN_VALUE, Int.MAX_VALUE),
+                            date = selectedDate,
+                            title = newEventText.trim(),
+                            time = newEventTime
+                        )
+                        eventsMap.add(newEv)
+                        // programar alarma si tiene hora
+                        scheduleAlarm(ctx, newEv)
                         newEventText = ""
-                        showEvents = true
+                        newEventTime = null
                     }
                     showAddDialog = false
                 }) {
@@ -285,6 +416,7 @@ fun CalendarioScreen() {
                 TextButton(onClick = {
                     showAddDialog = false
                     newEventText = ""
+                    newEventTime = null
                 }) {
                     Text("Cancelar")
                 }
@@ -300,6 +432,14 @@ fun CalendarioScreen() {
                         label = { Text("Título del evento") },
                         singleLine = true
                     )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        TextButton(onClick = { showTimePicker() }) {
+                            Text(if (newEventTime == null) "Seleccionar hora (opcional)" else "Hora: $newEventTime")
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text("Si selecciona hora, recibirá una notificación cuando llegue.")
                 }
             }
         )

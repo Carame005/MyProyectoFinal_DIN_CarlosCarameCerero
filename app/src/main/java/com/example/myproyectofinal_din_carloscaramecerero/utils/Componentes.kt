@@ -10,9 +10,13 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -34,9 +38,11 @@ import com.example.myproyectofinal_din_carloscaramecerero.model.BottomNavItem
 fun AppTopBar(
     user: User,
     onSettingsClick: () -> Unit,
-    onAvatarChange: (Uri) -> Unit   // 👈 se eleva el evento
+    onAvatarChange: (Uri) -> Unit,
+    currentRoute: String? = null // <-- nuevo parámetro opcional para saber en qué pantalla estamos
 ) {
     var profileExpanded by remember { mutableStateOf(false) }
+    var helpExpanded by remember { mutableStateOf(false) } // estado para el diálogo de ayuda
 
     Box {
         TopAppBar(
@@ -46,7 +52,7 @@ fun AppTopBar(
             ),
             navigationIcon = {
                 IconButton(onClick = { profileExpanded = true }) {
-                    // ...reemplazado: mostrar AsyncImage si hay avatarUri, si no fallback a recurso drawable...
+                    // ...existing avatar rendering...
                     Box(
                         modifier = Modifier
                             .size(36.dp)
@@ -77,6 +83,15 @@ fun AppTopBar(
                         tint = IconGray
                     )
                 }
+
+                // Nuevo botón de ayuda (info) junto a settings
+                IconButton(onClick = { helpExpanded = true }) {
+                    Icon(
+                        imageVector = Icons.Default.Info,
+                        contentDescription = "Ayuda",
+                        tint = IconGray
+                    )
+                }
             }
         )
 
@@ -84,7 +99,29 @@ fun AppTopBar(
             user = user,
             expanded = profileExpanded,
             onDismiss = { profileExpanded = false },
-            onAvatarChange = onAvatarChange // 👈 delega
+            onAvatarChange = onAvatarChange
+        )
+    }
+
+    // Dialogo de ayuda/mini guía contextual según currentRoute
+    if (helpExpanded) {
+        val helpText = when (currentRoute) {
+            "tasks" , "Tareas", "Tareas" -> "Esta pantalla muestra sus tareas. Puede marcar como completadas o eliminar tareas. Use el botón '+' para añadir una nueva tarea."
+            "calendar", "Calendar", "Calendario" -> "Calendario mensual: pulse un día para ver o añadir eventos. Puede fijar una hora para recibir un recordatorio."
+            "home", "Home", "Inicio" -> "Pantalla inicial: resumen rápido de tareas, eventos y colecciones. Toque una tarjeta para expandir más detalles."
+            "stats", "Stats", "Progreso" -> "Colecciones de vídeo: agrupe vídeos para recordar momentos. Pulse una colección para ver y reproducir los vídeos."
+            else -> "Esta es una mini guía: toque elementos en pantalla para ver más opciones. Use el botón '+' para añadir contenido donde proceda."
+        }
+
+        AlertDialog(
+            onDismissRequest = { helpExpanded = false },
+            confirmButton = {
+                TextButton(onClick = { helpExpanded = false }) {
+                    Text("Cerrar")
+                }
+            },
+            title = { Text("Ayuda rápida") },
+            text = { Text(helpText) }
         )
     }
 }
@@ -140,5 +177,3 @@ fun AppBottomBar(
         }
     }
 }
-
-

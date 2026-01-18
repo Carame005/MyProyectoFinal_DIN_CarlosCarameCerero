@@ -69,7 +69,8 @@ fun MainScaffold(
                 onSettingsClick = { /* navegar ajustes */ },
                 onAvatarChange = { uri ->
                     user = user.copy(avatarUri = uri)
-                }
+                },
+                currentRoute = currentRoute // <-- pasar la ruta actual para ayuda contextual
             )
         },
         bottomBar = {
@@ -91,7 +92,7 @@ fun MainScaffold(
             modifier = Modifier.padding(padding)
         ) {
             composable(AppRoute.Home.route) {
-                HomeScreen()
+                HomeScreen(user)
             }
 
             composable(AppRoute.Tasks.route) {
