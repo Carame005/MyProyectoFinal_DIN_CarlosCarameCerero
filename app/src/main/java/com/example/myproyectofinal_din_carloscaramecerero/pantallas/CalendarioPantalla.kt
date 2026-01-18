@@ -70,10 +70,8 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.core.content.edit
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import com.example.myproyectofinal_din_carloscaramecerero.model.CalendarEvent // <-- usar la data class del modelo
 import kotlin.random.Random
-
-// Nuevo modelo de evento (id, fecha, título, hora opcional "HH:mm")
-data class CalendarEvent(val id: Int, val date: LocalDate, val title: String, val time: String?)
 
 // Constantes de persistencia y notificación
 private const val PREFS_EVENTS = "calendar_events_prefs"

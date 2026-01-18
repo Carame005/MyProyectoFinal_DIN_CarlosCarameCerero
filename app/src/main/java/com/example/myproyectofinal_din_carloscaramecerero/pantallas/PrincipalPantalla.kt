@@ -33,7 +33,11 @@ import com.example.myproyectofinal_din_carloscaramecerero.utils.AppTopBar
 import com.example.myproyectofinal_din_carloscaramecerero.utils.SettingsDrawer
 import com.example.myproyectofinal_din_carloscaramecerero.utils.SettingsScreen
 import com.example.myproyectofinal_din_carloscaramecerero.utils.defaultUser
-import com.example.myproyectofinal_din_carloscaramecerero.utils.* // usar colores desde ColorSheet
+import com.example.myproyectofinal_din_carloscaramecerero.pantallas.LoginScreen // <-- nuevo import
+import com.example.myproyectofinal_din_carloscaramecerero.utils.AddButtonBlue
+import com.example.myproyectofinal_din_carloscaramecerero.utils.DarkBackground
+import com.example.myproyectofinal_din_carloscaramecerero.utils.LightFilterBackground
+import com.example.myproyectofinal_din_carloscaramecerero.utils.LightFilterSurface
 
 
 val bottomNavItems = listOf(
@@ -61,6 +65,15 @@ fun MainScaffold(
 
     // nuevo estado: filtro claro funcional (false = defecto actual; true = filtro claro activo)
     var isLightFilter by remember { mutableStateOf(false) }
+
+    // Si debe mostrarse el login, mostrarlo y devolver temprano (evitamos renderizar Scaffold/drawer)
+    if (showLogin) {
+        LoginScreen(onLogin = { newUser ->
+            user = newUser
+            showLogin = false
+        })
+        return
+    }
 
     // obtener la ruta actual del NavController (necesaria por AppTopBar / AppBottomBar)
     val currentRoute = navController
