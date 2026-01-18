@@ -20,9 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
-import com.example.myproyectofinal_din_carloscaramecerero.utils.CollectionCard
-import com.example.myproyectofinal_din_carloscaramecerero.utils.VideoPlayerDialog
+import com.example.myproyectofinal_din_carloscaramecerero.repository.AppRepository
 import java.net.URLDecoder
 import java.net.URLEncoder
 import kotlin.random.Random
@@ -31,7 +29,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TextButton
+import androidx.compose.ui.unit.dp
 import androidx.core.content.edit
+import com.example.myproyectofinal_din_carloscaramecerero.utils.CollectionCard
+import com.example.myproyectofinal_din_carloscaramecerero.utils.VideoPlayerDialog
 
 private const val PREFS_NAME_COLLECTIONS = "video_collections_prefs"
 private const val COLLECTIONS_KEY = "video_collections_serialized"
@@ -53,7 +54,7 @@ data class VideoCollection(
 )
 
 @Composable
-fun StatsListScreen() {
+fun StatsListScreen(userEmail: String) {
     val context = LocalContext.current
     var collections by remember { mutableStateOf(listOf<VideoCollection>()) }
 
@@ -78,16 +79,14 @@ fun StatsListScreen() {
         }
     }
 
-    // Cargar colecciones al componer
-    LaunchedEffect(Unit) {
-        val prefs = context.getSharedPreferences(PREFS_NAME_COLLECTIONS, Context.MODE_PRIVATE)
-        collections = deserializeCollections(prefs.getString(COLLECTIONS_KEY, null))
+    // Cargar colecciones al componer (por usuario)
+    LaunchedEffect(userEmail) {
+        collections = AppRepository.loadCollections(context, userEmail)
     }
 
     // Guardar cada vez que collections cambian
     LaunchedEffect(collections) {
-        val prefs = context.getSharedPreferences(PREFS_NAME_COLLECTIONS, Context.MODE_PRIVATE)
-        prefs.edit { putString(COLLECTIONS_KEY, serializeCollections(collections)) }
+        AppRepository.saveCollections(context, userEmail, collections)
     }
 
     Box(modifier = Modifier.fillMaxSize()) {

@@ -1,6 +1,5 @@
 package com.example.myproyectofinal_din_carloscaramecerero.pantallas
 
-import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -20,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import com.example.myproyectofinal_din_carloscaramecerero.repository.AppRepository
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.Dp
@@ -29,47 +29,21 @@ import com.example.myproyectofinal_din_carloscaramecerero.utils.AddTaskDialog
 import com.example.myproyectofinal_din_carloscaramecerero.utils.TaskCard
 import androidx.compose.runtime.LaunchedEffect
 import kotlin.random.Random
-import androidx.core.content.edit
-
-private const val PREFS_NAME = "tasks_prefs"
-private const val TASKS_KEY = "tasks_serialized"
-
-private fun serializeTasks(tasks: List<Task>): String =
-    tasks.joinToString("|||") { "${it.id}::${it.title.replace("::"," ")}::${it.description.replace("::"," ")}::${it.status.name}" }
-
-private fun deserializeTasks(serialized: String?): List<Task> {
-    if (serialized.isNullOrEmpty()) return emptyList()
-    return try {
-        serialized.split("|||").mapNotNull { entry ->
-            val parts = entry.split("::")
-            if (parts.size < 4) return@mapNotNull null
-            val id = parts[0].toIntOrNull() ?: return@mapNotNull null
-            val title = parts[1]
-            val description = parts[2]
-            val status = try { TaskStatus.valueOf(parts[3]) } catch (_: Exception) { TaskStatus.PENDING }
-            Task(id = id, title = title, description = description, status = status)
-        }
-    } catch (_: Exception) {
-        emptyList()
-    }
-}
 
 @Composable
-fun TaskListScreen() {
+fun TaskListScreen(userEmail: String) {
     val context = LocalContext.current
     var tasks by remember { mutableStateOf(listOf<Task>()) }
     var showDialog by remember { mutableStateOf(false) }
 
-    // Cargar tareas al componer
-    LaunchedEffect(Unit) {
-        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        tasks = deserializeTasks(prefs.getString(TASKS_KEY, null))
+    // Cargar tareas al componer (desde AppRepository por usuario)
+    LaunchedEffect(userEmail) {
+        tasks = AppRepository.loadTasks(context, userEmail)
     }
 
     // Guardar cada vez que tasks cambian
     LaunchedEffect(tasks) {
-        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        prefs.edit { putString(TASKS_KEY, serializeTasks(tasks)) }
+        AppRepository.saveTasks(context, userEmail, tasks)
     }
 
     Box(modifier = Modifier.fillMaxSize()) {

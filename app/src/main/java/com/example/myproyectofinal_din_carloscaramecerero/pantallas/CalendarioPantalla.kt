@@ -52,9 +52,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.example.myproyectofinal_din_carloscaramecerero.repository.AppRepository // <-- nuevo
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -67,6 +65,9 @@ import com.example.myproyectofinal_din_carloscaramecerero.utils.CalendarioGrid
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.content.edit
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -191,27 +192,26 @@ private fun cancelAlarm(context: Context, eventId: Int) {
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CalendarioScreen() {
+fun CalendarioScreen(userEmail: String) { // <-- ahora recibe userEmail
     val context = LocalContext.current
 
     val today = remember { LocalDate.now() }
     var currentMonth by remember { mutableStateOf(YearMonth.from(today)) }
     var selectedDate by remember { mutableStateOf(today) }
 
-    // ahora guardamos CalendarEvent
     val eventsMap = remember { mutableStateListOf<CalendarEvent>() }
     var showAddDialog by remember { mutableStateOf(false) }
     var newEventText by remember { mutableStateOf("") }
-    var newEventTime by remember { mutableStateOf<String?>(null) } // "HH:mm" o null
+    var newEventTime by remember { mutableStateOf<String?>(null) }
     var showEvents by remember { mutableStateOf(false) }
 
-    // Cargar eventos al componer
-    LaunchedEffect(Unit) {
-        val prefs = context.getSharedPreferences(PREFS_EVENTS, Context.MODE_PRIVATE)
-        val loaded = deserializeEvents(prefs.getString(EVENTS_KEY, null))
+    // Cargar eventos al componer (desde AppRepository por usuario)
+    LaunchedEffect(userEmail) {
+        val loaded = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            AppRepository.loadEvents(context, userEmail)
+        } else emptyList()
         eventsMap.clear()
         eventsMap.addAll(loaded)
-        // (re)programar alarmas de eventos con hora futura
         ensureNotificationChannel(context)
         loaded.forEach { ev -> scheduleAlarm(context, ev) }
     }
@@ -219,8 +219,7 @@ fun CalendarioScreen() {
     // Guardar automáticamente cuando cambian los eventos
     LaunchedEffect(Unit) {
         snapshotFlow { eventsMap.toList() }.collect { list ->
-            val prefs = context.getSharedPreferences(PREFS_EVENTS, Context.MODE_PRIVATE)
-            prefs.edit { putString(EVENTS_KEY, serializeEvents(list)) }
+            AppRepository.saveEvents(context, userEmail, list)
         }
     }
 

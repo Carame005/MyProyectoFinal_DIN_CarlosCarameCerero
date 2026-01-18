@@ -17,9 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.example.myproyectofinal_din_carloscaramecerero.repository.AppRepository // <-- nuevo
 import com.example.myproyectofinal_din_carloscaramecerero.model.Task
 import com.example.myproyectofinal_din_carloscaramecerero.model.TaskStatus
 import com.example.myproyectofinal_din_carloscaramecerero.model.User
@@ -31,7 +29,10 @@ import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.VideoLibrary
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.content.edit
 import java.net.URLDecoder
 import com.example.myproyectofinal_din_carloscaramecerero.utils.SummaryCard // <-- importar el componente
@@ -57,62 +58,24 @@ fun HomeScreen(user: User) { // <-- ahora recibe el usuario
     // nuevo estado: sección expandida ("tasks" | "events" | "collections" | null)
     var expandedSection by remember { mutableStateOf<String?>(null) }
 
-    // helpers de deserialización locales (sólo para resumen)
-    fun deserializeTasks(serialized: String?): List<Task> {
-        if (serialized.isNullOrEmpty()) return emptyList()
-        return try {
-            serialized.split("|||").mapNotNull { entry ->
-                val parts = entry.split("::")
-                if (parts.size < 4) return@mapNotNull null
-                val id = parts[0].toIntOrNull() ?: return@mapNotNull null
-                val title = parts[1]
-                val description = parts[2]
-                val status = try { TaskStatus.valueOf(parts[3]) } catch (_: Exception) { TaskStatus.PENDING }
-                Task(id = id, title = URLDecoder.decode(title, "UTF-8"), description = URLDecoder.decode(description, "UTF-8"), status = status)
-            }
-        } catch (_: Exception) {
-            emptyList()
+    // Cargar datos por perfil usando AppRepository cuando cambie el usuario
+    LaunchedEffect(user.email) {
+        if (user.email.isBlank()) {
+            tasks = emptyList()
+            eventsForToday = emptyList()
+            collectionsCount = 0
+        } else {
+            // cargar tareas
+            tasks = AppRepository.loadTasks(ctx, user.email)
+            // cargar eventos y filtrar los de hoy
+            val loadedEvents = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                AppRepository.loadEvents(ctx, user.email)
+            } else emptyList()
+            eventsForToday = loadedEvents.filter { it.date.toString() == today.toString() }.map { it.title }
+            // cargar colecciones y contar
+            val loadedCols = AppRepository.loadCollections(ctx, user.email)
+            collectionsCount = loadedCols.size
         }
-    }
-
-    data class MiniEvent(val id: Int, val date: String, val title: String, val time: String?)
-    fun deserializeEvents(serialized: String?): List<MiniEvent> {
-        if (serialized.isNullOrEmpty()) return emptyList()
-        return try {
-            serialized.split("|||").mapNotNull { entry ->
-                val parts = entry.split("::")
-                if (parts.size < 4) return@mapNotNull null
-                val id = parts[0].toIntOrNull() ?: return@mapNotNull null
-                val date = parts[1]
-                val title = parts[2]
-                val time = parts[3].ifBlank { null }
-                MiniEvent(id = id, date = date, title = title, time = time)
-            }
-        } catch (_: Exception) {
-            emptyList()
-        }
-    }
-
-    fun countCollections(serialized: String?): Int {
-        if (serialized.isNullOrEmpty()) return 0
-        return try {
-            // Cada colección separada por "###"
-            serialized.split("###").size
-        } catch (_: Exception) {
-            0
-        }
-    }
-
-    LaunchedEffect(Unit) {
-        val prefs = ctx.getSharedPreferences(PREFS_TASKS, android.content.Context.MODE_PRIVATE)
-        tasks = deserializeTasks(prefs.getString(TASKS_KEY, null))
-
-        val prefsE = ctx.getSharedPreferences(PREFS_EVENTS, android.content.Context.MODE_PRIVATE)
-        val allEvents = deserializeEvents(prefsE.getString(EVENTS_KEY, null))
-        eventsForToday = allEvents.filter { it.date == today.toString() }.map { it.title }
-
-        val prefsC = ctx.getSharedPreferences(PREFS_COLLECTIONS, android.content.Context.MODE_PRIVATE)
-        collectionsCount = countCollections(prefsC.getString(COLLECTIONS_KEY, null))
     }
 
     Column(modifier = Modifier
