@@ -1,5 +1,7 @@
 package com.example.myproyectofinal_din_carloscaramecerero.pantallas
 
+import android.Manifest
+import android.R
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.app.TimePickerDialog
@@ -8,6 +10,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.annotation.RequiresPermission
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -104,6 +107,7 @@ private fun deserializeEvents(serialized: String?): List<CalendarEvent> {
 
 // BroadcastReceiver que muestra la notificación cuando suena la alarma
 class AlarmReceiver : BroadcastReceiver() {
+    @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     override fun onReceive(context: Context, intent: Intent) {
         val eventId = intent.getIntExtra("eventId", 0)
         val title = intent.getStringExtra("title") ?: "Evento"
@@ -113,7 +117,7 @@ class AlarmReceiver : BroadcastReceiver() {
         ensureNotificationChannel(context)
 
         val notif = NotificationCompat.Builder(context, NOTIF_CHANNEL_ID)
-            .setSmallIcon(android.R.drawable.ic_dialog_info)
+            .setSmallIcon(R.drawable.ic_dialog_info)
             .setContentTitle("Recordatorio: $title")
             .setContentText("Fecha: $date ${if (time.isNotBlank()) "Hora: $time" else ""}")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -139,6 +143,7 @@ private fun ensureNotificationChannel(context: Context) {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 private fun scheduleAlarm(context: Context, event: CalendarEvent) {
     if (event.time.isNullOrBlank()) return
     try {
