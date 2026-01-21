@@ -79,7 +79,6 @@ fun SettingsDrawer(
     var newPass by remember { mutableStateOf("") }
     var showGuide by remember { mutableStateOf(false) }
     var showLogoutConfirm by remember { mutableStateOf(false) } // <-- nuevo estado para confirmación
-    var showTutError by remember { mutableStateOf(false) }
     val ctx = LocalContext.current
 
     // elegir colores según filtro claro
@@ -154,27 +153,30 @@ fun SettingsDrawer(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // Función tutor: permitir ser tutorizado
-                var allowTut by remember { mutableStateOf(user.allowTutoring) }
+                // Biometría: permitir inicio rápido mediante huella/rostro
+                val biometricManager = androidx.biometric.BiometricManager.from(ctx)
+                val canAuth = biometricManager.canAuthenticate(androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG or androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL)
+                var biometricEnabledLocal by remember { mutableStateOf(user.biometricEnabled) }
                 Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                    Text("Función tutor", modifier = Modifier.weight(1f), color = textColor)
-                    Switch(checked = allowTut, onCheckedChange = { newVal ->
-                        if (!newVal) {
-                            // si desea desactivar, comprobar si está en alguna lista de tutorizados
-                            val isTut = AppRepository.isTutorizadoByAny(ctx, user.email)
-                            if (isTut) {
-                                // no permitir y mostrar error
-                                showTutError = true
+                    Text("Inicio rápido (biometría)", modifier = Modifier.weight(1f), color = textColor)
+                    Switch(checked = biometricEnabledLocal, onCheckedChange = { newVal ->
+                        if (newVal) {
+                            if (canAuth != androidx.biometric.BiometricManager.BIOMETRIC_SUCCESS) {
+                                // no disponible
+                                // mostrar breve snackbar/diálogo informativo
+                                // aquí simplemente evitamos activar
+                                biometricEnabledLocal = false
                                 return@Switch
                             }
                         }
-                        // persistir cambio
-                        allowTut = newVal
-                        val updated = user.copy(allowTutoring = allowTut)
+                        biometricEnabledLocal = newVal
+                        // persistir en el perfil
+                        val updated = user.copy(biometricEnabled = biometricEnabledLocal)
                         AppRepository.saveUser(ctx, updated)
                     })
                 }
-                Spacer(modifier = Modifier.height(8.dp))
+
+                Spacer(modifier = Modifier.height(12.dp))
 
                 // Cambiar nombre de usuario
                 Text("Cambiar nombre", style = MaterialTheme.typography.labelLarge, color = textColor)
@@ -311,16 +313,6 @@ fun SettingsDrawer(
             )
         }
 
-        // Mensaje de error al deshabilitar función tutor si está tutorizado
-        if (showTutError) {
-            AlertDialog(
-                onDismissRequest = { showTutError = false },
-                title = { Text("Error") },
-                text = { Text("No puede deshabilitar la función tutor mientras está tutorizado por alguien.") },
-                confirmButton = {
-                    TextButton(onClick = { showTutError = false }) { Text("Aceptar") }
-                }
-            )
-        }
+        // (anteriormente se mostraba un diálogo de error al intentar desactivar la función tutor)
     }
 }

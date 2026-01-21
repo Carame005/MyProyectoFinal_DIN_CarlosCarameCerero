@@ -29,9 +29,11 @@ Estructura de carpetas (relevante)
 - `app/src/main/java/.../repository/` — persistencia local.
 - `app/src/main/java/.../model/` — data classes.
 - `app/src/main/java/.../documentacion/` — documentación (esta carpeta).
+- `app/src/main/java/.../pantallas/TutorPantalla.kt` — pantalla para la gestión por parte de tutores (añadir/visualizar tutorizados, ver/crear tareas y eventos para tutorizados).
 
 Puntos a documentar en futuros documentos técnicos
 ------------------------------------------------
 - Especificación de formatos JSON usados por `AppRepository`.
 - Contratos de los componentes Compose (parámetros y efectos secundarios).
 - Requisitos y permisos (notificaciones, lectura URIs para vídeos).
+- Notas: la lógica relacionada con la gestión de tutorizados se divide entre `TutorPantalla` (UI para tutores) y `AppRepository` (persistencia y comprobaciones, por ejemplo `isTutorizadoByAny`). Mantener esta separación facilita pruebas y evita inconsistencias.

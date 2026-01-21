@@ -9,12 +9,14 @@ import java.time.LocalDate
  * @property date Fecha del evento (solo fecha, sin hora) en formato LocalDate.
  * @property title Título descriptivo del evento.
  * @property time Hora opcional en formato "HH:mm". Si es null, el evento no dispara notificación automática.
+ * @property createdByTutor Indica si el evento fue creado por un tutor (impide eliminación por el tutorizado).
  */
 data class CalendarEvent(
     val id: Int,
     val date: LocalDate,
     val title: String,
-    val time: String? // formato "HH:mm" opcional
+    val time: String? = null, // formato "HH:mm" opcional
+    val createdByTutor: Boolean = false
 )
 
 /**

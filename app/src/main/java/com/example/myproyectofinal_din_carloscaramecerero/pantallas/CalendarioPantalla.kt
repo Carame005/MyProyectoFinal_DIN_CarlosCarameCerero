@@ -73,6 +73,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.example.myproyectofinal_din_carloscaramecerero.model.CalendarEvent // <-- usar la data class del modelo
 import kotlin.random.Random
+import com.example.myproyectofinal_din_carloscaramecerero.model.User
 
 // Constantes de persistencia y notificación
 private const val PREFS_EVENTS = "calendar_events_prefs"
@@ -94,7 +95,6 @@ private fun serializeEvents(events: List<CalendarEvent>): String =
  * Deserializa el contenido serializado hacia una lista de [CalendarEvent].
  * Devuelve lista vacía en caso de error o entrada nula.
  */
-@RequiresApi(Build.VERSION_CODES.O)
 private fun deserializeEvents(serialized: String?): List<CalendarEvent> {
     if (serialized.isNullOrEmpty()) return emptyList()
     return try {
@@ -162,7 +162,6 @@ private fun ensureNotificationChannel(context: Context) {
  * Programa una alarma exacta para el [event] en la hora/date definida.
  * No hace nada si [event.time] es null o la hora ya pasó.
  */
-@RequiresApi(Build.VERSION_CODES.O)
 private fun scheduleAlarm(context: Context, event: CalendarEvent) {
     if (event.time.isNullOrBlank()) return
     try {
@@ -252,6 +251,11 @@ fun CalendarioScreen(userEmail: String) { // <-- ahora recibe userEmail
             AppRepository.saveEvents(context, userEmail, list)
         }
     }
+
+    // cargar usuario actual para comprobar rol
+    var currentUser by remember { mutableStateOf<User?>(null) }
+    LaunchedEffect(userEmail) { currentUser = AppRepository.loadUser(context, userEmail) }
+    val isAdmin = currentUser?.esAdmin == true
 
     Box(
         modifier = Modifier
@@ -367,15 +371,17 @@ fun CalendarioScreen(userEmail: String) { // <-- ahora recibe userEmail
                                     }
 
                                     // Icono de papelera para eliminar el evento (y cancelar alarma)
-                                    IconButton(onClick = {
-                                        eventsMap.remove(ev)
-                                        cancelAlarm(context, ev.id)
-                                    }) {
-                                        Icon(
-                                            imageVector = Icons.Filled.Delete,
-                                            contentDescription = "Eliminar evento",
-                                            tint = Color(0xFFB00020)
-                                        )
+                                    if (isAdmin) {
+                                        IconButton(onClick = {
+                                            eventsMap.remove(ev)
+                                            cancelAlarm(context, ev.id)
+                                        }) {
+                                            Icon(
+                                                imageVector = Icons.Filled.Delete,
+                                                contentDescription = "Eliminar evento",
+                                                tint = Color(0xFFB00020)
+                                            )
+                                        }
                                     }
                                 }
                             }

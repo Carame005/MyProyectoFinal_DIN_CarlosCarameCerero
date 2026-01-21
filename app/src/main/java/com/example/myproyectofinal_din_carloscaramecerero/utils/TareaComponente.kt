@@ -60,6 +60,7 @@ fun StatusIndicator(status: com.example.myproyectofinal_din_carloscaramecerero.m
  * @param onClick Callback al pulsar la tarjeta (se alterna expansión).
  * @param onStatusChange Callback para actualizar el estado de la tarea.
  * @param onDelete Callback para eliminar la tarea.
+ * @param canDelete Indica si está permitido mostrar/ejecutar la acción de borrar esta tarea.
  */
 @Composable
 fun TaskCard(
@@ -67,7 +68,8 @@ fun TaskCard(
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
     onStatusChange: (taskId: Int, newStatus: com.example.myproyectofinal_din_carloscaramecerero.model.TaskStatus) -> Unit = { _, _ -> },
-    onDelete: (taskId: Int) -> Unit = {}
+    onDelete: (taskId: Int) -> Unit = {},
+    canDelete: Boolean = true
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -127,7 +129,7 @@ fun TaskCard(
                             TaskStatus.DONE -> { /* sin botones */ }
                         }
 
-                        if (task.status == TaskStatus.DONE) {
+                        if (task.status == TaskStatus.DONE && canDelete) {
                             Spacer(modifier = Modifier.width(8.dp))
                             IconButton(onClick = { onDelete(task.id) }) {
                                 Icon(

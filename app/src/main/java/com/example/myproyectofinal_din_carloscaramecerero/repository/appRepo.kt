@@ -134,6 +134,7 @@ object AppRepository {
                 put("avatarUri", user.avatarUri?.toString() ?: "")
                 put("esAdmin", user.esAdmin)
                 put("allowTutoring", user.allowTutoring)
+                put("biometricEnabled", user.biometricEnabled)
             }
             val fn = fileNameFor(user.email, SUFFIX_USER)
             ctx.openFileOutput(fn, Context.MODE_PRIVATE).use { it.write(jo.toString().toByteArray()) }
@@ -157,7 +158,8 @@ object AppRepository {
             val avatarUri = if (avatarUriStr.isNotBlank()) Uri.parse(avatarUriStr) else null
             val esAdmin = jo.optBoolean("esAdmin", false)
             val allowTutoring = jo.optBoolean("allowTutoring", true)
-            return User(name = name, email = email, avatarRes = avatarRes, avatarUri = avatarUri, esAdmin = esAdmin, allowTutoring = allowTutoring)
+            val biometricEnabled = jo.optBoolean("biometricEnabled", false)
+            return User(name = name, email = email, avatarRes = avatarRes, avatarUri = avatarUri, esAdmin = esAdmin, allowTutoring = allowTutoring, biometricEnabled = biometricEnabled)
         } catch (ex: FileNotFoundException) {
             return null
         } catch (_: Exception) {
@@ -178,6 +180,7 @@ object AppRepository {
                 jo.put("title", t.title)
                 jo.put("description", t.description)
                 jo.put("status", t.status.name)
+                jo.put("createdByTutor", t.createdByTutor)
                 arr.put(jo)
             }
             val fn = fileNameFor(userEmail, SUFFIX_TASKS)
@@ -201,7 +204,8 @@ object AppRepository {
                 val desc = jo.optString("description", "")
                 val statusName = jo.optString("status", TaskStatus.PENDING.name)
                 val status = try { TaskStatus.valueOf(statusName) } catch (_: Exception) { TaskStatus.PENDING }
-                list.add(Task(id = id, title = title, description = desc, status = status))
+                val createdByTutor = jo.optBoolean("createdByTutor", false)
+                list.add(Task(id = id, title = title, description = desc, status = status, createdByTutor = createdByTutor))
             }
             return list
         } catch (ex: FileNotFoundException) {
@@ -224,6 +228,7 @@ object AppRepository {
                 jo.put("date", e.date.toString()) // ISO
                 jo.put("title", e.title)
                 jo.put("time", e.time ?: "")
+                jo.put("createdByTutor", e.createdByTutor)
                 arr.put(jo)
             }
             val fn = fileNameFor(userEmail, SUFFIX_EVENTS)
@@ -247,8 +252,9 @@ object AppRepository {
                 val dateStr = jo.optString("date", "")
                 val title = jo.optString("title", "")
                 val time = jo.optString("time", "").ifBlank { null }
+                val createdByTutor = jo.optBoolean("createdByTutor", false)
                 val date = try { LocalDate.parse(dateStr) } catch (_: Exception) { null }
-                if (date != null) list.add(CalendarEvent(id = id, date = date, title = title, time = time))
+                if (date != null) list.add(CalendarEvent(id = id, date = date, title = title, time = time, createdByTutor = createdByTutor))
             }
             return list
         } catch (ex: FileNotFoundException) {
@@ -276,6 +282,7 @@ object AppRepository {
                     ivo.put("title", itv.title)
                     ivo.put("description", itv.description)
                     ivo.put("uriString", itv.uriString)
+                    ivo.put("createdByTutor", itv.createdByTutor)
                     itemsArr.put(ivo)
                 }
                 cjo.put("items", itemsArr)
@@ -308,7 +315,8 @@ object AppRepository {
                             id = ivo.optInt("id", 0),
                             title = ivo.optString("title", ""),
                             description = ivo.optString("description", ""),
-                            uriString = ivo.optString("uriString", "")
+                            uriString = ivo.optString("uriString", ""),
+                            createdByTutor = ivo.optBoolean("createdByTutor", false)
                         )
                     )
                 }

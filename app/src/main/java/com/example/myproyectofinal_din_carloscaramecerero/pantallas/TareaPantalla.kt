@@ -29,6 +29,7 @@ import com.example.myproyectofinal_din_carloscaramecerero.utils.AddTaskDialog
 import com.example.myproyectofinal_din_carloscaramecerero.utils.TaskCard
 import androidx.compose.runtime.LaunchedEffect
 import kotlin.random.Random
+import com.example.myproyectofinal_din_carloscaramecerero.model.User
 
 /**
  * Pantalla de lista de tareas para el usuario identificado por [userEmail].
@@ -54,6 +55,17 @@ fun TaskListScreen(userEmail: String) {
         AppRepository.saveTasks(context, userEmail, tasks)
     }
 
+    // cargar usuario actual para comprobar rol
+    var currentUser by remember { mutableStateOf<User?>(null) }
+    LaunchedEffect(userEmail) {
+        currentUser = AppRepository.loadUser(context, userEmail)
+    }
+
+    val isAdmin = currentUser?.esAdmin == true
+
+    // comprobar si este usuario está marcado como tutorizado por algún tutor; si lo está, no podrá eliminar items creados por tutor
+    val isTutorizado = AppRepository.isTutorizadoByAny(context, userEmail)
+
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier
             .padding(16.dp)
@@ -74,8 +86,12 @@ fun TaskListScreen(userEmail: String) {
                             }
                         },
                         onDelete = { id ->
-                            tasks = tasks.filter { it.id != id }
-                        }
+                            // sólo permitir eliminar si el usuario es admin y (la tarea no fue creada por tutor o el usuario no es tutorizado)
+                            if (isAdmin && (!task.createdByTutor || !isTutorizado)) {
+                                tasks = tasks.filter { it.id != id }
+                            }
+                        },
+                        canDelete = isAdmin && !(isTutorizado && task.createdByTutor)
                     )
                 }
             }

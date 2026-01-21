@@ -30,6 +30,8 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+        // Habilitar desugaring para java.time y otras APIs del JDK en dispositivos antiguos
+        isCoreLibraryDesugaringEnabled = true
     }
     kotlinOptions {
         jvmTarget = "11"
@@ -60,6 +62,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.foundation)
     implementation("androidx.compose.material:material-icons-extended")
+    implementation(libs.androidx.biometric.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -68,4 +71,8 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     implementation("io.coil-kt:coil-compose:2.6.0")
+    // Biometric authentication support
+    implementation("androidx.biometric:biometric:1.2.0-alpha05")
+    // Desugaring libs para usar java.time en minSdk < 26
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
 }

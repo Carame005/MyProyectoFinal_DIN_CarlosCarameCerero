@@ -114,7 +114,16 @@ Perfil y ajustes (cambiar nombre, foto y cerrar sesión)
   - Cambiar contraseña: rellene la contraseña actual y la nueva (si procede).
   - Filtro claro (tema): cambiar formato visual para facilitar la lectura.
   - Notificaciones: activar/desactivar.
+  - Función tutor (opción para usuarios tutorizados): en el panel lateral aparece un interruptor "Función tutor" que permite al usuario aceptar o rechazar ser seleccionable como tutorizado por un tutor.
+    - Estado por defecto: activado (el usuario puede ser elegido como tutorizado por un tutor).
+    - Restricción importante: si el usuario ya ha sido seleccionado como tutorizado por algún tutor, intentar desactivar esta opción mostrará un mensaje de error indicando que debe pedir al tutor que lo elimine de su lista antes de desactivar la función. Esto evita inconsistencias entre la configuración del usuario y la lista del tutor.
+    - Cambio persistente: al activar/desactivar se guarda la preferencia en la configuración del usuario.
   - Cerrar sesión: volver a la pantalla de inicio de sesión.
+
+Nota sobre gestión de tutorizados y pantallas relacionadas
+-----------------------------------------------------
+- Gestión centralizada: la lista y gestión de tutorizados debe realizarse desde la pantalla de Tutor (o desde la sección dedicada en la barra inferior para tutores), donde un tutor puede ver sus tutorizados y añadir/quitar tareas o eventos para ellos. El interruptor "Función tutor" en Ajustes es una preferencia personal para aceptar ser tutorizado; no sustituye la gestión por parte de un tutor.
+- Mensajes y errores: si al intentar desactivar la "Función tutor" aparece un mensaje indicando que no puede desactivarlo, significa que existe al menos un tutor que actualmente tiene al usuario en su lista; en ese caso el usuario debe solicitar al tutor que lo elimine previamente.
 
 Notificaciones y recordatorios
 ------------------------------

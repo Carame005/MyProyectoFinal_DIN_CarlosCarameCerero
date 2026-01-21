@@ -11,6 +11,7 @@ import android.net.Uri
  * @property avatarUri Uri opcional a un avatar personalizado.
  * @property esAdmin Marca si el usuario tiene privilegios administrativos (habilita opciones adicionales).
  * @property allowTutoring Indica si el usuario acepta ser tutorizado (visible para tutores). Por defecto true.
+ * @property biometricEnabled Indica si el usuario activó inicio rápido por biometría.
  */
 data class User(
     val name: String,
@@ -18,5 +19,6 @@ data class User(
     val avatarRes: Int,
     val avatarUri: Uri? = null,
     var esAdmin : Boolean = false,
-    var allowTutoring: Boolean = true
+    var allowTutoring: Boolean = true,
+    var biometricEnabled: Boolean = false
 )

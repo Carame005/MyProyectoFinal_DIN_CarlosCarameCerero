@@ -1,6 +1,15 @@
 package com.example.myproyectofinal_din_carloscaramecerero.utils
 
 import android.net.Uri
+import android.view.View
+import android.webkit.CookieManager
+import android.webkit.PermissionRequest
+import android.webkit.WebChromeClient
+import android.webkit.WebResourceError
+import android.webkit.WebResourceRequest
+import android.webkit.WebSettings
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.MediaController
 import android.widget.VideoView
 import androidx.compose.foundation.background
@@ -95,7 +104,9 @@ fun CollectionCard(
     onAddVideo: () -> Unit,
     onDeleteCollection: () -> Unit,
     onDeleteVideo: (videoId: Int) -> Unit,
-    onPlayVideo: (uriString: String) -> Unit
+    onPlayVideo: (uriString: String) -> Unit,
+    canDeleteCollection: Boolean = true,
+    canDeleteVideo: Boolean = true
 ) {
     Card(
         modifier = Modifier
@@ -112,8 +123,10 @@ fun CollectionCard(
                         .weight(1f)
                         .clickable { onToggleExpanded() }
                 )
-                IconButton(onClick = onDeleteCollection) {
-                    Icon(imageVector = Icons.Default.Delete, contentDescription = "Eliminar colección", tint = Color(0xFFB00020))
+                if (canDeleteCollection) {
+                    IconButton(onClick = onDeleteCollection) {
+                        Icon(imageVector = Icons.Default.Delete, contentDescription = "Eliminar colección", tint = Color(0xFFB00020))
+                    }
                 }
             }
 
@@ -125,7 +138,8 @@ fun CollectionCard(
                         VideoItemCard(
                             video = item,
                             onDelete = { onDeleteVideo(item.id) },
-                            onPlay = { onPlayVideo(item.uriString) }
+                            onPlay = { onPlayVideo(item.uriString) },
+                            canDelete = canDeleteVideo
                         )
                     }
 
@@ -158,7 +172,8 @@ fun CollectionCard(
 fun VideoItemCard(
     video: com.example.myproyectofinal_din_carloscaramecerero.pantallas.VideoItem,
     onDelete: () -> Unit,
-    onPlay: () -> Unit
+    onPlay: () -> Unit,
+    canDelete: Boolean = true
 ) {
     Card(
         modifier = Modifier
@@ -179,8 +194,10 @@ fun VideoItemCard(
             IconButton(onClick = onPlay) {
                 Icon(imageVector = Icons.Default.PlayArrow, contentDescription = "Reproducir")
             }
-            IconButton(onClick = onDelete) {
-                Icon(imageVector = Icons.Default.Delete, contentDescription = "Eliminar", tint = Color(0xFFB00020))
+            if (canDelete) {
+                IconButton(onClick = onDelete) {
+                    Icon(imageVector = Icons.Default.Delete, contentDescription = "Eliminar", tint = Color(0xFFB00020))
+                }
             }
         }
     }
@@ -189,6 +206,9 @@ fun VideoItemCard(
 /**
  * Diálogo que reproduce un vídeo local dado su uriString.
  * Soporta modo pantalla completa mediante toggle.
+ *
+ * Ahora: si `uriString` comienza por http(s) se mostrará en un internal WebView;
+ *       si es una URL de YouTube se intentará cargar la versión embebida.
  *
  * @param uriString Uri en formato String (se parsea a Uri internamente).
  * @param onClose Callback para cerrar el diálogo/reproductor.
@@ -200,6 +220,38 @@ fun VideoPlayerDialog(
 ) {
     val context = LocalContext.current
     var isFullScreen by remember { mutableStateOf(false) }
+
+    // helper: detectar y convertir URL de YouTube a la URL embebida
+    fun youTubeEmbedUrl(url: String): String? {
+        try {
+            val lower = url.lowercase()
+            if (lower.contains("youtube.com/watch?v=")) {
+                val idx = lower.indexOf("v=")
+                if (idx >= 0) {
+                    val idPart = url.substring(idx + 2).split('&')[0]
+                    // usar el dominio 'youtube-nocookie.com' para evitar algunos bloqueos de embedding
+                    return "https://www.youtube-nocookie.com/embed/$idPart"
+                }
+            }
+            if (lower.contains("youtu.be/")) {
+                val parts = url.split("youtu.be/")
+                if (parts.size > 1) {
+                    val idPart = parts[1].split('?')[0]
+                    // usar el dominio 'youtube-nocookie.com' para evitar algunos bloqueos de embedding
+                    return "https://www.youtube-nocookie.com/embed/$idPart"
+                }
+            }
+            if (lower.contains("youtube.com/shorts/")) {
+                val parts = url.split("shorts/")
+                if (parts.size > 1) {
+                    val idPart = parts[1].split('?')[0]
+                    // usar el dominio 'youtube-nocookie.com' para evitar algunos bloqueos de embedding
+                    return "https://www.youtube-nocookie.com/embed/$idPart"
+                }
+            }
+        } catch (_: Exception) { }
+        return null
+    }
 
     Dialog(
         onDismissRequest = onClose,
@@ -214,27 +266,147 @@ fun VideoPlayerDialog(
                 modifier = if (isFullScreen) Modifier.fillMaxSize() else Modifier.fillMaxWidth()
             ) {
                 Box(modifier = Modifier.fillMaxSize()) {
-                    // VideoView: tamaño variable según fullscreen
-                    AndroidView(
-                        factory = { ctx ->
-                            VideoView(ctx).apply {
-                                val mc = MediaController(ctx)
-                                mc.setAnchorView(this)
-                                setMediaController(mc)
-                                try {
-                                    val u = Uri.parse(uriString)
-                                    setVideoURI(u)
-                                    requestFocus()
-                                    start()
-                                } catch (ex: Exception) {
-                                    // ignore; mostrar vacío si falla
+                    if (uriString.startsWith("http://") || uriString.startsWith("https://")) {
+                        // WebView path: usar embed para YouTube si es posible
+                        val embed = youTubeEmbedUrl(uriString) ?: uriString
+                        AndroidView(factory = { ctx ->
+                            WebView(ctx).apply {
+                                // Habilitar debugging en desarrollo
+                                WebView.setWebContentsDebuggingEnabled(true)
+                                // permitir cookies de terceros para embebidos
+                                try { CookieManager.getInstance().setAcceptThirdPartyCookies(this, true) } catch (_: Exception) {}
+
+                                // configuración segura para reproducir contenido embebido
+                                settings.javaScriptEnabled = true
+                                settings.domStorageEnabled = true
+                                settings.javaScriptCanOpenWindowsAutomatically = true
+                                settings.allowFileAccess = true
+                                settings.mediaPlaybackRequiresUserGesture = false
+                                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                                    settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
                                 }
+
+                                // Manejador de errores para evitar pantalla blanca y dar feedback
+                                webViewClient = object : WebViewClient() {
+                                    override fun onReceivedError(view: WebView?, errorCode: Int, description: String?, failingUrl: String?) {
+                                        super.onReceivedError(view, errorCode, description, failingUrl)
+                                        try {
+                                            val errHtml = "<html><body style=\"color:#fff;background:#000;padding:16px\"><h3>Error al cargar el vídeo</h3><p>No se pudo cargar el contenido.</p></body></html>"
+                                            loadDataWithBaseURL(null, errHtml, "text/html", "utf-8", null)
+                                        } catch (_: Exception) {}
+                                    }
+
+                                    override fun onReceivedError(view: WebView?, request: WebResourceRequest?, error: WebResourceError?) {
+                                        super.onReceivedError(view, request, error)
+                                        try {
+                                            val errHtml = "<html><body style=\"color:#fff;background:#000;padding:16px\"><h3>Error al cargar el vídeo</h3><p>No se pudo cargar el contenido.</p></body></html>"
+                                            loadDataWithBaseURL(null, errHtml, "text/html", "utf-8", null)
+                                        } catch (_: Exception) {}
+                                    }
+
+                                    override fun onPageFinished(view: WebView?, url: String?) {
+                                        super.onPageFinished(view, url)
+                                        try {
+                                            // Si el contenido cargado no tiene altura, puede indicar bloqueo de frame
+                                            if (view != null && view.contentHeight <= 0) {
+                                                // reintentar después de un breve retraso (algunos embeds tardan)
+                                                view.postDelayed({
+                                                    try {
+                                                        if (view.contentHeight <= 0) {
+                                                            // fallback: abrir externamente
+                                                            try {
+                                                                val i = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(embed)).apply { addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK) }
+                                                                ctx.startActivity(i)
+                                                            } catch (_: Exception) { /* ignore */ }
+                                                        }
+                                                    } catch (_: Exception) {}
+                                                }, 700)
+                                            }
+                                        } catch (_: Exception) {}
+                                    }
+                                }
+
+                                // WebChromeClient para gestionar permisos (audio/video/autoplay) y UI del WebView
+                                webChromeClient = object : WebChromeClient() {
+                                    override fun onPermissionRequest(request: PermissionRequest) {
+                                        try {
+                                            // No conceder recursos de captura (audio/video) desde el WebView porque la app no usa input de usuario
+                                            val deniedCapture = arrayOf(PermissionRequest.RESOURCE_VIDEO_CAPTURE, PermissionRequest.RESOURCE_AUDIO_CAPTURE)
+                                            val toGrant = request.resources.filter { res ->
+                                                !deniedCapture.contains(res)
+                                            }.toTypedArray()
+
+                                            if (toGrant.isNotEmpty()) {
+                                                request.grant(toGrant)
+                                            } else {
+                                                // Si sólo piden captura, denegar para evitar que Chromium solicite permisos Android a nivel de recording
+                                                request.deny()
+                                            }
+                                        } catch (_: Exception) {
+                                            try { request.deny() } catch (_: Exception) {}
+                                        }
+                                    }
+
+                                    override fun onConsoleMessage(message: android.webkit.ConsoleMessage?): Boolean {
+                                        try {
+                                            val msg = message?.message() ?: ""
+                                            // detectar bloqueo por X-Frame-Options u otros indicativos en consola
+                                            if (msg.contains("Refused to display") || msg.contains("blocked by X-Frame-Options") || msg.contains("Allow-FRAME-ANCESTOR") || msg.contains("content is blocked")) {
+                                                try {
+                                                    val i = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(embed)).apply { addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK) }
+                                                    ctx.startActivity(i)
+                                                } catch (_: Exception) { /* ignore */ }
+                                            }
+                                        } catch (_: Exception) {}
+                                        return super.onConsoleMessage(message)
+                                    }
+                                }
+
+                                // usar iframe embed cuando sea YouTube para evitar problemas de redirección
+                                try {
+                                    if (embed.startsWith("https://www.youtube.com/embed/")) {
+                                        val html = "<html><body style=\"margin:0;padding:0;background:black;\">" +
+                                            "<iframe width=\"100%\" height=\"100%\" src=\"${embed}?autoplay=1&mute=1&modestbranding=1&playsinline=1\" " +
+                                            "frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe></body></html>"
+                                        // load HTML with base URL to allow relative resources
+                                        loadDataWithBaseURL(null, html, "text/html", "utf-8", null)
+                                    } else {
+                                        // para otras URLs HTTP(S) cargar directamente
+                                        loadUrl(embed)
+                                    }
+                                } catch (ex: Exception) {
+                                    // fallback a loadUrl
+                                    try { loadUrl(embed) } catch (_: Exception) {}
+                                }
+                                // asegurar hardware acceleration si está disponible
+                                setLayerType(View.LAYER_TYPE_HARDWARE, null)
                             }
-                        },
-                        modifier = if (isFullScreen) Modifier.fillMaxSize() else Modifier
+                        }, modifier = if (isFullScreen) Modifier.fillMaxSize() else Modifier
                             .fillMaxWidth()
-                            .height(240.dp)
-                    )
+                            .height(480.dp))
+                    } else {
+                        // VideoView para URIs locales/content
+                        AndroidView(
+                            factory = { ctx ->
+                                VideoView(ctx).apply {
+                                    val mc = MediaController(ctx)
+                                    mc.setAnchorView(this)
+                                    setMediaController(mc)
+                                    try {
+                                        val u = Uri.parse(uriString)
+                                        setVideoURI(u)
+                                        requestFocus()
+                                        start()
+                                    } catch (ex: Exception) {
+                                        // ignore; mostrar vacío si falla
+                                    }
+                                }
+                            },
+                            modifier = if (isFullScreen) Modifier.fillMaxSize() else Modifier
+                                .fillMaxWidth()
+                                .height(240.dp)
+                        )
+                    }
 
                     // Controles superiores: fullscreen toggle y cerrar
                     Row(

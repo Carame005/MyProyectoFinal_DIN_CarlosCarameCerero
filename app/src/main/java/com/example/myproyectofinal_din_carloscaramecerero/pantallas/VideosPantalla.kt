@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.edit
 import com.example.myproyectofinal_din_carloscaramecerero.utils.CollectionCard
 import com.example.myproyectofinal_din_carloscaramecerero.utils.VideoPlayerDialog
+import com.example.myproyectofinal_din_carloscaramecerero.model.User
 
 private const val PREFS_NAME_COLLECTIONS = "video_collections_prefs"
 private const val COLLECTIONS_KEY = "video_collections_serialized"
@@ -44,12 +45,14 @@ private const val COLLECTIONS_KEY = "video_collections_serialized"
  * @property title Título mostrado al usuario.
  * @property description Descripción breve.
  * @property uriString Uri del recurso de vídeo (toString) para reproducir localmente.
+ * @property createdByTutor Indica si el vídeo fue añadido por un tutor (no podrá eliminarlo el tutorizado).
  */
 data class VideoItem(
     val id: Int,
     val title: String,
     val description: String,
-    val uriString: String
+    val uriString: String,
+    val createdByTutor: Boolean = false
 )
 
 /**
@@ -82,6 +85,11 @@ fun StatsListScreen(userEmail: String) {
 
     // estado temporal para la uri seleccionada en el diálogo
     var pendingVideoUri by remember { mutableStateOf<Uri?>(null) }
+
+    // cargar usuario actual para comprobar rol
+    var currentUser by remember { mutableStateOf<User?>(null) }
+    LaunchedEffect(userEmail) { currentUser = AppRepository.loadUser(context, userEmail) }
+    val isAdmin = currentUser?.esAdmin == true
 
     // Lanzador para seleccionar vídeo desde galería/archivos (mimetype video/*)
     val pickVideoLauncher = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri: Uri? ->
@@ -135,8 +143,19 @@ fun StatsListScreen(userEmail: String) {
                             }
                         },
                         onPlayVideo = { uriStr ->
-                            playingUri = uriStr
-                        }
+                            val lower = uriStr.lowercase()
+                            if ((lower.startsWith("http://") || lower.startsWith("https://")) && (lower.contains("youtube.com") || lower.contains("youtu.be"))) {
+                                try {
+                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uriStr)).apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) }
+                                    context.startActivity(intent)
+                                } catch (_: Exception) { /* ignore */ }
+                            } else {
+                                // reproducir dentro de la app (locales o URLs no-YouTube)
+                                playingUri = uriStr
+                            }
+                        },
+                        canDeleteCollection = isAdmin,
+                        canDeleteVideo = isAdmin
                     )
                 }
             }
@@ -257,6 +276,8 @@ fun AddCollectionDialog(
 
 /**
  * Diálogo para añadir un vídeo a una colección. Usa un selector externo para elegir URI.
+ * Ahora permite aportar una URL alternativa. Si no se proporciona ni URI ni URL no se llamará
+ * a `onVideoAdded` y se mostrará un mensaje de error.
  */
 @Composable
 fun AddVideoDialog(
@@ -267,6 +288,17 @@ fun AddVideoDialog(
 ) {
     var title by remember { mutableStateOf(TextFieldValue("")) }
     var desc by remember { mutableStateOf(TextFieldValue("")) }
+    var url by remember { mutableStateOf("") }
+    var showError by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
+
+    // Limpiar errores cuando el usuario cambia la selección o la URL
+    LaunchedEffect(selectedUri, url) {
+        if (showError) {
+            showError = false
+            errorMessage = ""
+        }
+    }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -288,13 +320,35 @@ fun AddVideoDialog(
                     Text(text = selectedUri?.lastPathSegment ?: (selectedUri?.toString() ?: "Ninguno seleccionado"))
                 }
 
+                Spacer(Modifier.height(8.dp))
+                Text("O pegar un enlace al vídeo (URL) como alternativa:")
+                OutlinedTextField(value = url, onValueChange = { url = it }, label = { Text("URL (https://...)") })
+
                 Spacer(Modifier.height(6.dp))
-                Text("Se recomienda seleccionar el vídeo desde la galería o archivos. Si desea, puede dejar la URI vacía.")
+                Text("Se recomienda seleccionar el vídeo desde la galería o archivos. Si desea, puede usar una URL.")
+
+                if (showError) {
+                    Spacer(Modifier.height(6.dp))
+                    Text(text = errorMessage.ifBlank { "Debe seleccionar un vídeo local o proporcionar una URL válida." }, color = Color(0xFFB00020))
+                }
             }
         },
         confirmButton = {
             TextButton(onClick = {
-                val uriStr = selectedUri?.toString() ?: ""
+                // Validaciones: no permitir ambos (local + url) al mismo tiempo
+                val hasLocal = selectedUri != null
+                val hasUrl = url.trim().isNotBlank()
+                if (hasLocal && hasUrl) {
+                    errorMessage = "Seleccione solo una fuente: o vídeo local o URL, no ambos."
+                    showError = true
+                    return@TextButton
+                }
+                val uriStr = selectedUri?.toString()?.takeIf { it.isNotBlank() } ?: url.trim().takeIf { it.isNotBlank() }
+                if (uriStr == null) {
+                    errorMessage = "Debe seleccionar un vídeo local o proporcionar una URL válida."
+                    showError = true
+                    return@TextButton
+                }
                 onVideoAdded(title.text, desc.text, uriStr)
             }) { Text("Añadir") }
         },

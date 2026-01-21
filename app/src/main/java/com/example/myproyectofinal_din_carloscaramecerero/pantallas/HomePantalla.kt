@@ -77,9 +77,7 @@ fun HomeScreen(user: User) { // <-- ahora recibe el usuario
             // cargar tareas
             tasks = AppRepository.loadTasks(ctx, user.email)
             // cargar eventos y filtrar los de hoy
-            val loadedEvents = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                AppRepository.loadEvents(ctx, user.email)
-            } else emptyList()
+            val loadedEvents = AppRepository.loadEvents(ctx, user.email)
             eventsForToday = loadedEvents.filter { it.date.toString() == today.toString() }.map { it.title }
             // cargar colecciones y contar
             val loadedCols = AppRepository.loadCollections(ctx, user.email)
