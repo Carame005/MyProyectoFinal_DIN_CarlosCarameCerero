@@ -22,6 +22,18 @@ import com.example.myproyectofinal_din_carloscaramecerero.repository.AppReposito
 
 private val EMAIL_REGEX = Regex("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\$")
 
+/**
+ * Pantalla de autenticación que soporta dos modos:
+ *  - Registro: solicita nombre, correo, contraseña y confirmación.
+ *  - Inicio de sesión: acepta usuario o correo + contraseña.
+ *
+ * Al registrarse guarda las credenciales y el perfil con [AppRepository].
+ * Al iniciar sesión valida las credenciales existentes y carga/crea el perfil.
+ *
+ * También incluye un botón de purga para pruebas que borra todos los datos locales.
+ *
+ * @param onLogin Callback invocado con el [User] cuando la autenticación es correcta.
+ */
 @Composable
 fun LoginScreen(
     onLogin: (User) -> Unit

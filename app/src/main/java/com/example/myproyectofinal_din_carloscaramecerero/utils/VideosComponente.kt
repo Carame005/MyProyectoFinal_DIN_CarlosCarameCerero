@@ -35,12 +35,15 @@ import com.example.myproyectofinal_din_carloscaramecerero.model.TimeBreakdown
 import com.example.myproyectofinal_din_carloscaramecerero.pantallas.VideoCollection
 import com.example.myproyectofinal_din_carloscaramecerero.pantallas.VideoItem
 
+/**
+ * Elemento de progreso simple que muestra una barra coloreada y texto.
+ */
 @Composable
 fun TimeProgressItem(
     label: String,
     value: Long,
     maxValue: Long,
-    color: Color
+    color: androidx.compose.ui.graphics.Color
 ) {
     val progress = (value.toFloat() / maxValue.coerceAtLeast(1)).coerceIn(0f, 1f)
 
@@ -67,8 +70,11 @@ fun TimeProgressItem(
     }
 }
 
+/**
+ * Gráfico de progreso temporal compuesto por varios TimeProgressItem.
+ */
 @Composable
-fun TimeProgressChart(time: TimeBreakdown) {
+fun TimeProgressChart(time: com.example.myproyectofinal_din_carloscaramecerero.model.TimeBreakdown) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         TimeProgressItem("años", time.years, 10, Color(0xFF2ECC71))
         TimeProgressItem("meses", time.months, 12, Color(0xFF27AE60))
@@ -77,9 +83,13 @@ fun TimeProgressChart(time: TimeBreakdown) {
     }
 }
 
+/**
+ * Tarjeta que representa una colección de vídeos. Puede expandirse para listar items
+ * y ofrece botones para reproducir, eliminar y añadir vídeos.
+ */
 @Composable
 fun CollectionCard(
-    collection: VideoCollection,
+    collection: com.example.myproyectofinal_din_carloscaramecerero.pantallas.VideoCollection,
     expanded: Boolean,
     onToggleExpanded: () -> Unit,
     onAddVideo: () -> Unit,
@@ -141,9 +151,12 @@ fun CollectionCard(
     }
 }
 
+/**
+ * Card que muestra metadatos de un vídeo dentro de una colección y acciones (reproducir, borrar).
+ */
 @Composable
 fun VideoItemCard(
-    video: VideoItem,
+    video: com.example.myproyectofinal_din_carloscaramecerero.pantallas.VideoItem,
     onDelete: () -> Unit,
     onPlay: () -> Unit
 ) {
@@ -173,6 +186,13 @@ fun VideoItemCard(
     }
 }
 
+/**
+ * Diálogo que reproduce un vídeo local dado su uriString.
+ * Soporta modo pantalla completa mediante toggle.
+ *
+ * @param uriString Uri en formato String (se parsea a Uri internamente).
+ * @param onClose Callback para cerrar el diálogo/reproductor.
+ */
 @Composable
 fun VideoPlayerDialog(
     uriString: String,

@@ -30,8 +30,13 @@ import com.example.myproyectofinal_din_carloscaramecerero.model.Task
 import com.example.myproyectofinal_din_carloscaramecerero.model.TaskStatus
 import kotlin.random.Random
 
+/**
+ * Indicador de estado pequeño para una tarea.
+ *
+ * @param status Estado de la tarea (pone color asociado).
+ */
 @Composable
-fun StatusIndicator(status: TaskStatus) {
+fun StatusIndicator(status: com.example.myproyectofinal_din_carloscaramecerero.model.TaskStatus) {
     val color = when (status) {
         TaskStatus.DONE -> Color(0xFF4CAF50)       // verde
         TaskStatus.PENDING -> Color(0xFFF44336)    // rojo
@@ -46,12 +51,22 @@ fun StatusIndicator(status: TaskStatus) {
     )
 }
 
+/**
+ * Card que representa una tarea. Soporta expansión para ver descripción,
+ * cambio de estado y eliminación (cuando está completada).
+ *
+ * @param task Tarea mostrada.
+ * @param modifier Modifier aplicable.
+ * @param onClick Callback al pulsar la tarjeta (se alterna expansión).
+ * @param onStatusChange Callback para actualizar el estado de la tarea.
+ * @param onDelete Callback para eliminar la tarea.
+ */
 @Composable
 fun TaskCard(
-    task: Task,
+    task: com.example.myproyectofinal_din_carloscaramecerero.model.Task,
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
-    onStatusChange: (taskId: Int, newStatus: TaskStatus) -> Unit = { _, _ -> },
+    onStatusChange: (taskId: Int, newStatus: com.example.myproyectofinal_din_carloscaramecerero.model.TaskStatus) -> Unit = { _, _ -> },
     onDelete: (taskId: Int) -> Unit = {}
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -129,10 +144,13 @@ fun TaskCard(
     }
 }
 
+/**
+ * Diálogo para añadir una nueva tarea.
+ */
 @Composable
 fun AddTaskDialog(
     onDismiss: () -> Unit,
-    onTaskAdded: (Task) -> Unit
+    onTaskAdded: (com.example.myproyectofinal_din_carloscaramecerero.model.Task) -> Unit
 ) {
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }

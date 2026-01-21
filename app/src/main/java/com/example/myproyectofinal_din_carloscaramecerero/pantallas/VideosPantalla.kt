@@ -38,7 +38,12 @@ private const val PREFS_NAME_COLLECTIONS = "video_collections_prefs"
 private const val COLLECTIONS_KEY = "video_collections_serialized"
 
 /**
- * Data models locales (simples)
+ * Representa un vídeo individual guardado en una colección.
+ *
+ * @property id Identificador único.
+ * @property title Título mostrado al usuario.
+ * @property description Descripción breve.
+ * @property uriString Uri del recurso de vídeo (toString) para reproducir localmente.
  */
 data class VideoItem(
     val id: Int,
@@ -47,12 +52,25 @@ data class VideoItem(
     val uriString: String
 )
 
+/**
+ * Agrupador de vídeos (colección) que el usuario puede crear.
+ *
+ * @property id Identificador único.
+ * @property title Título de la colección.
+ * @property items Lista de [VideoItem] pertenecientes a la colección.
+ */
 data class VideoCollection(
     val id: Int,
     val title: String,
     val items: List<VideoItem>
 )
 
+/**
+ * Lista y gestor de colecciones de vídeo asociadas al [userEmail].
+ * Permite crear colecciones, añadir vídeos desde la galería/archivos y reproducirlos.
+ *
+ * @param userEmail Email del usuario actual (clave para persistencia por perfil).
+ */
 @Composable
 fun StatsListScreen(userEmail: String) {
     val context = LocalContext.current
@@ -200,6 +218,9 @@ fun StatsListScreen(userEmail: String) {
     }
 }
 
+/**
+ * Diálogo para crear una nueva colección de vídeos.
+ */
 @Composable
 fun AddCollectionDialog(
     onDismiss: () -> Unit,
@@ -234,6 +255,9 @@ fun AddCollectionDialog(
     )
 }
 
+/**
+ * Diálogo para añadir un vídeo a una colección. Usa un selector externo para elegir URI.
+ */
 @Composable
 fun AddVideoDialog(
     onDismiss: () -> Unit,
@@ -280,7 +304,9 @@ fun AddVideoDialog(
     )
 }
 
-// Serialización sencilla y robusta con URLEncoder/URLDecoder
+/**
+ * Serializa las colecciones a un String para guardado local.
+ */
 private fun serializeCollections(list: List<VideoCollection>): String {
     return list.joinToString("###") { col ->
         val titleEnc = URLEncoder.encode(col.title, "UTF-8")
@@ -294,6 +320,9 @@ private fun serializeCollections(list: List<VideoCollection>): String {
     }
 }
 
+/**
+ * Deserializa el String guardado en lista de [VideoCollection].
+ */
 private fun deserializeCollections(serialized: String?): List<VideoCollection> {
     if (serialized.isNullOrEmpty()) return emptyList()
     return try {

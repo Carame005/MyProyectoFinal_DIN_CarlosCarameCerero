@@ -80,12 +80,20 @@ private const val EVENTS_KEY = "events_serialized"
 private const val NOTIF_CHANNEL_ID = "calendar_events_channel"
 private const val NOTIF_CHANNEL_NAME = "Eventos del calendario"
 
+/**
+ * Serializa una lista de [CalendarEvent] a un String plano para persistencia sencilla.
+ * Usa separadores '|||' y '::' para reconstruir posteriormente.
+ */
 private fun serializeEvents(events: List<CalendarEvent>): String =
     events.joinToString("|||") {
         val timePart = it.time ?: ""
         "${it.id}::${it.date}::${it.title.replace("::", " ")}::${timePart}"
     }
 
+/**
+ * Deserializa el contenido serializado hacia una lista de [CalendarEvent].
+ * Devuelve lista vacía en caso de error o entrada nula.
+ */
 @RequiresApi(Build.VERSION_CODES.O)
 private fun deserializeEvents(serialized: String?): List<CalendarEvent> {
     if (serialized.isNullOrEmpty()) return emptyList()
@@ -104,7 +112,12 @@ private fun deserializeEvents(serialized: String?): List<CalendarEvent> {
     }
 }
 
-// BroadcastReceiver que muestra la notificación cuando suena la alarma
+/**
+ * BroadcastReceiver que se encarga de mostrar la notificación cuando suena la alarma
+ * programada para un evento de calendario.
+ *
+ * Requiere permiso POST_NOTIFICATIONS en Android 13+.
+ */
 class AlarmReceiver : BroadcastReceiver() {
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     override fun onReceive(context: Context, intent: Intent) {
@@ -127,6 +140,9 @@ class AlarmReceiver : BroadcastReceiver() {
     }
 }
 
+/**
+ * Crea el canal de notificación necesario para los recordatorios del calendario.
+ */
 private fun ensureNotificationChannel(context: Context) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as android.app.NotificationManager
@@ -142,6 +158,10 @@ private fun ensureNotificationChannel(context: Context) {
     }
 }
 
+/**
+ * Programa una alarma exacta para el [event] en la hora/date definida.
+ * No hace nada si [event.time] es null o la hora ya pasó.
+ */
 @RequiresApi(Build.VERSION_CODES.O)
 private fun scheduleAlarm(context: Context, event: CalendarEvent) {
     if (event.time.isNullOrBlank()) return
@@ -170,6 +190,9 @@ private fun scheduleAlarm(context: Context, event: CalendarEvent) {
     }
 }
 
+/**
+ * Cancela la alarma asociada al identificador [eventId] si existe.
+ */
 private fun cancelAlarm(context: Context, eventId: Int) {
     try {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
@@ -189,6 +212,13 @@ private fun cancelAlarm(context: Context, eventId: Int) {
     }
 }
 
+/**
+ * Composable principal de la pantalla de calendario.
+ *
+ * @param userEmail Email del usuario actual — usado para cargar/guardar eventos por perfil.
+ * Muestra un calendario mensual navegable, lista de eventos del día seleccionado y diálogo
+ * para crear eventos con hora (opcional) que programará notificaciones.
+ */
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

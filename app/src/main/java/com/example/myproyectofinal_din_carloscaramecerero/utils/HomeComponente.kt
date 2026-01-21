@@ -25,7 +25,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-
+/**
+ * Tarjeta resumen presionable usada en la pantalla Home.
+ *
+ * - icon: composable que dibuja el icono de la tarjeta.
+ * - title: texto descriptivo.
+ * - value: valor principal mostrado.
+ * - modifier: modifier pasado desde el llamador (no aplicar weight aquí dentro).
+ * - onClick: acción cuando se pulsa la tarjeta (por ejemplo expandir sección).
+ */
 @Composable
 fun SummaryCard(
     icon: @Composable () -> Unit,

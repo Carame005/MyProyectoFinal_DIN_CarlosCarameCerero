@@ -46,6 +46,15 @@ private const val EVENTS_KEY = "events_serialized"
 private const val PREFS_COLLECTIONS = "video_collections_prefs"
 private const val COLLECTIONS_KEY = "video_collections_serialized"
 
+/**
+ * Pantalla principal (Home) que muestra un saludo personalizado y un resumen rápido
+ * de items por el usuario actual.
+ *
+ * Carga tareas, eventos y colecciones usando [AppRepository] según el email del [user].
+ * Dispone de tarjetas presionables que expanden su contenido (tareas, eventos, colecciones).
+ *
+ * @param user Perfil del usuario actualmente logueado.
+ */
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreen(user: User) { // <-- ahora recibe el usuario

@@ -30,6 +30,14 @@ import com.example.myproyectofinal_din_carloscaramecerero.utils.TaskCard
 import androidx.compose.runtime.LaunchedEffect
 import kotlin.random.Random
 
+/**
+ * Pantalla de lista de tareas para el usuario identificado por [userEmail].
+ *
+ * Carga y guarda tareas mediante [AppRepository] por perfil. Muestra la lista y
+ * un botón flotante para añadir nuevas tareas (abre [AddTaskDialog]).
+ *
+ * @param userEmail Email del usuario actual (clave para la persistencia por perfil).
+ */
 @Composable
 fun TaskListScreen(userEmail: String) {
     val context = LocalContext.current

@@ -42,7 +42,9 @@ import com.example.myproyectofinal_din_carloscaramecerero.utils.LightFilterBackg
 import com.example.myproyectofinal_din_carloscaramecerero.utils.LightFilterSurface
 import com.example.myproyectofinal_din_carloscaramecerero.repository.AppRepository // <-- nuevo
 
-
+/**
+ * Elementos de la barra de navegación inferior usados en la [MainScaffold].
+ */
 val bottomNavItems = listOf(
     BottomNavItem(AppRoute.Tasks.route, Icons.Default.List, "Tareas"),
     BottomNavItem(AppRoute.Calendar.route, Icons.Default.DateRange, "Calendario"),
@@ -50,6 +52,14 @@ val bottomNavItems = listOf(
     BottomNavItem(AppRoute.Stats.route, Icons.Default.Check, "Progreso")
 )
 
+/**
+ * Scaffold principal de la aplicación. Gestiona:
+ *  - sesión de usuario (login/logout),
+ *  - tema (filtro claro/oscuro) por usuario,
+ *  - navegación entre pantallas y la superposición del drawer de ajustes.
+ *
+ * @param navController NavController usado para navegar entre rutas.
+ */
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MainScaffold(

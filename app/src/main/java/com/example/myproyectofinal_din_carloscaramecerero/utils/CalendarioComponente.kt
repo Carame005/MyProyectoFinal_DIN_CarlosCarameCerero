@@ -27,6 +27,16 @@ import androidx.compose.ui.unit.dp
 import java.time.LocalDate
 import java.time.YearMonth
 
+/**
+ * Composable que dibuja la cuadrícula mensual del calendario.
+ *
+ * @param currentMonth Mes a mostrar (YearMonth).
+ * @param selectedDate Fecha actualmente seleccionada.
+ * @param today Fecha actual (para destacar).
+ * @param events Lista de pares (fecha, título) utilizados para indicar si un día tiene eventos.
+ * @param onDateSelected Lambda invocada al pulsar una fecha válida.
+ * @param modifier Modifier opcional aplicado al grid (no aplica a la fila de cabeceras).
+ */
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CalendarioGrid(
@@ -94,6 +104,17 @@ fun CalendarioGrid(
     }
 }
 
+/**
+ * Celda de día del calendario.
+ *
+ * Muestra el número del día, estado si es hoy, seleccionado y un punto si tiene eventos.
+ *
+ * @param date Fecha de la celda.
+ * @param isToday True si la fecha coincide con hoy.
+ * @param isSelected True si la fecha es la seleccionada.
+ * @param hasEvents True si existe al menos un evento en esa fecha.
+ * @param onClick Callback al pulsar la celda.
+ */
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun DayCell(

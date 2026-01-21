@@ -20,12 +20,23 @@ import coil.compose.AsyncImage
 import com.example.myproyectofinal_din_carloscaramecerero.model.User
 import com.example.myproyectofinal_din_carloscaramecerero.R
 
+/**
+ * Usuario por defecto usado cuando no hay perfil cargado.
+ */
 val defaultUser = User(
     name = "Usuario",
     email = "usuario@correo.com",
     avatarRes = R.drawable.pfp
 )
 
+/**
+ * Menú de perfil desplegable que permite cambiar avatar mediante selector del sistema.
+ *
+ * @param user Usuario mostrado.
+ * @param expanded Estado del DropdownMenu.
+ * @param onDismiss Cierra el menú.
+ * @param onAvatarChange Callback con la Uri seleccionada para actualizar el avatar.
+ */
 @Composable
 fun ProfileMenu(
     user: User,
@@ -91,4 +102,3 @@ fun ProfileMenu(
         }
     }
 }
-

@@ -17,6 +17,18 @@ import java.io.FileNotFoundException
 import java.io.IOException
 import java.time.LocalDate
 
+/**
+ * Repositorio de aplicación encargado de guardado/lectura local por usuario.
+ *
+ * Guarda/lee JSON en archivos privados de la app. Las claves/archivos se derivan del
+ * email del usuario (saneado). Provee funciones para:
+ *  - credenciales (guardar/leer),
+ *  - perfil de usuario (guardar/leer),
+ *  - tareas, eventos y colecciones de vídeo (guardar/leer),
+ *  - limpieza de datos por usuario o global (pruebas).
+ *
+ * NOTA: las contraseñas se almacenan en texto plano en ficheros privados (solo para pruebas).
+ */
 object AppRepository {
     // sufijos de fichero
     private const val SUFFIX_USER = "user.json"
@@ -26,12 +38,25 @@ object AppRepository {
     private const val SUFFIX_CREDS = "creds.json" // <-- nuevo sufijo para credenciales
 
     // helpers para nombre de archivo (sanitizar email)
+    /**
+     * Construye un nombre de fichero seguro a partir del email del usuario y un sufijo.
+     *
+     * @param userEmail Email del usuario (se sanea para evitar caracteres no válidos).
+     * @param suffix Sufijo que identifica el tipo de dato (ej. "tasks.json").
+     * @return Nombre de fichero utilizado internamente.
+     */
     private fun fileNameFor(userEmail: String, suffix: String): String {
         val safe = userEmail.replace(Regex("[^A-Za-z0-9_]"), "_")
         return "${safe}_$suffix"
     }
 
     // --- Credenciales: guardar/leer contraseña simple (no cifrado) ---
+    /**
+     * Guarda credenciales (contraseña) para el usuario en un fichero privado.
+     * @param ctx Contexto.
+     * @param userEmail Email del usuario.
+     * @param password Contraseña en texto plano (ver nota de seguridad).
+     */
     fun saveCredentials(ctx: Context, userEmail: String, password: String) {
         try {
             val jo = JSONObject().apply {
@@ -42,6 +67,10 @@ object AppRepository {
         } catch (_: Exception) { }
     }
 
+    /**
+     * Lee la contraseña guardada para el usuario, o null si no existe.
+     * @return contraseña o null.
+     */
     fun loadCredentials(ctx: Context, userEmail: String): String? {
         try {
             val fn = fileNameFor(userEmail, SUFFIX_CREDS)
@@ -56,7 +85,14 @@ object AppRepository {
         }
     }
 
-    // Buscar un usuario por nombre iterando los ficheros de usuario (útil para aceptar "usuario" o "correo" al loguear)
+    /**
+     * Busca un usuario por su nombre (case-insensitive) recorriendo los ficheros de usuario
+     * almacenados por AppRepository. Útil para aceptar "usuario" en login.
+     *
+     * @param ctx Contexto.
+     * @param name Nombre a buscar.
+     * @return User si se encuentra, o null.
+     */
     fun findUserByName(ctx: Context, name: String): User? {
         try {
             val files = ctx.fileList()
@@ -82,6 +118,12 @@ object AppRepository {
     }
 
     // --- Usuario ---
+    /**
+     * Persiste el perfil de usuario en un fichero JSON privado.
+     *
+     * @param ctx Contexto.
+     * @param user Perfil a guardar.
+     */
     fun saveUser(ctx: Context, user: User) {
         try {
             val jo = JSONObject().apply {
@@ -98,6 +140,9 @@ object AppRepository {
         }
     }
 
+    /**
+     * Carga el perfil de usuario por email. Devuelve null si no existe.
+     */
     fun loadUser(ctx: Context, userEmail: String): User? {
         try {
             val fn = fileNameFor(userEmail, SUFFIX_USER)
@@ -118,6 +163,9 @@ object AppRepository {
     }
 
     // --- Tasks ---
+    /**
+     * Guarda la lista de tareas del usuario.
+     */
     fun saveTasks(ctx: Context, userEmail: String, tasks: List<Task>) {
         try {
             val arr = JSONArray()
@@ -134,6 +182,9 @@ object AppRepository {
         } catch (_: Exception) { }
     }
 
+    /**
+     * Carga las tareas del usuario, devuelve lista vacía si no hay fichero.
+     */
     fun loadTasks(ctx: Context, userEmail: String): List<Task> {
         try {
             val fn = fileNameFor(userEmail, SUFFIX_TASKS)
@@ -158,6 +209,9 @@ object AppRepository {
     }
 
     // --- Events (CalendarEvent) ---
+    /**
+     * Guarda eventos de calendario del usuario.
+     */
     fun saveEvents(ctx: Context, userEmail: String, events: List<CalendarEvent>) {
         try {
             val arr = JSONArray()
@@ -174,6 +228,9 @@ object AppRepository {
         } catch (_: Exception) { }
     }
 
+    /**
+     * Carga eventos de calendario del usuario. Usa LocalDate.parse para reconstruir fechas.
+     */
     @RequiresApi(Build.VERSION_CODES.O)
     fun loadEvents(ctx: Context, userEmail: String): List<CalendarEvent> {
         try {
@@ -199,6 +256,9 @@ object AppRepository {
     }
 
     // --- Video collections ---
+    /**
+     * Guarda colecciones de vídeo y sus items.
+     */
     fun saveCollections(ctx: Context, userEmail: String, collections: List<VideoCollection>) {
         try {
             val arr = JSONArray()
@@ -223,6 +283,9 @@ object AppRepository {
         } catch (_: Exception) { }
     }
 
+    /**
+     * Carga colecciones de vídeo del usuario, devuelve lista vacía si no existe fichero.
+     */
     fun loadCollections(ctx: Context, userEmail: String): List<VideoCollection> {
         try {
             val fn = fileNameFor(userEmail, SUFFIX_COLLECTIONS)
@@ -257,6 +320,10 @@ object AppRepository {
     }
 
     // --- Borrar datos de un usuario (logout / limpieza) ---
+    /**
+     * Elimina todos los ficheros asociados a un usuario (perfil, tareas, eventos, colecciones).
+     * Útil en logout para liberar datos del dispositivo.
+     */
     fun clearUserData(ctx: Context, userEmail: String) {
         try { ctx.deleteFile(fileNameFor(userEmail, SUFFIX_USER)) } catch (_: Exception) {}
         try { ctx.deleteFile(fileNameFor(userEmail, SUFFIX_TASKS)) } catch (_: Exception) {}
@@ -265,6 +332,10 @@ object AppRepository {
     }
 
     // --- Borrar todos los datos/credenciales del repo (para pruebas) ---
+    /**
+     * Elimina todos los ficheros gestionados por AppRepository (usuario, tasks, events, collections,
+     * credenciales). Diseñado para pruebas: borra también SharedPreferences relacionadas.
+     */
     fun clearAllData(ctx: Context) {
         try {
             // borrar ficheros creados por el repo (por sufijo)

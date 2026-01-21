@@ -2,8 +2,14 @@ package com.example.myproyectofinal_din_carloscaramecerero.model
 
 import java.time.LocalDate
 
-// Data class que representa un evento de calendario.
-// Usamos LocalDate para mantener compatibilidad con la lógica actual en CalendarioPantalla.kt
+/**
+ * Representa un evento del calendario.
+ *
+ * @property id Identificador único del evento (usado para programar/cancelar alarmas).
+ * @property date Fecha del evento (solo fecha, sin hora) en formato LocalDate.
+ * @property title Título descriptivo del evento.
+ * @property time Hora opcional en formato "HH:mm". Si es null, el evento no dispara notificación automática.
+ */
 data class CalendarEvent(
     val id: Int,
     val date: LocalDate,
@@ -11,7 +17,9 @@ data class CalendarEvent(
     val time: String? // formato "HH:mm" opcional
 )
 
-// Contenedor/DTO para futuras operaciones de persistencia o sincronización
+/**
+ * Contenedor simple para facilitar serialización/deserialización masiva.
+ */
 data class CalendarData(
     val events: List<CalendarEvent> = emptyList()
 )

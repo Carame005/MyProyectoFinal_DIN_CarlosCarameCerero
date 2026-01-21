@@ -33,10 +33,18 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.myproyectofinal_din_carloscaramecerero.model.BottomNavItem
 
+/**
+ * Top bar principal con avatar, ajustes y botón de ayuda contextual.
+ *
+ * @param user Usuario actual.
+ * @param onSettingsClick Callback cuando se pulsa el icono de ajustes.
+ * @param onAvatarChange Callback para cambiar avatar.
+ * @param currentRoute Ruta actual (opcional) para mostrar la mini-guía contextual.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppTopBar(
-    user: User,
+    user: com.example.myproyectofinal_din_carloscaramecerero.model.User,
     onSettingsClick: () -> Unit,
     onAvatarChange: (Uri) -> Unit,
     currentRoute: String? = null // <-- nuevo parámetro opcional para saber en qué pantalla estamos
@@ -126,11 +134,12 @@ fun AppTopBar(
     }
 }
 
-
-
+/**
+ * Ítem de la barra inferior.
+ */
 @Composable
 fun BottomBarItem(
-    item: BottomNavItem,
+    item: com.example.myproyectofinal_din_carloscaramecerero.model.BottomNavItem,
     selected: Boolean,
     onClick: () -> Unit
 ) {
@@ -154,12 +163,18 @@ fun BottomBarItem(
     }
 }
 
-
+/**
+ * Barra inferior con los items proporcionados.
+ *
+ * @param items Lista de BottomNavItem.
+ * @param currentRoute Ruta activa para marcar el item seleccionado.
+ * @param onItemSelected Callback cuando se selecciona un item.
+ */
 @Composable
 fun AppBottomBar(
-    items: List<BottomNavItem>,
+    items: List<com.example.myproyectofinal_din_carloscaramecerero.model.BottomNavItem>,
     currentRoute: String,
-    onItemSelected: (BottomNavItem) -> Unit
+    onItemSelected: (com.example.myproyectofinal_din_carloscaramecerero.model.BottomNavItem) -> Unit
 ) {
     Row(
         modifier = Modifier

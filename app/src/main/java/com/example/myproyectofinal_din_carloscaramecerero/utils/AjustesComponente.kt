@@ -42,7 +42,26 @@ fun SettingsScreen(){
     Text("Ajustes")
 }
 
-// Drawer lateral de Ajustes (se muestra como overlay desde la derecha)
+/**
+ * Drawer lateral de ajustes que se presenta como overlay encima del resto de la UI.
+ *
+ * Respeta la safe drawing area y permite:
+ *  - cambiar nombre y contraseña,
+ *  - alternar filtro claro,
+ *  - alternar notificaciones,
+ *  - mostrar guía y opciones de tutor (si el usuario es admin),
+ *  - confirmar cierre de sesión.
+ *
+ * @param user Usuario actual (se usa para mostrar info y condicionar opciones de admin).
+ * @param onClose Cierra el drawer (invocado desde el botón de flecha).
+ * @param onChangeName Callback para actualizar el nombre del usuario.
+ * @param onChangePassword Callback para cambiar contraseña (recibe old/new).
+ * @param isLightTheme Estado del filtro claro.
+ * @param onToggleTheme Callback que invierte el filtro claro.
+ * @param notificationsEnabled Estado de notificaciones.
+ * @param onToggleNotifications Callback para cambiar notificaciones.
+ * @param onLogout Callback a ejecutar cuando el usuario confirma el cierre de sesión.
+ */
 @Composable
 fun SettingsDrawer(
     user: com.example.myproyectofinal_din_carloscaramecerero.model.User,
