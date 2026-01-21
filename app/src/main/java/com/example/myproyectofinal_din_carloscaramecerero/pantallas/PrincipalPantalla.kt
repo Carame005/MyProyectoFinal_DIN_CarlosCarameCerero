@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.People
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.darkColorScheme
@@ -141,21 +142,35 @@ fun MainScaffold(
         // envolvemos todo en un Box para poder superponer el drawer sobre topbar/bottombar
         Box(modifier = Modifier.fillMaxSize()) {
             Scaffold(
-                modifier = Modifier.safeDrawingPadding(),
-                topBar = {
-                    AppTopBar(
-                        user = user,
-                        onSettingsClick = { showSettingsDrawer = true }, // abrir drawer en lugar de navegar
-                        onAvatarChange = { uri ->
-                            user = user.copy(avatarUri = uri)
-                            AppRepository.saveUser(ctx, user) // persistir cambio avatar inmediatamente
-                        },
-                        currentRoute = currentRoute // <-- pasar la ruta actual para ayuda contextual
-                    )
-                },
+                 modifier = Modifier.safeDrawingPadding(),
+                 topBar = {
+                     AppTopBar(
+                         user = user,
+                         onSettingsClick = { showSettingsDrawer = true }, // abrir drawer en lugar de navegar
+                         onAvatarChange = { uri ->
+                             user = user.copy(avatarUri = uri)
+                             AppRepository.saveUser(ctx, user) // persistir cambio avatar inmediatamente
+                         },
+                         currentRoute = currentRoute // <-- pasar la ruta actual para ayuda contextual
+                     )
+                 },
                 bottomBar = {
+                    // construir items dinámicamente: incluir Tutor solo si user.esAdmin
+                    val itemsLocal = remember(user.esAdmin) {
+                        val base = listOf(
+                            BottomNavItem(AppRoute.Tasks.route, Icons.Default.List, "Tareas"),
+                            BottomNavItem(AppRoute.Calendar.route, Icons.Default.DateRange, "Calendario"),
+                            BottomNavItem(AppRoute.Home.route, Icons.Default.Home, "Inicio"),
+                            BottomNavItem(AppRoute.Stats.route, Icons.Default.Check, "Progreso")
+                        ).toMutableList()
+                        if (user.esAdmin) {
+                            base.add(BottomNavItem(AppRoute.Tutor.route, Icons.Default.People, "Tutor"))
+                        }
+                        base.toList()
+                    }
+
                     AppBottomBar(
-                        items = bottomNavItems,
+                        items = itemsLocal,
                         currentRoute = currentRoute ?: AppRoute.Home.route,
                         onItemSelected = { item ->
                             navController.navigate(item.route) {
@@ -165,7 +180,7 @@ fun MainScaffold(
                         }
                     )
                 }
-            ) { padding ->
+             ) { padding ->
                 // NavHost dentro del contenido del Scaffold
                 NavHost(
                     navController = navController,
@@ -191,8 +206,11 @@ fun MainScaffold(
                     composable(AppRoute.Calendar.route) {
                         CalendarioScreen(user.email) // <-- pasar email
                     }
-                }
-            }
+                    composable(AppRoute.Tutor.route) {
+                        TutorScreen(user.email)
+                    }
+                 }
+             }
 
             // Overlay drawer: ahora está fuera del contenido del Scaffold (se pinta encima del topbar y bottombar)
             if (showSettingsDrawer) {
@@ -212,9 +230,14 @@ fun MainScaffold(
                         showSettingsDrawer = false
                         // opcional: limpiar memoria/volver a login
                         showLogin = true
+                        // navegar a Home y limpiar backstack para evitar que la próxima sesión herede la ruta anterior
+                        navController.navigate(AppRoute.Home.route) {
+                            popUpTo(AppRoute.Home.route) { inclusive = true }
+                            launchSingleTop = true
+                        }
                     }
-                )
-            }
-        }
-    } // MaterialTheme
-}
+                 )
+             }
+         }
+     } // MaterialTheme
+ }

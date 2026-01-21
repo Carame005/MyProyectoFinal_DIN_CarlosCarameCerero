@@ -11,4 +11,5 @@ sealed class AppRoute(val route: String) {
     object Settings : AppRoute("settings")
     object Login : AppRoute("login")
     object Calendar : AppRoute("calendar")
+    object Tutor : AppRoute("tutor")
 }

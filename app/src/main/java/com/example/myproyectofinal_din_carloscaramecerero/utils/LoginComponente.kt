@@ -1,8 +1,8 @@
 package com.example.myproyectofinal_din_carloscaramecerero.utils
 
+import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.myproyectofinal_din_carloscaramecerero.model.User
 import com.example.myproyectofinal_din_carloscaramecerero.R
+import androidx.compose.ui.platform.LocalContext
 
 /**
  * Usuario por defecto usado cuando no hay perfil cargado.
@@ -44,10 +45,22 @@ fun ProfileMenu(
     onDismiss: () -> Unit,
     onAvatarChange: (Uri) -> Unit
 ) {
+    val ctx = LocalContext.current
+
+    // Usar OpenDocument para poder pedir permisos persistentes sobre la URI
     val imagePicker = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.PickVisualMedia()
-    ) { uri ->
-        uri?.let { onAvatarChange(it) }
+        contract = ActivityResultContracts.OpenDocument()
+    ) { uri: Uri? ->
+        uri?.let {
+            try {
+                // solicitar permiso persistente para poder usar la URI tras reinicios
+                val takeFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                ctx.contentResolver.takePersistableUriPermission(it, takeFlags)
+            } catch (_: Exception) {
+                // ignore
+            }
+            onAvatarChange(it)
+        }
     }
 
     DropdownMenu(
@@ -66,11 +79,8 @@ fun ProfileMenu(
                     .size(72.dp)
                     .clip(CircleShape)
                     .clickable {
-                        imagePicker.launch(
-                            PickVisualMediaRequest(
-                                ActivityResultContracts.PickVisualMedia.ImageOnly
-                            )
-                        )
+                        // lanzar OpenDocument para imágenes
+                        imagePicker.launch(arrayOf("image/*"))
                     }
             ) {
                 if (user.avatarUri != null) {

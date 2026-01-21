@@ -36,6 +36,7 @@ object AppRepository {
     private const val SUFFIX_EVENTS = "events.json"
     private const val SUFFIX_COLLECTIONS = "collections.json"
     private const val SUFFIX_CREDS = "creds.json" // <-- nuevo sufijo para credenciales
+    private const val SUFFIX_TUTORIZADOS = "tutorizados.json" // lista de emails que tutor gestiona
 
     // helpers para nombre de archivo (sanitizar email)
     /**
@@ -46,7 +47,7 @@ object AppRepository {
      * @return Nombre de fichero utilizado internamente.
      */
     private fun fileNameFor(userEmail: String, suffix: String): String {
-        val safe = userEmail.replace(Regex("[^A-Za-z0-9_]"), "_")
+        val safe = userEmail.replace(Regex("[^A-Za-z0-9_]") , "_")
         return "${safe}_$suffix"
     }
 
@@ -132,6 +133,7 @@ object AppRepository {
                 put("avatarRes", user.avatarRes)
                 put("avatarUri", user.avatarUri?.toString() ?: "")
                 put("esAdmin", user.esAdmin)
+                put("allowTutoring", user.allowTutoring)
             }
             val fn = fileNameFor(user.email, SUFFIX_USER)
             ctx.openFileOutput(fn, Context.MODE_PRIVATE).use { it.write(jo.toString().toByteArray()) }
@@ -154,7 +156,8 @@ object AppRepository {
             val avatarUriStr = jo.optString("avatarUri", "")
             val avatarUri = if (avatarUriStr.isNotBlank()) Uri.parse(avatarUriStr) else null
             val esAdmin = jo.optBoolean("esAdmin", false)
-            return User(name = name, email = email, avatarRes = avatarRes, avatarUri = avatarUri, esAdmin = esAdmin)
+            val allowTutoring = jo.optBoolean("allowTutoring", true)
+            return User(name = name, email = email, avatarRes = avatarRes, avatarUri = avatarUri, esAdmin = esAdmin, allowTutoring = allowTutoring)
         } catch (ex: FileNotFoundException) {
             return null
         } catch (_: Exception) {
@@ -317,6 +320,116 @@ object AppRepository {
         } catch (_: Exception) {
             return emptyList()
         }
+    }
+
+    // --- Nuevo: listAllUsers y gestión de tutorizados ---
+    /**
+     * Lista todos los usuarios guardados en la app (lee los ficheros *_user.json)
+     */
+    fun listAllUsers(ctx: Context): List<User> {
+        val res = mutableListOf<User>()
+        try {
+            val files = ctx.fileList()
+            files.forEach { f ->
+                if (f.endsWith(SUFFIX_USER)) {
+                    try {
+                        // extraer safe email (nombre de fichero sin sufijo)
+                        val safe = f.removeSuffix("_$SUFFIX_USER")
+                        // intentamos reconstruir leyendo el fichero directamente
+                        val text = ctx.openFileInput(f).bufferedReader().use { it.readText() }
+                        val jo = JSONObject(text)
+                        val name = jo.optString("name", "Usuario")
+                        val email = jo.optString("email", "")
+                        val avatarRes = jo.optInt("avatarRes", 0)
+                        val avatarUriStr = jo.optString("avatarUri", "")
+                        val avatarUri = if (avatarUriStr.isNotBlank()) Uri.parse(avatarUriStr) else null
+                        val esAdmin = jo.optBoolean("esAdmin", false)
+                        if (email.isNotBlank()) {
+                            val allowTut = jo.optBoolean("allowTutoring", true)
+                            res.add(User(name = name, email = email, avatarRes = avatarRes, avatarUri = avatarUri, esAdmin = esAdmin, allowTutoring = allowTut))
+                        }
+                    } catch (_: Exception) { /* seguir */ }
+                }
+            }
+        } catch (_: Exception) { /* ignore */ }
+        return res
+    }
+
+    /**
+     * Carga la lista de emails tutorizados que un tutor gestiona.
+     */
+    fun loadTutorizados(ctx: Context, tutorEmail: String): List<String> {
+        try {
+            val fn = fileNameFor(tutorEmail, SUFFIX_TUTORIZADOS)
+            val text = ctx.openFileInput(fn).bufferedReader().use { it.readText() }
+            val arr = JSONArray(text)
+            val list = mutableListOf<String>()
+            for (i in 0 until arr.length()) {
+                val e = arr.optString(i, "").ifBlank { null }
+                if (e != null) list.add(e)
+            }
+            return list
+        } catch (ex: FileNotFoundException) {
+            return emptyList()
+        } catch (_: Exception) {
+            return emptyList()
+        }
+    }
+
+    /**
+     * Guarda la lista de emails tutorizados para un tutor.
+     */
+    fun saveTutorizados(ctx: Context, tutorEmail: String, tutorizados: List<String>) {
+        try {
+            val arr = JSONArray()
+            tutorizados.forEach { arr.put(it) }
+            val fn = fileNameFor(tutorEmail, SUFFIX_TUTORIZADOS)
+            ctx.openFileOutput(fn, Context.MODE_PRIVATE).use { it.write(arr.toString().toByteArray()) }
+        } catch (_: Exception) { /* ignore */ }
+    }
+
+    /**
+     * Añade un tutorizado a la lista del tutor (si no está ya) y guarda.
+     */
+    fun addTutorizado(ctx: Context, tutorEmail: String, tutorizadoEmail: String) {
+        try {
+            val current = loadTutorizados(ctx, tutorEmail).toMutableList()
+            if (!current.contains(tutorizadoEmail)) {
+                current.add(tutorizadoEmail)
+                saveTutorizados(ctx, tutorEmail, current)
+            }
+        } catch (_: Exception) { /* ignore */ }
+    }
+
+    /**
+     * Elimina un tutorizado de la lista del tutor.
+     */
+    fun removeTutorizado(ctx: Context, tutorEmail: String, tutorizadoEmail: String) {
+        try {
+            val current = loadTutorizados(ctx, tutorEmail).toMutableList()
+            if (current.remove(tutorizadoEmail)) saveTutorizados(ctx, tutorEmail, current)
+        } catch (_: Exception) { /* ignore */ }
+    }
+
+    /**
+     * Comprueba si el usuario con email dado está en las listas de tutorizados de algún tutor.
+     */
+    fun isTutorizadoByAny(ctx: Context, userEmail: String): Boolean {
+        try {
+            val files = ctx.fileList()
+            files.forEach { f ->
+                if (f.endsWith(SUFFIX_TUTORIZADOS)) {
+                    try {
+                        val text = ctx.openFileInput(f).bufferedReader().use { it.readText() }
+                        val arr = JSONArray(text)
+                        for (i in 0 until arr.length()) {
+                            if (arr.optString(i, "") == userEmail) return true
+                        }
+                    } catch (_: Exception) { /* seguir */ }
+                }
+            }
+        } catch (_: Exception) { /* ignore */ }
+        return false
     }
 
     // --- Borrar datos de un usuario (logout / limpieza) ---

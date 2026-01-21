@@ -1,22 +1,21 @@
 package com.example.myproyectofinal_din_carloscaramecerero.utils
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalContext
 import com.example.myproyectofinal_din_carloscaramecerero.model.User
+import com.example.myproyectofinal_din_carloscaramecerero.repository.AppRepository
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import com.example.myproyectofinal_din_carloscaramecerero.utils.* // usar colores desde ColorSheet
 
 /**
  * Pantalla de ajustes de la aplicación.
@@ -64,7 +63,7 @@ fun SettingsScreen(){
  */
 @Composable
 fun SettingsDrawer(
-    user: com.example.myproyectofinal_din_carloscaramecerero.model.User,
+    user: User,
     onClose: () -> Unit,
     onChangeName: (String) -> Unit,
     onChangePassword: (oldPass: String, newPass: String) -> Unit,
@@ -80,7 +79,8 @@ fun SettingsDrawer(
     var newPass by remember { mutableStateOf("") }
     var showGuide by remember { mutableStateOf(false) }
     var showLogoutConfirm by remember { mutableStateOf(false) } // <-- nuevo estado para confirmación
-    var showTutorPlaceholder by remember { mutableStateOf(false) } // <-- placeholder para botón de tutor
+    var showTutError by remember { mutableStateOf(false) }
+    val ctx = LocalContext.current
 
     // elegir colores según filtro claro
     val scrimColor = if (isLightTheme) LightFilterScrim else DarkFilterScrim
@@ -118,7 +118,7 @@ fun SettingsDrawer(
                 ) {
                     // botón flecha a la izquierda para cerrar
                     IconButton(onClick = { onClose() }) {
-                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Cerrar", tint = if (isLightTheme) Color.Black else LocalContentColor.current)
+                        Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = "Cerrar", tint = if (isLightTheme) Color.Black else LocalContentColor.current)
                     }
 
                     Text(
@@ -153,6 +153,28 @@ fun SettingsDrawer(
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))
+
+                // Función tutor: permitir ser tutorizado
+                var allowTut by remember { mutableStateOf(user.allowTutoring) }
+                Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    Text("Función tutor", modifier = Modifier.weight(1f), color = textColor)
+                    Switch(checked = allowTut, onCheckedChange = { newVal ->
+                        if (!newVal) {
+                            // si desea desactivar, comprobar si está en alguna lista de tutorizados
+                            val isTut = AppRepository.isTutorizadoByAny(ctx, user.email)
+                            if (isTut) {
+                                // no permitir y mostrar error
+                                showTutError = true
+                                return@Switch
+                            }
+                        }
+                        // persistir cambio
+                        allowTut = newVal
+                        val updated = user.copy(allowTutoring = allowTut)
+                        AppRepository.saveUser(ctx, updated)
+                    })
+                }
+                Spacer(modifier = Modifier.height(8.dp))
 
                 // Cambiar nombre de usuario
                 Text("Cambiar nombre", style = MaterialTheme.typography.labelLarge, color = textColor)
@@ -230,18 +252,6 @@ fun SettingsDrawer(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // --- Botón de tutor (visible solo si el usuario es admin) ---
-                if (user.esAdmin) {
-                    Text("Sección tutor", style = MaterialTheme.typography.labelLarge, color = textColor)
-                    Spacer(modifier = Modifier.height(6.dp))
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
-                        TextButton(onClick = { showTutorPlaceholder = true }) {
-                            Text("Gestionar tutorizados", color = if (isLightTheme) Color.Black else LocalContentColor.current)
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
-
                 // Guía detallada (diálogo)
                 TextButton(onClick = { showGuide = true }) {
                     Text("Guía de uso detallada", color = if (isLightTheme) Color.Black else LocalContentColor.current)
@@ -283,18 +293,6 @@ fun SettingsDrawer(
             )
         }
 
-        // diálogo placeholder para la funcionalidad de tutor (solo aviso "en desarrollo")
-        if (showTutorPlaceholder) {
-            AlertDialog(
-                onDismissRequest = { showTutorPlaceholder = false },
-                confirmButton = {
-                    TextButton(onClick = { showTutorPlaceholder = false }) { Text("Aceptar") }
-                },
-                title = { Text("Gestión de tutorizados") },
-                text = { Text("Funcionalidad en desarrollo. Pronto podrá agregar y gestionar tutorizados desde aquí.") }
-            )
-        }
-
         // Diálogo de confirmación de cierre de sesión
         if (showLogoutConfirm) {
             AlertDialog(
@@ -309,6 +307,18 @@ fun SettingsDrawer(
                 },
                 dismissButton = {
                     TextButton(onClick = { showLogoutConfirm = false }) { Text("Cancelar") }
+                }
+            )
+        }
+
+        // Mensaje de error al deshabilitar función tutor si está tutorizado
+        if (showTutError) {
+            AlertDialog(
+                onDismissRequest = { showTutError = false },
+                title = { Text("Error") },
+                text = { Text("No puede deshabilitar la función tutor mientras está tutorizado por alguien.") },
+                confirmButton = {
+                    TextButton(onClick = { showTutError = false }) { Text("Aceptar") }
                 }
             )
         }

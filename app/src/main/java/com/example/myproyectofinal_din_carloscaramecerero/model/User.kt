@@ -10,11 +10,13 @@ import android.net.Uri
  * @property avatarRes Recurso drawable por defecto para avatar.
  * @property avatarUri Uri opcional a un avatar personalizado.
  * @property esAdmin Marca si el usuario tiene privilegios administrativos (habilita opciones adicionales).
+ * @property allowTutoring Indica si el usuario acepta ser tutorizado (visible para tutores). Por defecto true.
  */
 data class User(
     val name: String,
     val email: String,
     val avatarRes: Int,
     val avatarUri: Uri? = null,
-    var esAdmin : Boolean = false
+    var esAdmin : Boolean = false,
+    var allowTutoring: Boolean = true
 )
