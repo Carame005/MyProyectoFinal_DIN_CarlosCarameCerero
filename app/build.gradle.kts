@@ -62,7 +62,6 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.foundation)
     implementation("androidx.compose.material:material-icons-extended")
-    implementation(libs.androidx.biometric.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -71,8 +70,9 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     implementation("io.coil-kt:coil-compose:2.6.0")
-    // Biometric authentication support
-    implementation("androidx.biometric:biometric:1.2.0-alpha05")
+    // Biometric authentication support (alineada con version catalog)
+    implementation("androidx.biometric:biometric:1.1.0")
     // Desugaring libs para usar java.time en minSdk < 26
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
+
 }
