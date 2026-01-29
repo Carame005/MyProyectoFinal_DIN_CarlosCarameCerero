@@ -4,6 +4,8 @@
 
     <!-- Permiso necesario para que WebView cargue contenidos externos (YouTube embed, etc.) -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Permiso para mostrar notificaciones en Android 13+ -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:allowBackup="true"
@@ -25,6 +27,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Receiver para notificaciones programadas desde CalendarioPantalla -->
+        <receiver android:name=".pantallas.AlarmReceiver" android:exported="true" />
     </application>
 
 </manifest>

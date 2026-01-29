@@ -21,9 +21,6 @@ Prioridad media
 
 Prioridad baja
 --------------
-- Refactorizar persistencia a Room y separar interfaz de repositorio.
 - Añadir tutoriales y manual de usuario.
-- Implementar NUI (voz/gesto) como propuesta de futura mejora.
-- Implementar migración de credenciales desde `*_creds.json` a `EncryptedSharedPreferences`.
 
 Si quieres que implemente alguno de estos puntos automáticamente, dime cuál y lo hago.

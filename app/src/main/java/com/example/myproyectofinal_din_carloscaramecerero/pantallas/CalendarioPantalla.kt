@@ -75,6 +75,14 @@ import com.example.myproyectofinal_din_carloscaramecerero.model.CalendarEvent //
 import kotlin.random.Random
 import com.example.myproyectofinal_din_carloscaramecerero.model.User
 
+// Nuevos imports para permisos
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
+import android.content.pm.PackageManager
+import android.widget.Toast
+import android.util.Log
+
 // Constantes de persistencia y notificación
 private const val PREFS_EVENTS = "calendar_events_prefs"
 private const val EVENTS_KEY = "events_serialized"
@@ -121,22 +129,40 @@ private fun deserializeEvents(serialized: String?): List<CalendarEvent> {
 class AlarmReceiver : BroadcastReceiver() {
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     override fun onReceive(context: Context, intent: Intent) {
-        val eventId = intent.getIntExtra("eventId", 0)
-        val title = intent.getStringExtra("title") ?: "Evento"
-        val date = intent.getStringExtra("date") ?: ""
-        val time = intent.getStringExtra("time") ?: ""
+        try {
+            val eventId = intent.getIntExtra("eventId", 0)
+            val title = intent.getStringExtra("title") ?: "Evento"
+            val date = intent.getStringExtra("date") ?: ""
+            val time = intent.getStringExtra("time") ?: ""
 
-        ensureNotificationChannel(context)
+            Log.d("Calendario", "AlarmReceiver.onReceive: eventId=$eventId title=$title date=$date time=$time")
 
-        val notif = NotificationCompat.Builder(context, NOTIF_CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_dialog_info)
-            .setContentTitle("Recordatorio: $title")
-            .setContentText("Fecha: $date ${if (time.isNotBlank()) "Hora: $time" else ""}")
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setAutoCancel(true)
-            .build()
+            ensureNotificationChannel(context)
 
-        NotificationManagerCompat.from(context).notify(eventId, notif)
+            val notifManager = NotificationManagerCompat.from(context)
+            if (!notifManager.areNotificationsEnabled()) {
+                Log.w("Calendario", "Notificaciones deshabilitadas para la app (areNotificationsEnabled=false)")
+                // informar brevemente al usuario (útil en debugging en dispositivo)
+                Toast.makeText(context, "Notificaciones deshabilitadas: no se mostrará el recordatorio.", Toast.LENGTH_LONG).show()
+            }
+
+            val notif = NotificationCompat.Builder(context, NOTIF_CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_dialog_info)
+                .setContentTitle("Recordatorio: $title")
+                .setContentText("Fecha: $date ${if (time.isNotBlank()) "Hora: $time" else ""}")
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setAutoCancel(true)
+                .build()
+
+            try {
+                notifManager.notify(eventId, notif)
+                Log.d("Calendario", "Notificación enviada: id=$eventId")
+            } catch (ex: Exception) {
+                Log.e("Calendario", "Error mostrando notificación", ex)
+            }
+        } catch (ex: Exception) {
+            Log.e("Calendario", "Error en AlarmReceiver.onReceive", ex)
+        }
     }
 }
 
@@ -151,7 +177,7 @@ private fun ensureNotificationChannel(context: Context) {
             val newChannel = android.app.NotificationChannel(
                 NOTIF_CHANNEL_ID,
                 NOTIF_CHANNEL_NAME,
-                android.app.NotificationManager.IMPORTANCE_DEFAULT
+                android.app.NotificationManager.IMPORTANCE_HIGH
             )
             nm.createNotificationChannel(newChannel)
         }
@@ -184,8 +210,9 @@ private fun scheduleAlarm(context: Context, event: CalendarEvent) {
             PendingIntent.FLAG_UPDATE_CURRENT or if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE else 0
         )
         alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAt, pending)
-    } catch (_: Exception) {
-        // ignore parse errors
+        Log.d("Calendario", "Alarm scheduled: id=${event.id} at=$triggerAt title=${event.title}")
+    } catch (ex: Exception) {
+        Log.e("Calendario", "Error scheduling alarm for event=${event.id}", ex)
     }
 }
 
@@ -234,6 +261,17 @@ fun CalendarioScreen(userEmail: String) { // <-- ahora recibe userEmail
     var newEventTime by remember { mutableStateOf<String?>(null) }
     var showEvents by remember { mutableStateOf(false) }
 
+    // Launcher para pedir permiso POST_NOTIFICATIONS en Android 13+
+    val notifPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = { granted ->
+            if (!granted) {
+                // informar al usuario que sin permiso no recibirá notificaciones
+                Toast.makeText(context, "Permiso de notificaciones no concedido; no se mostrarán recordatorios.", Toast.LENGTH_LONG).show()
+            }
+        }
+    )
+
     // Cargar eventos al componer (desde AppRepository por usuario)
     LaunchedEffect(userEmail) {
         val loaded = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -242,6 +280,15 @@ fun CalendarioScreen(userEmail: String) { // <-- ahora recibe userEmail
         eventsMap.clear()
         eventsMap.addAll(loaded)
         ensureNotificationChannel(context)
+
+        // comprobar permiso POST_NOTIFICATIONS en Android 13+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val has = ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
+            if (!has) {
+                notifPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+
         loaded.forEach { ev -> scheduleAlarm(context, ev) }
     }
 

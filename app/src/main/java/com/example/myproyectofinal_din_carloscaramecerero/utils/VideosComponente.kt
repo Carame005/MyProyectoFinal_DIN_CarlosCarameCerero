@@ -257,13 +257,17 @@ fun VideoPlayerDialog(
         onDismissRequest = onClose,
         properties = DialogProperties(usePlatformDefaultWidth = !isFullScreen)
     ) {
-        // Cuando está en fullscreen ocupamos toda la pantalla, si no mostramos una card con altura fija
+        // Cuando está en fullscreen ocupamos toda la pantalla, si no mostramos una card con altura adaptativa
         Box(
-            modifier = if (isFullScreen) Modifier.fillMaxSize() else Modifier.wrapContentSize()
+            modifier = if (isFullScreen) Modifier.fillMaxSize() else Modifier.wrapContentSize(),
+            contentAlignment = Alignment.Center
         ) {
             Card(
                 shape = RoundedCornerShape(12.dp),
-                modifier = if (isFullScreen) Modifier.fillMaxSize() else Modifier.fillMaxWidth()
+                modifier = if (isFullScreen) Modifier.fillMaxSize() else Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = 180.dp, max = 560.dp)
+                    .padding(8.dp)
             ) {
                 Box(modifier = Modifier.fillMaxSize()) {
                     if (uriString.startsWith("http://") || uriString.startsWith("https://")) {
@@ -383,7 +387,7 @@ fun VideoPlayerDialog(
                             }
                         }, modifier = if (isFullScreen) Modifier.fillMaxSize() else Modifier
                             .fillMaxWidth()
-                            .height(480.dp))
+                            .heightIn(min = 180.dp, max = 420.dp))
                     } else {
                         // VideoView para URIs locales/content
                         AndroidView(
@@ -404,7 +408,7 @@ fun VideoPlayerDialog(
                             },
                             modifier = if (isFullScreen) Modifier.fillMaxSize() else Modifier
                                 .fillMaxWidth()
-                                .height(240.dp)
+                                .heightIn(min = 180.dp, max = 420.dp)
                         )
                     }
 
