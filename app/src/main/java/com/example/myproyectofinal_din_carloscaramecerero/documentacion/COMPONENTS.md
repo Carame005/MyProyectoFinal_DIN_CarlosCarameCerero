@@ -11,7 +11,7 @@ Resumen de componentes clave
 
 - `AppBottomBar(items, currentRoute, onItemSelected)`
   - Ubicación: `utils/Componentes.kt`
-  - Descripción: Barra inferior con navegación entre pantallas.
+  - Descripción: Barra inferior con navegación entre pantallas. Contiene ahora una entrada adicional para acceder a la pantalla de gestión/visualización de tutorizados (visible para usuarios con rol tutor).
   - Parámetros: `items: List<BottomNavItem>`, `currentRoute: String`, `onItemSelected: (BottomNavItem) -> Unit`.
 
 - `SummaryCard(icon, title, value, modifier = Modifier, onClick = {})`
@@ -20,7 +20,7 @@ Resumen de componentes clave
 
 - `TaskCard(task, modifier, onClick, onStatusChange, onDelete)`
   - Ubicación: `utils/TareaComponente.kt`
-  - Uso: visualización y acciones sobre tareas.
+  - Nota: por decisión de permisos, el icono de eliminación (`onDelete`) no se muestra cuando el usuario actual no tiene `isAdmin=true`. El componente acepta el callback pero la UI lo oculta según permisos.
 
 - `AddTaskDialog(onDismiss, onTaskAdded)`
   - Ubicación: `utils/TareaComponente.kt`
@@ -28,30 +28,36 @@ Resumen de componentes clave
 - `CollectionCard`, `VideoItemCard`, `VideoPlayerDialog`
   - Ubicación: `utils/VideosComponente.kt`
   - Uso: gestionar colecciones y reproducir vídeos seleccionados.
+  - Nota: la reproducción de vídeos embed (YouTube) puede requerir permisos/ajustes WebView; hay un issue conocido (ver TODO).
 
 - `CalendarioGrid(currentMonth, selectedDate, today, events, onDateSelected)`
   - Ubicación: `utils/CalendarioComponente.kt`
   - Uso: grid reutilizable para mostrar calendarios y marcar fechas con eventos.
 
 - `TutorizadosListPreview(userList, onSelectTutorizado)`
-  - Ubicación: `pantallas/TutorPantalla.kt` (UI principal del tutor)
-  - Descripción: Componente que muestra la lista de usuarios que pueden ser añadidos como tutorizados. Muestra nombre y foto de perfil en una card mínima; si la lista está vacía muestra un mensaje "Aún no hay".
-  - Uso: en la pantalla de Tutor permite previsualizar y seleccionar usuarios (solo usuarios no-admin) para agregarlos como tutorizados.
+  - Ubicación: `pantallas/TutorPantalla.kt`
+  - Descripción: Componente que muestra la lista de usuarios disponibles con rol `tutorizado`. Muestra nombre y foto de perfil en una card mínima; si la lista está vacía muestra un mensaje "Aún no hay".
+  - Uso: en la pantalla de Tutor permite previsualizar tutorizados.
+  - Nota clave: la lógica actual ha cambiado respecto a versiones anteriores: ya no existe botón para agregar o eliminar tutorizados desde la preview; los tutores gestionan (ver/editar/añadir tareas y eventos) todos los usuarios con rol `tutorizado` directamente desde la pantalla de Tutor.
 
-- `TutorizadoCard(user, isAdded, expanded, onAdd, onRemove, onExpandChange, expandedContent)`
+- `TutorizadoCard(user, expanded, onExpandChange, expandedContent)`
   - Ubicación: `utils/TutorComponente.kt`
-  - Descripción: Card reutilizable que muestra avatar, nombre y email del usuario, con un botón para agregar/eliminar de la lista de tutorizados. Soporta estado expandible y acepta un slot `expandedContent` para renderizar tareas/eventos.
-  - Parámetros: `user: User`, `isAdded: Boolean`, `expanded: Boolean`, `onAdd: () -> Unit`, `onRemove: () -> Unit`, `onExpandChange: (Boolean) -> Unit`, `expandedContent: (@Composable () -> Unit)?`
+  - Descripción: Card reutilizable que muestra avatar, nombre y email del usuario, con soporte expandible. En la versión actual la card no contiene botones para añadir/quitar tutorizados (esa gestión está centralizada). Soporta un slot `expandedContent` para renderizar tareas/eventos y acciones permitidas.
+  - Parámetros: `user: User`, `expanded: Boolean`, `onExpandChange: (Boolean) -> Unit`, `expandedContent: (@Composable () -> Unit)?`
 
 - `TutorScreen(tutorEmail)`
   - Ubicación: `pantallas/TutorPantalla.kt`
-  - Descripción: Pantalla completa para tutores con listado de usuarios (filtrados por `allowTutoring` y no-admin), manejo de tutorizados (añadir/quitar) y edición de tareas/eventos de cada tutorizado.
+  - Descripción: Pantalla completa para tutores con listado de usuarios (filtrados por rol `tutorizado`), visualización en cards expandibles y edición/creación de tareas, eventos y colecciones de vídeos para cada tutorizado.
   - Parámetros: `tutorEmail: String` (email del tutor actual).
+
+Notas sobre permisos y UI
+------------------------
+- Restricción de borrado: los tutorizados (usuarios con `isAdmin = false`) no pueden eliminar tareas, eventos o vídeos asignados por un tutor —el icono de papelera no se renderiza para ellos. Esto se aplica a nivel UI (componente) y se recomienda reforzarlo también en la capa de persistencia (`AppRepository`) para evitar bypass.
 
 Notas sobre `SettingsDrawer` / Ajustes
 ------------------------------------
-- El `SettingsDrawer` ahora incluye un interruptor "Función tutor" que controla si el usuario acepta ser seleccionado por un tutor. Al desactivar el switch el componente consulta `AppRepository.isTutorizadoByAny(context, user.email)` y, si existe alguna referencia, muestra un diálogo de error y bloquea la desactivación.
-- Recomendación: mantener la lógica de comprobación en el `Repository` (no en componentes) para facilitar pruebas y mantener componentes puros.
+- Se eliminó el interruptor "Función tutor" del drawer de ajustes en la versión actual (decisión de diseño). La opción ya no existe; la aplicaci	n considera el rol y la política centralizada para determinar quién aparece como tutorizado y qué puede gestionar cada usuario.
+- Recomendación: mantener la lógica de comprobación de permisos en el `Repository` (no en componentes) para facilitar pruebas y mantener componentes puros.
 
 Buenas prácticas sugeridas
 -------------------------

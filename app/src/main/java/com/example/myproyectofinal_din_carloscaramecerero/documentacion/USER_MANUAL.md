@@ -7,8 +7,9 @@ Tabla de contenido
 - Conceptos básicos (pantallas principales)
 - Primeros pasos (configurar cuenta)
 - Cómo iniciar sesión
+- Inicio rápido (selección por foto + biometría)
 - Cómo ver la pantalla principal
-- Tareas (añadir, marcar, eliminar)
+- Tareas (añadir, marcar)
 - Calendario y eventos (añadir recordatorio)
 - Colecciones de vídeos (añadir y reproducir)
 - Perfil y ajustes (cambiar nombre, foto y cerrar sesión)
@@ -48,7 +49,14 @@ Cómo iniciar sesión
 1. En la pantalla de inicio, introduzca su usuario o correo en el campo superior.
 2. Escriba su contraseña en el campo de contraseña.
 3. Pulse "Entrar".
-4. Si olvida la contraseña, el cuidador puede registrar un nuevo usuario o purgar datos de prueba (opción de purga está para pruebas; usar con precaución).
+4. Si olvida la contraseña, el cuidador puede registrar un nuevo usuario o purgar datos de prueba (opción de purga está para pruebas; usar con precaución). Se recomienda anotar la contraseña o usar el inicio rápido con biometría si se configura.
+
+Inicio rápido (selección por foto + biometría)
+-----------------------------------------------
+- La app ofrece una vista rápida con las cuentas registradas (foto de perfil, nombre y correo). Si pulsa sobre un usuario, y el dispositivo tiene biometría registrada, solicitará la verificación biométrica y, si tiene éxito, iniciará sesión automáticamente.
+- Si el dispositivo no tiene biometría configurada, al pulsar sobre la cuenta iniciará sesión sin pedir verificación.
+- Para poder usar biometría desde esta vista, el usuario debe registrar sus datos biométricos desde Ajustes > Seguridad > Registrar biometría.
+- Nota para cuidadores: esta función está pensada para facilitar el acceso rápido; mantener control de las cuentas registradas es responsabilidad del cuidador.
 
 Cómo ver la pantalla principal
 -----------------------------
@@ -58,7 +66,7 @@ Cómo ver la pantalla principal
   - Tres tarjetas: Tareas, Eventos, Colecciones. Cada una muestra el número correspondiente.
 - Toque una tarjeta para ver más detalles.
 
-Tareas (añadir, marcar, eliminar)
+Tareas (añadir, marcar)
 ---------------------------------
 - Ver tareas:
   - Pulse la tarjeta "Tareas" o vaya a la pestaña Tareas en la barra inferior.
@@ -70,7 +78,7 @@ Tareas (añadir, marcar, eliminar)
   - Toque la tarea para desplegar opciones.
   - Pulse "En progreso" o "Hecho" según corresponda.
 - Eliminar una tarea:
-  - Si la tarea está marcada como "Hecho", verá un icono de papelera; púlselo para eliminar.
+  - Por seguridad, si su cuenta no tiene rol de administrador (`isAdmin=false`) el icono de eliminar no estará disponible. Si necesita eliminar una tarea creada por un tutor pida ayuda al tutor o al cuidador.
 
 Consejo: mantener las tareas cortas y concretas (por ejemplo: "Tomar medicación a las 9:00").
 
@@ -83,10 +91,10 @@ Calendario y eventos (añadir recordatorio)
 - Añadir evento y recordatorio:
   1. Pulse el botón azul "+" en la parte inferior.
   2. Escriba el título del evento.
-  3. (Opcional) Pulse "Seleccionar hora" para escoger una hora (si quiere un recordatorio a una hora concreta).
+  3. Seleccione el día deseado y (Opcional) pulse "Seleccionar hora" para escoger una hora (si quiere un recordatorio a una hora concreta).
   4. Pulse "Guardar".
 - Eliminar evento:
-  - En la lista de eventos pulse el icono de papelera junto al evento.
+  - Por seguridad, los usuarios sin rol de administrador no pueden eliminar eventos asignados por tutores; el icono de papelera no estará disponible en su UI.
 
 Aviso sobre notificaciones: Para recibir recordatorios debe permitir las notificaciones en el dispositivo. Si no llegan notificaciones, revise los ajustes del dispositivo.
 
@@ -99,11 +107,12 @@ Colecciones de vídeos (añadir y reproducir)
 - Añadir un vídeo a una colección:
   1. Abra la colección (pulse su tarjeta para expandirla).
   2. Pulse el icono de añadir vídeo dentro de la colección.
-  3. Seleccione "Seleccionar vídeo" y elija un archivo de la galería o archivos del dispositivo.
-  4. Rellene título y descripción si lo desea y pulse "Añadir".
+  3. Si se quiere añadir un vídeo debe elegir O bien un archivo local O bien una URL (no se aceptan ambos a la vez). Si adjunta ambos la app mostrará un error y no creará el elemento.
+  4. Seleccione "Seleccionar vídeo" y elija un archivo de la galería o introduzca una URL (YouTube u otra URL compatible).
+  5. Rellene título y descripción si lo desea y pulse "Añadir".
 - Reproducir un vídeo:
   - Pulse el icono de reproducir junto al vídeo. Se abrirá un reproductor que permite ampliar a pantalla completa y cerrar.
-- Eliminar vídeo o colecciones: use el icono de papelera junto al elemento que desea eliminar.
+- Eliminar vídeo o colecciones: por seguridad, los usuarios sin rol de administrador no verán el icono de eliminar para vídeos asignados por tutores.
 
 Perfil y ajustes (cambiar nombre, foto y cerrar sesión)
 --------------------------------------------------------
@@ -114,16 +123,13 @@ Perfil y ajustes (cambiar nombre, foto y cerrar sesión)
   - Cambiar contraseña: rellene la contraseña actual y la nueva (si procede).
   - Filtro claro (tema): cambiar formato visual para facilitar la lectura.
   - Notificaciones: activar/desactivar.
-  - Función tutor (opción para usuarios tutorizados): en el panel lateral aparece un interruptor "Función tutor" que permite al usuario aceptar o rechazar ser seleccionable como tutorizado por un tutor.
-    - Estado por defecto: activado (el usuario puede ser elegido como tutorizado por un tutor).
-    - Restricción importante: si el usuario ya ha sido seleccionado como tutorizado por algún tutor, intentar desactivar esta opción mostrará un mensaje de error indicando que debe pedir al tutor que lo elimine de su lista antes de desactivar la función. Esto evita inconsistencias entre la configuración del usuario y la lista del tutor.
-    - Cambio persistente: al activar/desactivar se guarda la preferencia en la configuración del usuario.
+  - Seguridad > Registrar biometría: opción para guardar que en este dispositivo el usuario podrá usar biometría para inicio rápido.
   - Cerrar sesión: volver a la pantalla de inicio de sesión.
 
 Nota sobre gestión de tutorizados y pantallas relacionadas
------------------------------------------------------
-- Gestión centralizada: la lista y gestión de tutorizados debe realizarse desde la pantalla de Tutor (o desde la sección dedicada en la barra inferior para tutores), donde un tutor puede ver sus tutorizados y añadir/quitar tareas o eventos para ellos. El interruptor "Función tutor" en Ajustes es una preferencia personal para aceptar ser tutorizado; no sustituye la gestión por parte de un tutor.
-- Mensajes y errores: si al intentar desactivar la "Función tutor" aparece un mensaje indicando que no puede desactivarlo, significa que existe al menos un tutor que actualmente tiene al usuario en su lista; en ese caso el usuario debe solicitar al tutor que lo elimine previamente.
+---------------------------------------------------------
+- Gestión centralizada: la lista y gestión de tutorizados se realiza desde la pantalla de Tutor (o desde la sección dedicada en la barra inferior para tutores). Los tutores pueden ver todos los usuarios con rol `tutorizado` y crear/editar tareas, eventos y colecciones para ellos. Ya no existe la opción de agregar/eliminar tutorizados desde el slider de Ajustes ni desde la preview.
+- Mensajes y errores: si ve un mensaje indicando que no puede eliminar o desactivar funciones, póngase en contacto con su tutor o cuidador.
 
 Notificaciones y recordatorios
 ------------------------------
@@ -140,7 +146,7 @@ Buenas prácticas para cuidadores
 - Enseñar al usuario a utilizar la app con ejercicios simples (por ejemplo: crear una tarea diaria juntos).
 
 Preguntas frecuentes (solución de problemas)
--------------------------------------------
+--------------------------------------------
 - No puedo iniciar sesión:
   - Verifique que el correo/usuario y la contraseña estén correctos.
   - Si no funciona, el cuidador puede crear un nuevo usuario o usar la opción de purga (si está disponible) con precaución.
