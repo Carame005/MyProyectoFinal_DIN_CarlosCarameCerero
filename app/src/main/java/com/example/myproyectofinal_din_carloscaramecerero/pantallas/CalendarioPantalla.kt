@@ -1,9 +1,6 @@
 package com.example.myproyectofinal_din_carloscaramecerero.pantallas
 
 import android.Manifest
-import android.R
-import android.app.AlarmManager
-import android.app.PendingIntent
 import android.app.TimePickerDialog
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -54,10 +51,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import com.example.myproyectofinal_din_carloscaramecerero.repository.AppRepository // <-- nuevo
 import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
 import java.time.YearMonth
-import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import com.example.myproyectofinal_din_carloscaramecerero.utils.AddButtonBlue
 import com.example.myproyectofinal_din_carloscaramecerero.utils.PrimaryBlue
@@ -68,57 +62,28 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.edit
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
-import com.example.myproyectofinal_din_carloscaramecerero.model.CalendarEvent // <-- usar la data class del modelo
-import kotlin.random.Random
-import com.example.myproyectofinal_din_carloscaramecerero.model.User
-
-// Nuevos imports para permisos
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import android.content.pm.PackageManager
 import android.widget.Toast
 import android.util.Log
+import com.example.myproyectofinal_din_carloscaramecerero.model.CalendarEvent // <-- usar la data class del modelo
+import kotlin.random.Random
+import com.example.myproyectofinal_din_carloscaramecerero.model.User
 
-// Constantes de persistencia y notificación
-private const val PREFS_EVENTS = "calendar_events_prefs"
-private const val EVENTS_KEY = "events_serialized"
-private const val NOTIF_CHANNEL_ID = "calendar_events_channel"
-private const val NOTIF_CHANNEL_NAME = "Eventos del calendario"
+// Reusar helpers públicos para notificaciones/alarms
+import com.example.myproyectofinal_din_carloscaramecerero.pantallas.scheduleAlarm
+import com.example.myproyectofinal_din_carloscaramecerero.pantallas.cancelAlarm
+import com.example.myproyectofinal_din_carloscaramecerero.pantallas.ensureNotificationChannel
+import com.example.myproyectofinal_din_carloscaramecerero.pantallas.NOTIF_CHANNEL_ID
+import com.example.myproyectofinal_din_carloscaramecerero.pantallas.NOTIF_ACTION
 
-/**
- * Serializa una lista de [CalendarEvent] a un String plano para persistencia sencilla.
- * Usa separadores '|||' y '::' para reconstruir posteriormente.
- */
-private fun serializeEvents(events: List<CalendarEvent>): String =
-    events.joinToString("|||") {
-        val timePart = it.time ?: ""
-        "${it.id}::${it.date}::${it.title.replace("::", " ")}::${timePart}"
-    }
-
-/**
- * Deserializa el contenido serializado hacia una lista de [CalendarEvent].
- * Devuelve lista vacía en caso de error o entrada nula.
- */
-private fun deserializeEvents(serialized: String?): List<CalendarEvent> {
-    if (serialized.isNullOrEmpty()) return emptyList()
-    return try {
-        serialized.split("|||").mapNotNull { entry ->
-            val parts = entry.split("::")
-            if (parts.size < 4) return@mapNotNull null
-            val id = parts[0].toIntOrNull() ?: return@mapNotNull null
-            val date = try { LocalDate.parse(parts[1]) } catch (_: Exception) { return@mapNotNull null }
-            val title = parts[2]
-            val time = parts[3].ifBlank { null }
-            CalendarEvent(id = id, date = date, title = title, time = time)
-        }
-    } catch (_: Exception) {
-        emptyList()
-    }
-}
+// Nuevos imports para permisos
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import android.content.res.Resources
+import android.media.RingtoneManager
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 
 /**
  * BroadcastReceiver que se encarga de mostrar la notificación cuando suena la alarma
@@ -130,6 +95,9 @@ class AlarmReceiver : BroadcastReceiver() {
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     override fun onReceive(context: Context, intent: Intent) {
         try {
+            // solo manejar acciones esperadas
+            if (intent.action != null && intent.action != NOTIF_ACTION) return
+
             val eventId = intent.getIntExtra("eventId", 0)
             val title = intent.getStringExtra("title") ?: "Evento"
             val date = intent.getStringExtra("date") ?: ""
@@ -140,22 +108,32 @@ class AlarmReceiver : BroadcastReceiver() {
             ensureNotificationChannel(context)
 
             val notifManager = NotificationManagerCompat.from(context)
-            if (!notifManager.areNotificationsEnabled()) {
-                Log.w("Calendario", "Notificaciones deshabilitadas para la app (areNotificationsEnabled=false)")
-                // informar brevemente al usuario (útil en debugging en dispositivo)
-                Toast.makeText(context, "Notificaciones deshabilitadas: no se mostrará el recordatorio.", Toast.LENGTH_LONG).show()
+
+            // comprobar permiso runtime POST_NOTIFICATIONS (Android 13+)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                val granted = ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
+                if (!granted) {
+                    Log.w("AlarmReceiver", "POST_NOTIFICATIONS no concedido, no puedo mostrar notificación para eventId=$eventId")
+                    return
+                }
             }
 
+            if (!notifManager.areNotificationsEnabled()) {
+                Log.w("Calendario", "Notificaciones deshabilitadas para la app (areNotificationsEnabled=false)")
+            }
+
+            val soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
             val notif = NotificationCompat.Builder(context, NOTIF_CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_dialog_info)
+                .setSmallIcon(com.example.myproyectofinal_din_carloscaramecerero.R.mipmap.ic_launcher)
                 .setContentTitle("Recordatorio: $title")
                 .setContentText("Fecha: $date ${if (time.isNotBlank()) "Hora: $time" else ""}")
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setSound(soundUri)
                 .setAutoCancel(true)
                 .build()
 
             try {
-                notifManager.notify(eventId, notif)
+                notifManager.notify(eventId and 0x7fffffff, notif)
                 Log.d("Calendario", "Notificación enviada: id=$eventId")
             } catch (ex: Exception) {
                 Log.e("Calendario", "Error mostrando notificación", ex)
@@ -163,78 +141,6 @@ class AlarmReceiver : BroadcastReceiver() {
         } catch (ex: Exception) {
             Log.e("Calendario", "Error en AlarmReceiver.onReceive", ex)
         }
-    }
-}
-
-/**
- * Crea el canal de notificación necesario para los recordatorios del calendario.
- */
-private fun ensureNotificationChannel(context: Context) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as android.app.NotificationManager
-        val channel = nm.getNotificationChannel(NOTIF_CHANNEL_ID)
-        if (channel == null) {
-            val newChannel = android.app.NotificationChannel(
-                NOTIF_CHANNEL_ID,
-                NOTIF_CHANNEL_NAME,
-                android.app.NotificationManager.IMPORTANCE_HIGH
-            )
-            nm.createNotificationChannel(newChannel)
-        }
-    }
-}
-
-/**
- * Programa una alarma exacta para el [event] en la hora/date definida.
- * No hace nada si [event.time] es null o la hora ya pasó.
- */
-private fun scheduleAlarm(context: Context, event: CalendarEvent) {
-    if (event.time.isNullOrBlank()) return
-    try {
-        val localTime = LocalTime.parse(event.time)
-        val dateTime = LocalDateTime.of(event.date, localTime)
-        val triggerAt = dateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
-        if (triggerAt <= System.currentTimeMillis()) return // no programar pasado
-
-        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val intent = Intent(context, AlarmReceiver::class.java).apply {
-            putExtra("eventId", event.id)
-            putExtra("title", event.title)
-            putExtra("date", event.date.toString())
-            putExtra("time", event.time ?: "")
-        }
-        val pending = PendingIntent.getBroadcast(
-            context,
-            event.id,
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE else 0
-        )
-        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAt, pending)
-        Log.d("Calendario", "Alarm scheduled: id=${event.id} at=$triggerAt title=${event.title}")
-    } catch (ex: Exception) {
-        Log.e("Calendario", "Error scheduling alarm for event=${event.id}", ex)
-    }
-}
-
-/**
- * Cancela la alarma asociada al identificador [eventId] si existe.
- */
-private fun cancelAlarm(context: Context, eventId: Int) {
-    try {
-        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val intent = Intent(context, AlarmReceiver::class.java)
-        val pending = PendingIntent.getBroadcast(
-            context,
-            eventId,
-            intent,
-            PendingIntent.FLAG_NO_CREATE or if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE else 0
-        )
-        if (pending != null) {
-            alarmManager.cancel(pending)
-            pending.cancel()
-        }
-    } catch (_: Exception) {
-        // ignore
     }
 }
 
@@ -274,9 +180,7 @@ fun CalendarioScreen(userEmail: String) { // <-- ahora recibe userEmail
 
     // Cargar eventos al componer (desde AppRepository por usuario)
     LaunchedEffect(userEmail) {
-        val loaded = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            AppRepository.loadEvents(context, userEmail)
-        } else emptyList()
+        val loaded = AppRepository.loadEvents(context, userEmail)
         eventsMap.clear()
         eventsMap.addAll(loaded)
         ensureNotificationChannel(context)
@@ -289,11 +193,11 @@ fun CalendarioScreen(userEmail: String) { // <-- ahora recibe userEmail
             }
         }
 
-        loaded.forEach { ev -> scheduleAlarm(context, ev) }
+            loaded.forEach { ev -> scheduleAlarm(context, ev) }
     }
 
     // Guardar automáticamente cuando cambian los eventos
-    LaunchedEffect(Unit) {
+    androidx.compose.runtime.LaunchedEffect(Unit) {
         snapshotFlow { eventsMap.toList() }.collect { list ->
             AppRepository.saveEvents(context, userEmail, list)
         }
@@ -468,20 +372,20 @@ fun CalendarioScreen(userEmail: String) { // <-- ahora recibe userEmail
     if (showAddDialog) {
         // TimePicker: abrir desde Android TimePickerDialog; almacenamos newEventTime en formato "HH:mm"
         val ctx = LocalContext.current
-        val now = LocalTime.now()
+        val now = java.time.LocalTime.now()
         fun showTimePicker() {
             TimePickerDialog(ctx, { _, hour, minute ->
-                newEventTime = String.format("%02d:%02d", hour, minute)
+                newEventTime = String.format(java.util.Locale.getDefault(), "%02d:%02d", hour, minute)
             }, now.hour, now.minute, true).show()
         }
 
-        AlertDialog(
+        androidx.compose.material3.AlertDialog(
             onDismissRequest = { showAddDialog = false },
             confirmButton = {
-                TextButton(onClick = {
+                androidx.compose.material3.TextButton(onClick = {
                     if (newEventText.isNotBlank()) {
                         val newEv = CalendarEvent(
-                            id = Random.nextInt(Int.MIN_VALUE, Int.MAX_VALUE),
+                            id = kotlin.random.Random.nextInt(Int.MIN_VALUE, Int.MAX_VALUE),
                             date = selectedDate,
                             title = newEventText.trim(),
                             time = newEventTime
@@ -494,22 +398,22 @@ fun CalendarioScreen(userEmail: String) { // <-- ahora recibe userEmail
                     }
                     showAddDialog = false
                 }) {
-                    Text("Guardar")
+                    androidx.compose.material3.Text("Guardar")
                 }
             },
             dismissButton = {
-                TextButton(onClick = {
+                androidx.compose.material3.TextButton(onClick = {
                     showAddDialog = false
                     newEventText = ""
                     newEventTime = null
                 }) {
-                    Text("Cancelar")
+                    androidx.compose.material3.Text("Cancelar")
                 }
             },
-            title = { Text("Nuevo evento") },
+            title = { androidx.compose.material3.Text("Nuevo evento") },
             text = {
                 Column {
-                    Text("Fecha: ${selectedDate.format(DateTimeFormatter.ofPattern("dd MMM yyyy"))}")
+                    androidx.compose.material3.Text("Fecha: ${selectedDate.format(DateTimeFormatter.ofPattern("dd MMM yyyy"))}")
                     Spacer(modifier = Modifier.height(8.dp))
                     OutlinedTextField(
                         value = newEventText,

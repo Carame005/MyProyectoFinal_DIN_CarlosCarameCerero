@@ -42,6 +42,7 @@ import com.example.myproyectofinal_din_carloscaramecerero.utils.DarkBackground
 import com.example.myproyectofinal_din_carloscaramecerero.utils.LightFilterBackground
 import com.example.myproyectofinal_din_carloscaramecerero.utils.LightFilterSurface
 import com.example.myproyectofinal_din_carloscaramecerero.repository.AppRepository // <-- nuevo
+import android.util.Log
 
 /**
  * Elementos de la barra de navegación inferior usados en la [MainScaffold].
@@ -81,21 +82,54 @@ fun MainScaffold(
     // nuevo estado: filtro claro funcional (false = defecto actual; true = filtro claro activo)
     var isLightFilter by remember { mutableStateOf(false) }
 
+    // Intento de auto-login: leer last_user_email de preferencias
+    LaunchedEffect(Unit) {
+        try {
+            val prefs = ctx.getSharedPreferences("app_prefs", android.content.Context.MODE_PRIVATE)
+            val last = prefs.getString("last_user_email", null)
+            if (!last.isNullOrBlank()) {
+                val stored = AppRepository.loadUser(ctx, last)
+                if (stored != null) {
+                    user = stored
+                    // cargar preferencia de tema del usuario
+                    val prefsU = ctx.getSharedPreferences("user_prefs_${user.email}", android.content.Context.MODE_PRIVATE)
+                    isLightFilter = prefsU.getBoolean("theme_light", false)
+                    showLogin = false
+                    Log.d("MainScaffold", "Auto-login con usuario: ${user.email}")
+                } else {
+                    Log.d("MainScaffold", "No se encontró user para last_user_email=$last")
+                }
+            }
+        } catch (ex: Exception) {
+            Log.e("MainScaffold", "Error intentando auto-login", ex)
+        }
+    }
+
     // Si debe mostrarse el login, mostrarlo y devolver temprano (evitamos renderizar Scaffold/drawer)
     if (showLogin) {
         LoginScreen(onLogin = { newUser ->
-            // intentar cargar usuario previamente guardado; si existe lo usamos, si no guardamos el nuevo
-            val stored = AppRepository.loadUser(ctx, newUser.email)
-            if (stored != null) {
-                user = stored
-            } else {
-                user = newUser
-                AppRepository.saveUser(ctx, user)
+            try {
+                // intentar cargar usuario previamente guardado; si existe lo usamos, si no guardamos el nuevo
+                val stored = AppRepository.loadUser(ctx, newUser.email)
+                if (stored != null) {
+                    user = stored
+                } else {
+                    user = newUser
+                    AppRepository.saveUser(ctx, user)
+                }
+                // guardar última sesión para auto-login
+                try {
+                    val prefs = ctx.getSharedPreferences("app_prefs", android.content.Context.MODE_PRIVATE)
+                    prefs.edit().putString("last_user_email", user.email).apply()
+                } catch (ex: Exception) { Log.e("MainScaffold", "Error guardando last_user_email", ex) }
+
+                // cargar preferencia de tema del usuario
+                val prefsU = ctx.getSharedPreferences("user_prefs_${user.email}", android.content.Context.MODE_PRIVATE)
+                isLightFilter = prefsU.getBoolean("theme_light", false)
+                showLogin = false
+            } catch (ex: Exception) {
+                Log.e("MainScaffold", "Error en onLogin", ex)
             }
-            // cargar preferencia de tema del usuario
-            val prefsU = ctx.getSharedPreferences("user_prefs_${user.email}", android.content.Context.MODE_PRIVATE)
-            isLightFilter = prefsU.getBoolean("theme_light", false)
-            showLogin = false
         })
         return
     }

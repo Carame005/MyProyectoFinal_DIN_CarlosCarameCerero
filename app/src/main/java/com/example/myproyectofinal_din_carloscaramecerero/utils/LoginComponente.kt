@@ -20,6 +20,7 @@ import coil.compose.AsyncImage
 import com.example.myproyectofinal_din_carloscaramecerero.model.User
 import com.example.myproyectofinal_din_carloscaramecerero.R
 import androidx.compose.ui.platform.LocalContext
+import android.util.Log
 
 /**
  * Usuario por defecto usado cuando no hay perfil cargado.
@@ -54,10 +55,10 @@ fun ProfileMenu(
         uri?.let {
             try {
                 // solicitar permiso persistente para poder usar la URI tras reinicios
-                val takeFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                val takeFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                 ctx.contentResolver.takePersistableUriPermission(it, takeFlags)
-            } catch (_: Exception) {
-                // ignore
+            } catch (ex: Exception) {
+                Log.e("ProfileMenu", "takePersistableUriPermission failed", ex)
             }
             onAvatarChange(it)
         }

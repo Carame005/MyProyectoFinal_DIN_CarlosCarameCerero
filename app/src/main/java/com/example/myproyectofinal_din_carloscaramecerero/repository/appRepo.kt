@@ -16,6 +16,7 @@ import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.time.LocalDate
+import android.util.Log
 
 /**
  * Repositorio de aplicación encargado de guardado/lectura local por usuario.
@@ -65,7 +66,9 @@ object AppRepository {
             }
             val fn = fileNameFor(userEmail, SUFFIX_CREDS)
             ctx.openFileOutput(fn, Context.MODE_PRIVATE).use { it.write(jo.toString().toByteArray()) }
-        } catch (_: Exception) { }
+        } catch (ex: Exception) {
+            Log.e("AppRepository", "saveCredentials error for $userEmail", ex)
+        }
     }
 
     /**
@@ -81,7 +84,8 @@ object AppRepository {
             return if (pw.isBlank()) null else pw
         } catch (ex: FileNotFoundException) {
             return null
-        } catch (_: Exception) {
+        } catch (ex: Exception) {
+            Log.e("AppRepository", "loadCredentials error for $userEmail", ex)
             return null
         }
     }
@@ -111,10 +115,15 @@ object AppRepository {
                             val esAdmin = jo.optBoolean("esAdmin", false)
                             return User(name = n, email = email, avatarRes = avatarRes, avatarUri = avatarUri, esAdmin = esAdmin)
                         }
-                    } catch (_: Exception) { /* seguir */ }
+                    } catch (ex: Exception) {
+                        Log.e("AppRepository", "findUserByName: error reading file $f", ex)
+                        /* seguir */
+                    }
                 }
             }
-        } catch (_: Exception) { }
+        } catch (ex: Exception) {
+            Log.e("AppRepository", "findUserByName: error listing files", ex)
+        }
         return null
     }
 
@@ -138,8 +147,8 @@ object AppRepository {
             }
             val fn = fileNameFor(user.email, SUFFIX_USER)
             ctx.openFileOutput(fn, Context.MODE_PRIVATE).use { it.write(jo.toString().toByteArray()) }
-        } catch (_: Exception) {
-            // ignore
+        } catch (ex: Exception) {
+            Log.e("AppRepository", "saveUser error for ${user.email}", ex)
         }
     }
 
@@ -162,7 +171,8 @@ object AppRepository {
             return User(name = name, email = email, avatarRes = avatarRes, avatarUri = avatarUri, esAdmin = esAdmin, allowTutoring = allowTutoring, biometricEnabled = biometricEnabled)
         } catch (ex: FileNotFoundException) {
             return null
-        } catch (_: Exception) {
+        } catch (ex: Exception) {
+            Log.e("AppRepository", "loadUser error for $userEmail", ex)
             return null
         }
     }
@@ -185,7 +195,9 @@ object AppRepository {
             }
             val fn = fileNameFor(userEmail, SUFFIX_TASKS)
             ctx.openFileOutput(fn, Context.MODE_PRIVATE).use { it.write(arr.toString().toByteArray()) }
-        } catch (_: Exception) { }
+        } catch (ex: Exception) {
+            Log.e("AppRepository", "saveTasks error for $userEmail", ex)
+        }
     }
 
     /**
@@ -210,7 +222,8 @@ object AppRepository {
             return list
         } catch (ex: FileNotFoundException) {
             return emptyList()
-        } catch (_: Exception) {
+        } catch (ex: Exception) {
+            Log.e("AppRepository", "loadTasks error for $userEmail", ex)
             return emptyList()
         }
     }
@@ -233,7 +246,9 @@ object AppRepository {
             }
             val fn = fileNameFor(userEmail, SUFFIX_EVENTS)
             ctx.openFileOutput(fn, Context.MODE_PRIVATE).use { it.write(arr.toString().toByteArray()) }
-        } catch (_: Exception) { }
+        } catch (ex: Exception) {
+            Log.e("AppRepository", "saveEvents error for $userEmail", ex)
+        }
     }
 
     /**
@@ -259,7 +274,8 @@ object AppRepository {
             return list
         } catch (ex: FileNotFoundException) {
             return emptyList()
-        } catch (_: Exception) {
+        } catch (ex: Exception) {
+            Log.e("AppRepository", "loadEvents error for $userEmail", ex)
             return emptyList()
         }
     }
@@ -290,7 +306,9 @@ object AppRepository {
             }
             val fn = fileNameFor(userEmail, SUFFIX_COLLECTIONS)
             ctx.openFileOutput(fn, Context.MODE_PRIVATE).use { it.write(arr.toString().toByteArray()) }
-        } catch (_: Exception) { }
+        } catch (ex: Exception) {
+            Log.e("AppRepository", "saveCollections error for $userEmail", ex)
+        }
     }
 
     /**
@@ -325,7 +343,8 @@ object AppRepository {
             return list
         } catch (ex: FileNotFoundException) {
             return emptyList()
-        } catch (_: Exception) {
+        } catch (ex: Exception) {
+            Log.e("AppRepository", "loadCollections error for $userEmail", ex)
             return emptyList()
         }
     }
@@ -356,10 +375,16 @@ object AppRepository {
                             val allowTut = jo.optBoolean("allowTutoring", true)
                             res.add(User(name = name, email = email, avatarRes = avatarRes, avatarUri = avatarUri, esAdmin = esAdmin, allowTutoring = allowTut))
                         }
-                    } catch (_: Exception) { /* seguir */ }
+                    } catch (ex: Exception) {
+                        Log.e("AppRepository", "listAllUsers: error reading file $f", ex)
+                        /* seguir */
+                    }
                 }
             }
-        } catch (_: Exception) { /* ignore */ }
+        } catch (ex: Exception) {
+            Log.e("AppRepository", "listAllUsers: error listing files", ex)
+            /* ignore */
+        }
         return res
     }
 
@@ -379,7 +404,8 @@ object AppRepository {
             return list
         } catch (ex: FileNotFoundException) {
             return emptyList()
-        } catch (_: Exception) {
+        } catch (ex: Exception) {
+            Log.e("AppRepository", "loadTutorizados error for $tutorEmail", ex)
             return emptyList()
         }
     }
@@ -393,7 +419,10 @@ object AppRepository {
             tutorizados.forEach { arr.put(it) }
             val fn = fileNameFor(tutorEmail, SUFFIX_TUTORIZADOS)
             ctx.openFileOutput(fn, Context.MODE_PRIVATE).use { it.write(arr.toString().toByteArray()) }
-        } catch (_: Exception) { /* ignore */ }
+        } catch (ex: Exception) {
+            Log.e("AppRepository", "saveTutorizados error for $tutorEmail", ex)
+            /* ignore */
+        }
     }
 
     /**
@@ -406,7 +435,10 @@ object AppRepository {
                 current.add(tutorizadoEmail)
                 saveTutorizados(ctx, tutorEmail, current)
             }
-        } catch (_: Exception) { /* ignore */ }
+        } catch (ex: Exception) {
+            Log.e("AppRepository", "addTutorizado error for $tutorEmail adding $tutorizadoEmail", ex)
+            /* ignore */
+        }
     }
 
     /**
@@ -416,7 +448,10 @@ object AppRepository {
         try {
             val current = loadTutorizados(ctx, tutorEmail).toMutableList()
             if (current.remove(tutorizadoEmail)) saveTutorizados(ctx, tutorEmail, current)
-        } catch (_: Exception) { /* ignore */ }
+        } catch (ex: Exception) {
+            Log.e("AppRepository", "removeTutorizado error for $tutorEmail removing $tutorizadoEmail", ex)
+            /* ignore */
+        }
     }
 
     /**
@@ -433,10 +468,16 @@ object AppRepository {
                         for (i in 0 until arr.length()) {
                             if (arr.optString(i, "") == userEmail) return true
                         }
-                    } catch (_: Exception) { /* seguir */ }
+                    } catch (ex: Exception) {
+                        Log.e("AppRepository", "isTutorizadoByAny: error reading file $f", ex)
+                        /* seguir */
+                    }
                 }
             }
-        } catch (_: Exception) { /* ignore */ }
+        } catch (ex: Exception) {
+            Log.e("AppRepository", "isTutorizadoByAny: error listing files", ex)
+            /* ignore */
+        }
         return false
     }
 
@@ -446,10 +487,10 @@ object AppRepository {
      * Útil en logout para liberar datos del dispositivo.
      */
     fun clearUserData(ctx: Context, userEmail: String) {
-        try { ctx.deleteFile(fileNameFor(userEmail, SUFFIX_USER)) } catch (_: Exception) {}
-        try { ctx.deleteFile(fileNameFor(userEmail, SUFFIX_TASKS)) } catch (_: Exception) {}
-        try { ctx.deleteFile(fileNameFor(userEmail, SUFFIX_EVENTS)) } catch (_: Exception) {}
-        try { ctx.deleteFile(fileNameFor(userEmail, SUFFIX_COLLECTIONS)) } catch (_: Exception) {}
+        try { ctx.deleteFile(fileNameFor(userEmail, SUFFIX_USER)) } catch (ex: Exception) { Log.e("AppRepository", "clearUserData: error deleting user file for $userEmail", ex) }
+        try { ctx.deleteFile(fileNameFor(userEmail, SUFFIX_TASKS)) } catch (ex: Exception) { Log.e("AppRepository", "clearUserData: error deleting tasks for $userEmail", ex) }
+        try { ctx.deleteFile(fileNameFor(userEmail, SUFFIX_EVENTS)) } catch (ex: Exception) { Log.e("AppRepository", "clearUserData: error deleting events for $userEmail", ex) }
+        try { ctx.deleteFile(fileNameFor(userEmail, SUFFIX_COLLECTIONS)) } catch (ex: Exception) { Log.e("AppRepository", "clearUserData: error deleting collections for $userEmail", ex) }
     }
 
     // --- Borrar todos los datos/credenciales del repo (para pruebas) ---
@@ -468,7 +509,7 @@ object AppRepository {
                     f.endsWith(SUFFIX_COLLECTIONS) ||
                     f.endsWith(SUFFIX_CREDS)
                 ) {
-                    try { ctx.deleteFile(f) } catch (_: Exception) {}
+                    try { ctx.deleteFile(f) } catch (ex: Exception) { Log.e("AppRepository", "clearAllData: error deleting file $f", ex) }
                 }
             }
 
@@ -478,13 +519,13 @@ object AppRepository {
                 if (spDir.exists()) {
                     spDir.listFiles()?.forEach { f ->
                         if (f.name.startsWith("user_prefs_")) {
-                            try { f.delete() } catch (_: Exception) {}
+                            try { f.delete() } catch (ex: Exception) { Log.e("AppRepository", "clearAllData: error deleting pref file ${f.name}", ex) }
                         }
                     }
                 }
-            } catch (_: Exception) { /* ignore */ }
-        } catch (_: Exception) {
-            // ignore
+            } catch (ex: Exception) { Log.e("AppRepository", "clearAllData: error cleaning shared_prefs", ex) }
+        } catch (ex: Exception) {
+            Log.e("AppRepository", "clearAllData: general error", ex)
         }
     }
 }

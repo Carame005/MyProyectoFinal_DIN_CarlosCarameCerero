@@ -6,6 +6,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- Permiso para mostrar notificaciones en Android 13+ -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- Permiso para recibir BOOT_COMPLETED y reprogramar alarmas -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:allowBackup="true"
@@ -30,6 +32,13 @@
 
         <!-- Receiver para notificaciones programadas desde CalendarioPantalla -->
         <receiver android:name=".pantallas.AlarmReceiver" android:exported="true" />
+
+        <!-- Receiver para reprogramar alarmas al arrancar el dispositivo -->
+        <receiver android:name=".receivers.BootReceiver" android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
