@@ -82,7 +82,7 @@ dependencies {
     // Desugaring libs para usar java.time en minSdk < 26
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
 
-    // Dependencias para tests en JVM con Robolectric
-    testImplementation("org.robolectric:robolectric:4.10.3")
-    testImplementation("androidx.test:core:1.5.0")
+    // Dependencias para tests en JVM con Robolectric (actualizadas)
+    testImplementation("org.robolectric:robolectric:4.16.1")
+    testImplementation("androidx.test:core:1.7.0")
 }

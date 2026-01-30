@@ -45,7 +45,17 @@ fun ensureNotificationChannel(context: Context) {
     }
 }
 
+// Compatibilidad: versión pública que usa RealAlarmScheduler internamente
 fun scheduleAlarm(context: Context, event: CalendarEvent) {
+    scheduleAlarm(context, event, RealAlarmScheduler(context))
+}
+
+fun cancelAlarm(context: Context, eventId: Int) {
+    cancelAlarm(context, eventId, RealAlarmScheduler(context))
+}
+
+// Nueva versión testable que acepta AlarmScheduler
+fun scheduleAlarm(context: Context, event: CalendarEvent, scheduler: AlarmScheduler) {
     if (event.time.isNullOrBlank()) return
     try {
         val dateTime = LocalDateTime.of(event.date, java.time.LocalTime.parse(event.time))
@@ -55,17 +65,17 @@ fun scheduleAlarm(context: Context, event: CalendarEvent) {
             return
         }
 
-        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, AlarmReceiver::class.java).apply {
             putExtra("eventId", event.id)
             putExtra("title", event.title)
             putExtra("date", event.date.toString())
-            putExtra("time", event.time ?: "")
+            putExtra("time", event.time)
             action = NOTIF_ACTION
         }
         // asegurar request code no negativo y estable
         val requestCode = event.id and 0x7fffffff
-        val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE else PendingIntent.FLAG_UPDATE_CURRENT
+        // minSdk >= 24, por tanto FLAG_IMMUTABLE disponible
+        val flags = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         val pending = PendingIntent.getBroadcast(
             context,
             requestCode,
@@ -73,24 +83,23 @@ fun scheduleAlarm(context: Context, event: CalendarEvent) {
             flags
         )
 
-        // Evitar SecurityException: comprobar si el dispositivo permite exact alarms
         var usedExact = false
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) { // API 31+
             try {
-                if (alarmManager.canScheduleExactAlarms()) {
-                    alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAt, pending)
+                if (scheduler.canScheduleExactAlarms()) {
+                    scheduler.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAt, pending)
                     usedExact = true
                 } else {
                     // fallback inexacto
-                    alarmManager.set(AlarmManager.RTC_WAKEUP, triggerAt, pending)
+                    scheduler.set(AlarmManager.RTC_WAKEUP, triggerAt, pending)
                 }
             } catch (ex: SecurityException) {
                 Log.w("CalendarioAlarms", "No se permite SCHEDULE_EXACT_ALARM, fallback a alarma inexacta: ${ex.message}")
-                alarmManager.set(AlarmManager.RTC_WAKEUP, triggerAt, pending)
+                scheduler.set(AlarmManager.RTC_WAKEUP, triggerAt, pending)
             }
         } else {
             // API < 31: usar exacta
-            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAt, pending)
+            scheduler.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAt, pending)
             usedExact = true
         }
 
@@ -100,12 +109,11 @@ fun scheduleAlarm(context: Context, event: CalendarEvent) {
     }
 }
 
-fun cancelAlarm(context: Context, eventId: Int) {
+fun cancelAlarm(context: Context, eventId: Int, scheduler: AlarmScheduler) {
     try {
-        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, AlarmReceiver::class.java).apply { action = NOTIF_ACTION }
         val requestCode = eventId and 0x7fffffff
-        val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE else PendingIntent.FLAG_NO_CREATE
+        val flags = PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
         val pending = PendingIntent.getBroadcast(
             context,
             requestCode,
@@ -113,7 +121,7 @@ fun cancelAlarm(context: Context, eventId: Int) {
             flags
         )
         if (pending != null) {
-            alarmManager.cancel(pending)
+            scheduler.cancel(pending)
             pending.cancel()
             Log.d("CalendarioAlarms", "Alarm cancelled for id=$eventId requestCode=$requestCode")
         } else {
@@ -126,9 +134,14 @@ fun cancelAlarm(context: Context, eventId: Int) {
 
 fun scheduleAlarmsForUser(context: Context, userEmail: String) {
     try {
-        val events = AppRepository.loadEvents(context, userEmail)
-        ensureNotificationChannel(context)
-        events.forEach { scheduleAlarm(context, it) }
+        // loadEvents usa java.time y está marcado @RequiresApi(O). Proteger la llamada.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val events = AppRepository.loadEvents(context, userEmail)
+            ensureNotificationChannel(context)
+            events.forEach { scheduleAlarm(context, it) }
+        } else {
+            Log.w("CalendarioAlarms", "Skipping scheduleAlarmsForUser: API < O for user $userEmail")
+        }
     } catch (ex: Exception) {
         Log.e("CalendarioAlarms", "scheduleAlarmsForUser error for $userEmail", ex)
     }
@@ -137,7 +150,10 @@ fun scheduleAlarmsForUser(context: Context, userEmail: String) {
 fun scheduleAlarmsForAllUsers(context: Context) {
     try {
         val users = AppRepository.listAllUsers(context)
-        users.forEach { scheduleAlarmsForUser(context, it.email) }
+        users.forEach {
+            // reutilizar la función protegida
+            scheduleAlarmsForUser(context, it.email)
+        }
     } catch (ex: Exception) {
         Log.e("CalendarioAlarms", "scheduleAlarmsForAllUsers error", ex)
     }
