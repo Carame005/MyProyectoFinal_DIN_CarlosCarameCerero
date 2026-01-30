@@ -24,6 +24,9 @@ En el código se utilizan principalmente las siguientes librerías del ecosistem
 
 - Kotlin stdlib y coroutines (si se usan en otras partes)
 
+- Biometric API (androidx.biometric)
+  - Uso: Autenticación biométrica para login seguro.
+
 Notas
 -----
 - La versión exacta de cada dependencia se gestiona en `build.gradle.kts` en el proyecto raíz o en `app/`. Recomendación: documentar las versiones en `LIBRARIES.md` o en `gradle/libs.versions.toml` para auditoría.

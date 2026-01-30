@@ -9,6 +9,8 @@ Capas principales
 - UI (Compose): `pantallas/` y `utils/` contienen las pantallas y componentes.
 - Dominio / Modelos: `model/` con data classes (`User`, `Task`, `CalendarEvent`, etc.).
 - Persistencia: `repository/AppRepository` maneja la lectura/escritura de datos por usuario.
+- Seguridad: `security/BiometricUtils.kt` gestiona autenticación biométrica.
+- Notificaciones: `receivers/NotificationReceiver.kt` para gestionar alarmas y notificaciones
 - Activity: `MainActivity` monta el theme y el `MainScaffold` con navegación.
 
 Decisiones y justificación
@@ -29,18 +31,5 @@ Estructura de carpetas (relevante)
 - `app/src/main/java/.../repository/` — persistencia local.
 - `app/src/main/java/.../model/` — data classes.
 - `app/src/main/java/.../documentacion/` — documentación (esta carpeta).
-- `app/src/main/java/.../pantallas/TutorPantalla.kt` — pantalla para la gestión por parte de tutores (ver/crear tareas y eventos para tutorizados).  
-
-Cambios recientes y notas de diseño
-----------------------------------
-- Eliminado el interruptor "Función tutor" del drawer de ajustes: la gestión de quién puede ser tutorizado se realiza mediante roles y políticas centralizadas.
-- Eliminado el botón "Añadir tutorizado": los tutores gestionan todos los usuarios con rol `tutorizado` desde la `TutorPantalla`.
-- Inicio rápido biométrico: se ha añadido (documentación y diseño) una opción de inicio rápido que muestra previews de cuentas y permite autenticación por biometría si el dispositivo lo soporta.
-- Restricción de borrado: las acciones de borrado (tareas, eventos, vídeos) están ocultas en la UI para usuarios con `isAdmin=false` y se recomienda reforzar esta política en `AppRepository`.
-
-Puntos a documentar en futuros documentos técnicos
-------------------------------------------------
-- Especificación de formatos JSON usados por `AppRepository`.
-- Contratos de los componentes Compose (parámetros y efectos secundarios).
-- Requisitos y permisos (notificaciones, lectura URIs para vídeos, biometría).
-- Notas: la lógica relacionada con la gestión de tutorizados se centraliza en `TutorPantalla` (UI para tutores) y `AppRepository` (persistencia y comprobaciones, por ejemplo `isTutorizadoByAny` / filtros por rol). Mantener esta separación facilita pruebas y evita inconsistencias.
+- `app/src/main/java/.../receivers/` — BroadcastReceiver para notificaciones.
+- `app/src/main/java/.../security/` — utilidades de seguridad (Biometria).
