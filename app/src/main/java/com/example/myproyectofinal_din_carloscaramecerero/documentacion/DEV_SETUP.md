@@ -1,4 +1,4 @@
-# Guía rápida de desarrollo (DEV_SETUP)
+# Guía rápida de desarrollo (RA7)
 
 Requisitos
 ---------
@@ -98,6 +98,114 @@ Problemas frecuentes y soluciones rápidas
 - Robolectric falla por versión de JDK: usar JDK 17 en la sesión.
 - Error por dependencia no encontrada: comprobar `google()` y `mavenCentral()` en `settings.gradle.kts`.
 - Instrumented tests fallan por no haber emulador: ejecutar `emulator -avd <name>` y comprobar `adb devices` antes.
+
+Distribución (RA7) — empaquetado, firma y publicación
+----------------------------------------------------
+Esta sección complementa el flujo de desarrollo con pasos y buenas prácticas para cumplir los criterios del RA7 (empaquetado, instaladores, firma, canales y despliegue).
+
+RA7.a — Empaquetado de la aplicación
+- Generar APK (debug/release) o AAB (Android App Bundle) desde Gradle:
+  - Debug APK:
+
+```powershell
+.\gradlew.bat :app:assembleDebug
+```
+
+  - Release APK (requiere configuración de firma):
+
+```powershell
+.\gradlew.bat :app:assembleRelease
+```
+
+  - App Bundle (recomendado para Play Store):
+
+```powershell
+.\gradlew.bat :app:bundleRelease
+```
+
+- Resultados:
+  - APK: `app/build/outputs/apk/release/app-release.apk`
+  - AAB: `app/build/outputs/bundle/release/app-release.aab`
+
+RA7.b — Personalización del instalador
+- Elementos a comprobar/ajustar antes de generar release:
+  - `applicationId` en `app/build.gradle.kts` (identificador del paquete).
+  - `versionCode` y `versionName`.
+  - Iconos (res/mipmap), nombre (strings.xml) y splash si aplica.
+- No olvides actualizar el `AndroidManifest` si añades permisos o metadata que alteren la instalación.
+
+RA7.c — Paquete desde el entorno / CI
+- Recomendación: automatizar generación en CI (GitHub Actions / GitLab CI).
+- Flujo sugerido en CI:
+  1. Checkout.
+  2. Setup Java 17 and Android SDK.
+  3. `./gradlew :app:bundleRelease` (o `assembleRelease`).
+  4. Subir `app-release.aab` como artefacto y/o publicar en Play Console (internal track) usando `fastlane` o Play Developer API.
+
+RA7.d — Herramientas externas
+- Herramientas recomendadas:
+  - Fastlane: automatiza builds, screenshots y subida a Play.
+  - Google Play Console / Play Publisher API: publicar en tracks (internal, closed, open, production).
+  - Firebase App Distribution: distribuir betas a testers.
+  - bundletool: para generar apks desde un AAB si lo necesitas localmente.
+
+RA7.e — Firma digital (keystore)
+- Generar un keystore (ejemplo):
+
+```powershell
+keytool -genkeypair -v -keystore my-release-key.jks -alias mykey -keyalg RSA -keysize 2048 -validity 9125
+```
+
+- Ejemplo (simplificado) `signingConfigs` en `app/build.gradle.kts` (Kotlin DSL):
+
+```kotlin
+android {
+  // ...existing code...
+  signingConfigs {
+    create("release") {
+      storeFile = file("/path/to/my-release-key.jks")
+      storePassword = System.getenv("KEYSTORE_PASSWORD")
+      keyAlias = System.getenv("KEY_ALIAS")
+      keyPassword = System.getenv("KEY_PASSWORD")
+    }
+  }
+  buildTypes {
+    release {
+      signingConfig = signingConfigs.getByName("release")
+      isMinifyEnabled = false
+      // proguard files etc.
+    }
+  }
+}
+```
+
+- Buenas prácticas:
+  - No subir el keystore al repo.
+  - Guardar keystore y contraseñas como secretos en CI (GitHub Secrets).
+  - Mantener una copia segura del keystore (necesario para actualizaciones en Play).
+
+RA7.f — Instalación desatendida / despliegue masivo
+- Instalación local (desarrollo): `adb install -r app/build/outputs/apk/debug/app-debug.apk`.
+- Instalación silenciosa/desatendida en dispositivos gestionados: requiere MDM/EMM (Device Owner) o soluciones corporativas; documentar proveedor (e.g., Microsoft Intune, MobileIron, Scalefusion).
+- Nota: Android no permite instalaciones silenciosas en dispositivos de usuarios sin privilegios especiales por motivos de seguridad.
+
+RA7.g — Desinstalación y limpieza
+- Comando `adb uninstall <package>` para desarrollo:
+
+```powershell
+adb uninstall com.example.myproyectofinal_din_carloscaramecerero
+```
+
+- Para limpieza de datos del usuario en la app usar `AppRepository.clearUserData(ctx, userEmail)` (función disponible en el repo).
+- Documenta en la guía de soporte los pasos para restaurar un dispositivo y purgar datos si es necesario.
+
+RA7.h — Canales de distribución
+- Canales comunes y recomendaciones:
+  - Google Play (production/internal/closed): proceso estándar para apps públicas.
+  - Firebase App Distribution: ideal para betas y testers rápidos.
+  - GitHub Releases: publicar APK/AAB para descarga manual.
+  - F-Droid: solo si el proyecto es Open Source y cumple requisitos.
+- Documentar cuál canal usar y el procedimiento (en `DEV_SETUP.md` o `RELEASE.md`). .
 
 Checklist mínimo para un dev nuevo
 ----------------------------------

@@ -14,7 +14,6 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
 import java.io.FileNotFoundException
-import java.io.IOException
 import java.time.LocalDate
 import android.util.Log
 
@@ -48,7 +47,7 @@ object AppRepository {
      * @return Nombre de fichero utilizado internamente.
      */
     private fun fileNameFor(userEmail: String, suffix: String): String {
-        val safe = userEmail.replace(Regex("[^A-Za-z0-9_]") , "_")
+        val safe = userEmail.replace(Regex("[^A-Za-z0-9_]" ) , "_")
         return "${safe}_$suffix"
     }
 
@@ -360,8 +359,6 @@ object AppRepository {
             files.forEach { f ->
                 if (f.endsWith(SUFFIX_USER)) {
                     try {
-                        // extraer safe email (nombre de fichero sin sufijo)
-                        val safe = f.removeSuffix("_$SUFFIX_USER")
                         // intentamos reconstruir leyendo el fichero directamente
                         val text = ctx.openFileInput(f).bufferedReader().use { it.readText() }
                         val jo = JSONObject(text)
@@ -524,6 +521,13 @@ object AppRepository {
                     }
                 }
             } catch (ex: Exception) { Log.e("AppRepository", "clearAllData: error cleaning shared_prefs", ex) }
+
+            // NUEVO: eliminar last_user_email de app_prefs para evitar auto-login tras purga
+            try {
+                val appPrefs = ctx.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+                appPrefs.edit().remove("last_user_email").apply()
+            } catch (ex: Exception) { Log.e("AppRepository", "clearAllData: error clearing app_prefs last_user_email", ex) }
+
         } catch (ex: Exception) {
             Log.e("AppRepository", "clearAllData: general error", ex)
         }

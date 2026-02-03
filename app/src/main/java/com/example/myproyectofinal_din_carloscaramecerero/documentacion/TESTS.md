@@ -84,28 +84,11 @@ El informe HTML con el detalle de cada test está en `app/build/reports/tests/te
 
 ---
 
-## Huecos detectados y recomendaciones (priorizadas)
-
-1. Subir la prueba de volumen a 1000–2000 ítems y añadir umbrales aceptables (tiempo y tamaño) en las aserciones automáticas.
-2. Añadir tests que simulen condiciones adversas (I/O fallido, espacio bajo en disco, permisos denegados) para robustecer RA8.e y RA8.f.
-3. Automatizar la ejecución en CI (p. ej. GitHub Actions) y publicar los informes HTML como artefactos para evidencia permanente.
-4. Añadir pruebas instrumentadas (androidTest) para comprobar la entrega real de notificaciones cuando sea necesario.
-
----
-
 ## Implementación técnica y notas de testabilidad
 
 - Para facilitar pruebas, se creó la interfaz `AlarmScheduler` y se refactorizó `scheduleAlarm` para aceptar una implementación inyectada; en producción sigue usándose `RealAlarmScheduler` por defecto.
 - El test de seguridad usa un `FakeScheduler` que lanza `SecurityException` en `setExactAndAllowWhileIdle` y permite verificar que el código realiza el fallback a `set(...)`.
 - El test de volumen utiliza el `AppRepository` real y escribe a los ficheros privados de la app; por rapidez en CI puedes sustituirlo por un backend en memoria o reducir el número de elementos.
-
----
-
-## Evidencias recomendadas para la entrega RA8
-
-- Ejecutar los tests en CI y guardar los informes HTML y XML como artefactos (GitHub Actions o similar).
-- Incluir capturas de la ejecución (ya añadida `documentacion/capturas/TestSalida.png`).
-- Añadir un pequeño resumen tabulado en el README del proyecto con los resultados (tiempos y tamaños) para cada ejecución de volumen.
 
 ---
 
@@ -221,8 +204,3 @@ Relación con RA8:
 - Los tests unitarios se ejecutan con Gradle y Robolectric; el informe legible se genera en `app/build/reports/tests/testDebugUnitTest/index.html`.
 - Para cada prueba, el HTML report incluye tiempo de ejecución, mensajes `println` (los que imprimen el tamaño/tiempo) y stacktraces en caso de fallo.
 - Para evidencias de RA8 guarda el HTML y los XML de `app/build/test-results/testDebugUnitTest/` como artefactos en CI.
-
----
-
-Si quieres que añada una tabla automática con los resultados (tiempo y tamaño) extraídos de las ejecuciones recientes y la incluya en este MD, lo hago ahora: copiaré los valores impresos por `VolumeTests` desde la última ejecución y los añadiré a la sección "Resultado de la ejecución (ejemplo)". También puedo copiar el informe HTML dentro de `documentacion/test-reports` para centralizar la evidencia.
-

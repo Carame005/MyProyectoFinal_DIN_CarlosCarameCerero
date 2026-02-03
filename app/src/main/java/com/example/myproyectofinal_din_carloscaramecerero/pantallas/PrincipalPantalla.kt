@@ -264,6 +264,11 @@ fun MainScaffold(
                         showSettingsDrawer = false
                         // opcional: limpiar memoria/volver a login
                         showLogin = true
+                        // borrar la preferencia de última sesión para evitar auto-login
+                        try {
+                            val prefs = ctx.getSharedPreferences("app_prefs", android.content.Context.MODE_PRIVATE)
+                            prefs.edit().remove("last_user_email").apply()
+                        } catch (ex: Exception) { Log.e("MainScaffold", "Error limpiando last_user_email en logout", ex) }
                         // navegar a Home y limpiar backstack para evitar que la próxima sesión herede la ruta anterior
                         navController.navigate(AppRoute.Home.route) {
                             popUpTo(AppRoute.Home.route) { inclusive = true }

@@ -1,4 +1,4 @@
-# NUI (Natural User Interfaces) — propuestas para AutiCare
+# NUI (Natural User Interfaces) — propuestas para AutiCare(RA2)
 
 Este documento recoge ideas y recomendaciones para incorporar interfaces naturales (NUI) en la aplicación, con foco en personas con Alzheimer y sus cuidadores. Incluye las herramientas posibles, ventajas para el usuario objetivo, consideraciones de diseño, privacidad y un roadmap de implementación.
 

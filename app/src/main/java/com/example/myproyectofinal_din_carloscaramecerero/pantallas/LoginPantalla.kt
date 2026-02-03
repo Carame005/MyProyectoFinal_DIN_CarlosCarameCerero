@@ -64,8 +64,8 @@ fun LoginScreen(
     var generalErrorMsg by remember { mutableStateOf("") }
 
     // estados para purgar datos (confirmación y resultado)
-    var showPurgeConfirm by remember { mutableStateOf(false) }
-    var purgeResultMsg by remember { mutableStateOf("") }
+    // var showPurgeConfirm by remember { mutableStateOf(false) }
+    // var purgeResultMsg by remember { mutableStateOf("") }
 
     // Nueva opción local: habilitar biometría tras iniciar sesión/registrarse
     // seleccion de pestaña: 0 = Credenciales, 1 = Inicio rápido
@@ -265,7 +265,7 @@ fun LoginScreen(
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Text(
-                                text = "Administrador (temporal): ${if (isAdmin) "Sí" else "No"}",
+                                text = "Tutor ${if (isAdmin) "Sí" else "No"}",
                                 color = Color.White,
                                 modifier = Modifier.weight(1f)
                             )
@@ -481,40 +481,11 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // Botón para purgar todos los datos/credenciales (solo pruebas)
-                TextButton(onClick = { showPurgeConfirm = true }) {
-                    Text("Purgar datos (pruebas)", color = Color.White)
-                }
-
-                // Mostrar mensaje de resultado tras purgar
-                if (purgeResultMsg.isNotBlank()) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = purgeResultMsg, color = Color.Green)
-                }
+                // Nota: la opción de purgar datos ha sido ocultada en la UI.
             }
         }
     }
 
-    // Diálogo de confirmación para purgar datos
-    if (showPurgeConfirm) {
-        AlertDialog(
-            onDismissRequest = { showPurgeConfirm = false },
-            title = { Text("Confirmar purga") },
-            text = { Text("¿Desea eliminar todos los datos y credenciales de prueba? Esta acción no se puede deshacer.") },
-            confirmButton = {
-                TextButton(onClick = {
-                    showPurgeConfirm = false
-                    try {
-                        AppRepository.clearAllData(ctx)
-                        purgeResultMsg = "Datos purgados correctamente"
-                    } catch (_: Exception) {
-                        purgeResultMsg = "Error al purgar datos"
-                    }
-                }) { Text("Sí") }
-            },
-            dismissButton = {
-                TextButton(onClick = { showPurgeConfirm = false }) { Text("Cancelar") }
-            }
-        )
-    }
-}
+    // ...existing code...
+ }
+

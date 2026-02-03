@@ -1,4 +1,4 @@
-# Librerías y dependencias usadas
+# Librerías y dependencias usadas(RA1)
 
 En el código se utilizan principalmente las siguientes librerías del ecosistema Android (algunas vienen del SDK o AndroidX):
 

@@ -1,44 +1,39 @@
-# AutiCare — Aplicación (módulo app)
+# AutiCare — Módulo app (introducción y guía rápida)
 
-Este README es una guía y resumen a nivel del módulo `app` para desarrolladores, cuidadores y usuarios finales (especialmente pensado para personas con problemas de memoria / Alzheimer).
+Este README es una introducción de alto nivel al módulo `app` del proyecto AutiCare. Su objetivo es ayudar a desarrolladores y revisores a encontrar rápidamente las partes relevantes del proyecto (código, documentación y tests). La documentación detallada y las guías de uso están en la carpeta `documentacion` dentro del código fuente.
 
 Resumen rápido
 --------------
-AutiCare es una aplicación de ejemplo que ayuda a gestionar tareas, eventos y colecciones de vídeo personales. Está desarrollada con Jetpack Compose y Material3 y guarda los datos localmente por usuario.
+AutiCare es una aplicación desarrollada con Jetpack Compose y Material3 pensada para ayudar a gestionar tareas, eventos y colecciones de vídeo, con especial foco en usuarios con problemas de memoria (Alzheimer). Este módulo contiene la implementación de la app y la documentación técnica y de usuario.
 
-Características principales
---------------------------
-- Registro e inicio de sesión de usuario.
-- Pantallas principales: Inicio (resumen), Tareas, Calendario y Progreso/Vídeos.
-- Persistencia local por usuario (ficheros JSON manejados por `AppRepository`).
-- Reproducción de vídeos seleccionados desde la galería (permite permisos persistentes sobre URIs).
-- Programación de recordatorios mediante `AlarmManager` y notificaciones.
-- Menú de ajustes con opciones básicas: cambiar nombre, tema "filtro claro", notificaciones.
+Estructura principal (dónde buscar)
+-----------------------------------
+- Código fuente (pantallas, componentes, repositorio y modelos):
+  - `app/src/main/java/.../pantallas/`  — Todas las pantallas (Login, Home, Tareas, Calendario, Videos, Tutor, etc.).
+  - `app/src/main/java/.../utils/`      — Componentes Compose reutilizables (cards, barras, ajustes, etc.).
+  - `app/src/main/java/.../model/`      — Data classes y enums (`User`, `Task`, `CalendarEvent`, `TaskStatus`, ...).
+  - `app/src/main/java/.../repository/` — `AppRepository` (persistencia en ficheros JSON por usuario).
+  - `app/src/main/java/.../security/`   — Helpers de seguridad (p.ej. `BiometricHelper`).
+  - `app/src/main/java/.../receivers/`  — Broadcast receivers (p.ej. `BootReceiver`).
 
-Documentación y manuales
-------------------------
-En la carpeta `app/src/main/java/.../documentacion/` encontrarás la documentación creada automáticamente:
+- Documentación (guías, decisiones y manuales):
+  - `app/src/main/java/.../documentacion/` contiene los MD generados/manuales:
+    - `ARCHITECTURE.md`, `LIBRARIES.md`, `COMPONENTS.md`, `PERSISTENCE.md`, `SECURITY.md`, `DEV_SETUP.md`, `TESTS.md`, `USER_MANUAL.md`, `INFORMES.MD`, `NUI.md`, etc.
+    - `capturas/` — captura de los tests hechos.
 
-- `ARCHITECTURE.md` — Resumen de la arquitectura y decisiones.
-- `LIBRARIES.md` — Lista y justificación de librerías usadas.
-- `COMPONENTS.md` — Catálogo de componentes Compose reutilizables.
-- `PERSISTENCE.md` — Formatos y nombres de ficheros para datos persistentes.
-- `SECURITY.md` — Riesgos detectados y recomendaciones (importante leer).
-- `DEV_SETUP.md` — Requisitos y comandos para desarrollar (PowerShell).
-- `TESTS.md` — Estrategia de pruebas recomendada.
-- `TODO.md` — Mejoras propuestas y prioridades.
-- `USER_MANUAL.md` — Manual de usuario pensado para personas con Alzheimer y cuidadores.
+- Tests (unitarios / robolectric / utilidades):
+  - `app/src/test/kotlin/com/example/tests/` — tests unitarios actuales (por ejemplo `AppRepositoryTest.kt`, `CalendarioAlarmsTest.kt`, `VolumeTests.kt`, ...).
+  - Informes de ejecución y reportes se generan en `app/build/reports/tests/` y resultados XML en `app/build/test-results/`.
 
-Importante — seguridad de credenciales
---------------------------------------
-Actualmente las credenciales se guardan en un fichero JSON en texto plano (`*_creds.json`). Esto es inseguro para producción. Recomendación inmediata:
+Puntos importantes y notas rápidas
+---------------------------------
+- Persistencia: el proyecto usa ficheros JSON por usuario gestionados por `AppRepository`. Revisa `documentacion/PERSISTENCE.md` para detalles sobre rutas y formatos.
+- Notificaciones y AlarmManager: la app programa alarmas para recordatorios; en Android modernos puede requerir permisos especiales (`SCHEDULE_EXACT_ALARM`) o manejo por canal. Revisa `pantallas/CalendarioAlarms.kt` y `documentacion/TESTS.md` para pruebas relacionadas.
+- Biometría y NUI: hay un helper `security/BiometricHelper.kt` y un documento `documentacion/NUI.md` que comenta ideas para interfaces naturales (biometría, voz, gestos) enfocadas a usuarios con Alzheimer.
 
-- No desplegar esta versión en producción sin migrar a `EncryptedSharedPreferences` o a un sistema seguro (Android Keystore).
-- Revisar `documentacion/SECURITY.md` para la propuesta de migración y el plan de acción.
-
-Cómo ejecutar y probar (PowerShell)
-----------------------------------
-Abrir PowerShell en la raíz del proyecto (`.../MyProyectoFinal_DIN_CarlosCarameCerero`) y ejecutar:
+Comandos básicos (PowerShell)
+-----------------------------
+Abrir PowerShell en la raíz del proyecto y ejecutar:
 
 ```powershell
 # Compilar y construir
@@ -54,34 +49,15 @@ Abrir PowerShell en la raíz del proyecto (`.../MyProyectoFinal_DIN_CarlosCarame
 .\gradlew.bat :app:lintDebug
 ```
 
-Desarrollo y estructura de código
---------------------------------
-- `MainActivity.kt` — punto de entrada; monta el Theme y el `MainScaffold` con `NavController`.
-- `pantallas/` — contiene las pantallas del flujo (Home, Tasks, Calendar, Videos, Login, etc.).
-- `utils/` — componentes Compose reutilizables (TopBar, BottomBar, TaskCard, CollectionCard, CalendarioGrid, etc.).
-- `repository/` — `AppRepository` centraliza persistencia (leer/escribir JSON por usuario).
-- `model/` — data classes usadas en la app.
-
-Notas para cuidadores y usuarios
--------------------------------
-- Para usuarios con Alzheimer, hay un `USER_MANUAL.md` diseñado con lenguaje sencillo y pasos claros. Está pensado para imprimirse o leerse con un cuidador.
-- Recomendación para cuidadores: mantener la contraseña en un lugar seguro y supervisar las primeras interacciones del usuario con la app.
-
-Pruebas y CI sugeridos
-----------------------
-- Añadir pruebas unitarias para `AppRepository` (serialización y lectura/escritura) y pruebas de integración para los flujos de Login y Calendario.
-- Configurar un workflow CI que ejecute `./gradlew build` y `./gradlew test` en cada PR.
-
-Siguientes pasos recomendados (priorizados)
--------------------------------------------
-1. Migrar almacenamiento de credenciales a `EncryptedSharedPreferences` (urgente).
-2. Añadir tests unitarios clave y un pipeline CI básico.
-3. Generar PDF imprimible del `USER_MANUAL.md` para cuidadores.
-4. Mejorar logging y evitar `catch` silenciosos en `AppRepository`.
+Dónde mirar si algo falla
+-------------------------
+- Build fallido: revisar la salida de Gradle en la ventana de ejecución de Android Studio y el fichero `gradle.properties` / `build.gradle.kts`.
+- Tests fallando: `app/build/reports/tests/testDebugUnitTest/index.html` contiene el informe HTML con fallos y trazas.
+- Logs en ejecución: usar Logcat y filtrar por el `package` de la app.
 
 Contacto y soporte
 ------------------
-Si necesitas ayuda para cualquiera de los pasos anteriores (migración de credenciales, añadir tests o generar el PDF del manual), dímelo y lo implemento.
+Si quieres que actualice alguno de los MD (más capturas, ejemplos de comandos, añadir snippets de navegación, o generar un PDF del manual de usuario), dímelo y lo actualizo.
 
 --
-Archivo generado automáticamente por el asistente de documentación. Si quieres ajustes (más capturas, un índice con enlaces relativos o añadir versiones de dependencias), dime qué incorporar y lo añado.
+Archivo actualizado automáticamente por el asistente. Si quieres que lo simplifique más o que lo adapte para impresión/entrega, indícalo.

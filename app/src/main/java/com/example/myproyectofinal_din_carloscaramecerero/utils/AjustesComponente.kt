@@ -145,11 +145,9 @@ fun SettingsDrawer(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Notificaciones
-                Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                    Text("Notificaciones", modifier = Modifier.weight(1f), color = textColor)
-                    Switch(checked = notificationsEnabled, onCheckedChange = { onToggleNotifications(it) })
-                }
+                // NOTE: se ha eliminado el bloque UI del switch de NOTIFICACIONES por ser redundante.
+                // Se mantienen los parámetros `notificationsEnabled` y `onToggleNotifications` en la
+                // firma para no romper llamadas externas, pero ya no se muestra el control en el drawer.
 
                 Spacer(modifier = Modifier.height(12.dp))
 
