@@ -1,33 +1,34 @@
-# Librerías y dependencias usadas(RA1)
+# Librerías y dependencias usadas (RA1)
 
-En el código se utilizan principalmente las siguientes librerías del ecosistema Android (algunas vienen del SDK o AndroidX):
+Listado de librerías principales empleadas en el proyecto y su uso funcional.
 
-- Jetpack Compose (androidx.compose.*)
-  - Uso: UI declarativa, componentes, layouts.
-  - Justificación: Productividad y flexibilidad en el diseño UI.
+Dependencias clave
+------------------
+- Jetpack Compose (`androidx.compose.*`)
+  - Uso: UI declarativa, componentes y layouts.
 
-- Material3 (androidx.compose.material3)
-  - Uso: Componentes y theming moderno.
-  - Justificación: Consistencia visual y soporte de tokens de diseño.
+- Material3 (`androidx.compose.material3`)
+  - Uso: componentes y theming.
 
-- Navigation Compose (androidx.navigation.compose)
-  - Uso: Navegación entre pantallas (`NavController`, `NavHost`).
+- Navigation Compose (`androidx.navigation.compose`)
+  - Uso: navegación entre pantallas (`NavController`, `NavHost`).
 
-- Coil (coil-compose)
-  - Uso: Carga de imágenes (avatar) con `AsyncImage`.
+- Coil (`coil-compose`)
+  - Uso: carga de imágenes (avatar) con `AsyncImage`.
 
 - AndroidX Activity / Activity Result APIs
   - Uso: `rememberLauncherForActivityResult`, selección de imágenes/vídeos.
 
 - Android core / compat / notification
-  - Uso: AlarmManager, NotificationCompat, PendingIntent para recordatorios.
+  - Uso: `AlarmManager`, `NotificationCompat`, `PendingIntent` para recordatorios.
 
-- Kotlin stdlib y coroutines (si se usan en otras partes)
+- Kotlin stdlib y coroutines
+  - Uso: utilidades de lenguaje y concurrencia cuando procede.
 
-- Biometric API (androidx.biometric)
-  - Uso: Autenticación biométrica para login seguro.
+- Biometric API (`androidx.biometric`)
+  - Uso: autenticación biométrica para inicio rápido.
 
-Notas
------
-- La versión exacta de cada dependencia se gestiona en `build.gradle.kts` en el proyecto raíz o en `app/`. Recomendación: documentar las versiones en `LIBRARIES.md` o en `gradle/libs.versions.toml` para auditoría.
-- Si se requiere añadir análisis de seguridad, se pueden incorporar herramientas como `Detekt`, `KTlint`, `SpotBugs` y `MobSF` para análisis de móviles.
+Observaciones
+-------------
+- Las versiones exactas de las dependencias se gestionan en `build.gradle.kts` (raíz y `app/`) o en `gradle/libs.versions.toml`.
+- Para análisis de calidad y seguridad de código pueden usarse herramientas adicionales como `Detekt`, `ktlint` y `SpotBugs` (no integradas en el repositorio actual por defecto).

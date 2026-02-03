@@ -9,7 +9,7 @@ Requisitos
 
 Configurar la sesión de PowerShell para usar JDK 17 (temporal)
 ------------------------------------------------------------
-Si tienes JDK 17 instalado (por ejemplo en `C:\Program Files\Java\jdk-17`), en PowerShell puedes usarlo sólo en la sesión actual:
+Si se dispone de JDK 17 instalado (por ejemplo en `C:\Program Files\Java\jdk-17`), en PowerShell se puede usar sólo en la sesión actual:
 
 ```powershell
 $env:JAVA_HOME = 'C:\Program Files\Java\jdk-17'
@@ -47,12 +47,12 @@ Abrir PowerShell en la raíz del proyecto (`C:\Users\caram\AndroidStudioProjects
 ```
 
 Notas sobre los comandos
-- La tarea correcta para ejecutar los tests unitarios del módulo `app` es `:app:testDebugUnitTest` (no `testDebugUnitTest` a secas desde la raíz). Usar `--info` para más detalle.
+- La tarea para ejecutar los tests unitarios del módulo `app` es `:app:testDebugUnitTest`.
 - Para builds reproducibles en CI conviene usar `bundleRelease` y firmar el AAB con un keystore seguro en los secretos del runner.
 
 SDK, AVD y emuladores (línea de comandos)
 ----------------------------------------
-Si usas las command-line tools (sdkmanager/avdmanager) puedes instalar plataformas y crear AVDs:
+Si se usan las command-line tools (sdkmanager/avdmanager) se pueden instalar plataformas y crear AVDs:
 
 ```powershell
 # Instalar componentes necesarios (ejemplo)
@@ -66,8 +66,8 @@ emulator -avd test_api_33
 ```
 
 Local.properties y ruta del SDK
---------------------------------
-Asegúrate de que `local.properties` apunte a tu SDK local (solo en tu máquina, no subir al repo):
+-------------------------------
+Asegurarse de que `local.properties` apunte al SDK local (archivo no debe subirse al repositorio):
 
 ```
 sdk.dir=C\:\Users\<tu-usuario>\AppData\Local\Android\Sdk
@@ -85,13 +85,13 @@ adb uninstall com.example.myproyectofinal_din_carloscaramecerero
 
 Consejos para Robolectric y JDK
 -------------------------------
-- Si ves errores de tipo "Unsupported class file major version" o problemas al instrumentar clases, prueba ejecutar Gradle con JDK 17 como se muestra arriba.
+- Si aparecen errores de tipo "Unsupported class file major version" o problemas al instrumentar clases, ejecutar Gradle con JDK 17.
 - Robolectric suele requerir que el test runner y la versión de SDK sean compatibles; en los tests actuales se fuerza `@Config(sdk = [33])` cuando es necesario.
 
 Notas CI / Firma
 ----------------
-- No subas tu keystore al repositorio. Para publicar en Play Store configura `signingConfigs` en Gradle y usa secretos en tu CI (GitHub Actions / GitLab CI) para inyectar el keystore y las contraseñas.
-- Ejemplo rápido: en CI ejecuta `./gradlew :app:bundleRelease` y sube `app/build/outputs/bundle/release/app-release.aab` a Play Console.
+- No subir el keystore al repositorio. Para publicar en Play Store configurar `signingConfigs` en Gradle y usar secretos en CI (GitHub Actions / GitLab CI) para inyectar el keystore y las contraseñas.
+- Flujo sugerido en CI: checkout → setup Java 17 and Android SDK → `./gradlew :app:bundleRelease` → subir `app-release.aab`.
 
 Problemas frecuentes y soluciones rápidas
 ----------------------------------------
@@ -101,7 +101,7 @@ Problemas frecuentes y soluciones rápidas
 
 Distribución (RA7) — empaquetado, firma y publicación
 ----------------------------------------------------
-Esta sección complementa el flujo de desarrollo con pasos y buenas prácticas para cumplir los criterios del RA7 (empaquetado, instaladores, firma, canales y despliegue).
+Esta sección describe los pasos y resultados esperados para cumplir los criterios del RA7 (empaquetado, instaladores, firma, canales y despliegue).
 
 RA7.a — Empaquetado de la aplicación
 - Generar APK (debug/release) o AAB (Android App Bundle) desde Gradle:
@@ -132,80 +132,27 @@ RA7.b — Personalización del instalador
   - `applicationId` en `app/build.gradle.kts` (identificador del paquete).
   - `versionCode` y `versionName`.
   - Iconos (res/mipmap), nombre (strings.xml) y splash si aplica.
-- No olvides actualizar el `AndroidManifest` si añades permisos o metadata que alteren la instalación.
+- Actualizar `AndroidManifest` si se añaden permisos o metadata que alteren la instalación.
 
 RA7.c — Paquete desde el entorno / CI
-- Recomendación: automatizar generación en CI (GitHub Actions / GitLab CI).
-- Flujo sugerido en CI:
-  1. Checkout.
-  2. Setup Java 17 and Android SDK.
-  3. `./gradlew :app:bundleRelease` (o `assembleRelease`).
-  4. Subir `app-release.aab` como artefacto y/o publicar en Play Console (internal track) usando `fastlane` o Play Developer API.
+- Automatizar generación en CI (GitHub Actions / GitLab CI) y subir artefactos.
+- Flujo sugerido en CI: Checkout → Setup Java 17 + Android SDK → `./gradlew :app:bundleRelease` → subir artefacto / publicar.
 
 RA7.d — Herramientas externas
-- Herramientas recomendadas:
-  - Fastlane: automatiza builds, screenshots y subida a Play.
-  - Google Play Console / Play Publisher API: publicar en tracks (internal, closed, open, production).
-  - Firebase App Distribution: distribuir betas a testers.
-  - bundletool: para generar apks desde un AAB si lo necesitas localmente.
+- Herramientas identificadas: Fastlane, Google Play Console API, Firebase App Distribution, bundletool.
 
 RA7.e — Firma digital (keystore)
-- Generar un keystore (ejemplo):
-
-```powershell
-keytool -genkeypair -v -keystore my-release-key.jks -alias mykey -keyalg RSA -keysize 2048 -validity 9125
-```
-
-- Ejemplo (simplificado) `signingConfigs` en `app/build.gradle.kts` (Kotlin DSL):
-
-```kotlin
-android {
-  // ...existing code...
-  signingConfigs {
-    create("release") {
-      storeFile = file("/path/to/my-release-key.jks")
-      storePassword = System.getenv("KEYSTORE_PASSWORD")
-      keyAlias = System.getenv("KEY_ALIAS")
-      keyPassword = System.getenv("KEY_PASSWORD")
-    }
-  }
-  buildTypes {
-    release {
-      signingConfig = signingConfigs.getByName("release")
-      isMinifyEnabled = false
-      // proguard files etc.
-    }
-  }
-}
-```
-
-- Buenas prácticas:
-  - No subir el keystore al repo.
-  - Guardar keystore y contraseñas como secretos en CI (GitHub Secrets).
-  - Mantener una copia segura del keystore (necesario para actualizaciones en Play).
+- Resumen: generar keystore con `keytool` y configurar `signingConfigs` en Gradle.
 
 RA7.f — Instalación desatendida / despliegue masivo
-- Instalación local (desarrollo): `adb install -r app/build/outputs/apk/debug/app-debug.apk`.
-- Instalación silenciosa/desatendida en dispositivos gestionados: requiere MDM/EMM (Device Owner) o soluciones corporativas; documentar proveedor (e.g., Microsoft Intune, MobileIron, Scalefusion).
-- Nota: Android no permite instalaciones silenciosas en dispositivos de usuarios sin privilegios especiales por motivos de seguridad.
+- Nota: la instalación silenciosa requiere MDM/EMM y no está soportada en dispositivos de usuarios sin privilegios.
 
 RA7.g — Desinstalación y limpieza
-- Comando `adb uninstall <package>` para desarrollo:
-
-```powershell
-adb uninstall com.example.myproyectofinal_din_carloscaramecerero
-```
-
-- Para limpieza de datos del usuario en la app usar `AppRepository.clearUserData(ctx, userEmail)` (función disponible en el repo).
-- Documenta en la guía de soporte los pasos para restaurar un dispositivo y purgar datos si es necesario.
+- `adb uninstall <package>` para desarrollo.
+- Para purgar datos de usuario en la app usar `AppRepository.clearUserData(ctx, userEmail)`.
 
 RA7.h — Canales de distribución
-- Canales comunes y recomendaciones:
-  - Google Play (production/internal/closed): proceso estándar para apps públicas.
-  - Firebase App Distribution: ideal para betas y testers rápidos.
-  - GitHub Releases: publicar APK/AAB para descarga manual.
-  - F-Droid: solo si el proyecto es Open Source y cumple requisitos.
-- Documentar cuál canal usar y el procedimiento (en `DEV_SETUP.md` o `RELEASE.md`). .
+- Canales identificados: Google Play (production/internal), Firebase App Distribution, GitHub Releases.
 
 Checklist mínimo para un dev nuevo
 ----------------------------------

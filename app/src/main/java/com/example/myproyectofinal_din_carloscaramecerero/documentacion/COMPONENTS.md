@@ -1,6 +1,6 @@
-# Componentes Compose reutilizables(RA3)
+# Componentes Compose reutilizables (RA3)
 
-Este documento lista los componentes Compose reutilizables del proyecto, su API y usos.
+Este documento lista los componentes Compose reutilizables del proyecto, su API y usos. El objetivo es describir su comportamiento, parámetros y restricciones relevantes para la evaluación RA3.
 
 Resumen de componentes clave
 ----------------------------
@@ -11,7 +11,7 @@ Resumen de componentes clave
 
 - `AppBottomBar(items, currentRoute, onItemSelected)`
   - Ubicación: `utils/Componentes.kt`
-  - Descripción: Barra inferior con navegación entre pantallas. Contiene ahora una entrada adicional para acceder a la pantalla de gestión/visualización de tutorizados (visible para usuarios con rol tutor).
+  - Descripción: Barra inferior con navegación entre pantallas. Contiene una entrada para acceder a la pantalla de gestión/visualización de tutorizados (visible para usuarios con rol tutor).
   - Parámetros: `items: List<BottomNavItem>`, `currentRoute: String`, `onItemSelected: (BottomNavItem) -> Unit`.
 
 - `SummaryCard(icon, title, value, modifier = Modifier, onClick = {})`
@@ -20,7 +20,7 @@ Resumen de componentes clave
 
 - `TaskCard(task, modifier, onClick, onStatusChange, onDelete)`
   - Ubicación: `utils/TareaComponente.kt`
-  - Nota: por decisión de permisos, el icono de eliminación (`onDelete`) no se muestra cuando el usuario actual no tiene `isAdmin=true`. El componente acepta el callback pero la UI lo oculta según permisos.
+  - Nota: el icono de eliminación (`onDelete`) no se muestra cuando el usuario actual no tiene `isAdmin=true`. El componente acepta el callback pero la UI lo oculta según permisos.
 
 - `AddTaskDialog(onDismiss, onTaskAdded)`
   - Ubicación: `utils/TareaComponente.kt`
@@ -28,7 +28,7 @@ Resumen de componentes clave
 - `CollectionCard`, `VideoItemCard`, `VideoPlayerDialog`
   - Ubicación: `utils/VideosComponente.kt`
   - Uso: gestionar colecciones y reproducir vídeos seleccionados.
-  - Nota: la reproducción de vídeos embed (YouTube) puede requerir permisos/ajustes WebView; hay un issue conocido (ver TODO).
+  - Nota: la reproducción de vídeos embed (YouTube) puede requerir ajustes de `WebView` y permisos; existe un issue conocido relativo a la carga.
 
 - `CalendarioGrid(currentMonth, selectedDate, today, events, onDateSelected)`
   - Ubicación: `utils/CalendarioComponente.kt`
@@ -36,9 +36,9 @@ Resumen de componentes clave
 
 - `TutorizadosListPreview(userList, onSelectTutorizado)`
   - Ubicación: `pantallas/TutorPantalla.kt`
-  - Descripción: Componente que muestra la lista de usuarios disponibles con rol `tutorizado`. Muestra nombre y foto de perfil en una card mínima; si la lista está vacía muestra un mensaje "Aún no hay".
+  - Descripción: Componente que muestra la lista de usuarios disponibles con rol `tutorizado`. Muestra nombre y foto de perfil en una card mínima; si la lista está vacía muestra el mensaje "Aún no hay".
   - Uso: en la pantalla de Tutor permite previsualizar tutorizados.
-  - Nota clave: la lógica actual ha cambiado respecto a versiones anteriores: ya no existe botón para agregar o eliminar tutorizados desde la preview; los tutores gestionan (ver/editar/añadir tareas y eventos) todos los usuarios con rol `tutorizado` directamente desde la pantalla de Tutor.
+  - Comportamiento actual: la gestión de tutorizados (agregar/eliminar) se realiza de forma centralizada en la pantalla de Tutor; la preview solo muestra y permite navegación.
 
 - `TutorizadoCard(user, expanded, onExpandChange, expandedContent)`
   - Ubicación: `utils/TutorComponente.kt`
@@ -52,15 +52,8 @@ Resumen de componentes clave
 
 Notas sobre permisos y UI
 ------------------------
-- Restricción de borrado: los tutorizados (usuarios con `isAdmin = false`) no pueden eliminar tareas, eventos o vídeos asignados por un tutor —el icono de papelera no se renderiza para ellos. Esto se aplica a nivel UI (componente) y se recomienda reforzarlo también en la capa de persistencia (`AppRepository`) para evitar bypass.
+- Restricción de borrado: los tutorizados (usuarios con `isAdmin = false`) no pueden eliminar tareas, eventos o vídeos asignados por un tutor —el icono de papelera no se renderiza para ellos. Esta restricción se aplica a nivel UI y se recomienda que también esté presente en la capa de persistencia (`AppRepository`) para evitar bypass.
 
 Notas sobre `SettingsDrawer` / Ajustes
 ------------------------------------
-- Se eliminó el interruptor "Función tutor" del drawer de ajustes en la versión actual (decisión de diseño). La opción ya no existe; la aplicaci	n considera el rol y la política centralizada para determinar quién aparece como tutorizado y qué puede gestionar cada usuario.
-- Recomendación: mantener la lógica de comprobación de permisos en el `Repository` (no en componentes) para facilitar pruebas y mantener componentes puros.
-
-Buenas prácticas sugeridas
--------------------------
-- Añadir `@Preview` para cada componente para facilitar su inspección en IDE.
-- Documentar contratos (precondiciones) y efectos secundarios (p. ej. `onAvatarChange` debe persistir avatar fuera del componente).
-- Evitar side-effects directos en componentes; delegar al `ViewModel` o repositorio cuando sea necesario.
+- El interruptor "Función tutor" fue eliminado del drawer de ajustes en la versión documentada. La aplicación determina el acceso a funciones de tutor mediante el rol y políticas centralizadas.

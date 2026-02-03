@@ -1,4 +1,4 @@
-# Persistencia de datos(RA6)
+# Persistencia de datos (RA6)
 
 Resumen
 -------
@@ -10,7 +10,7 @@ Cada usuario tiene ficheros con sufijos específicos (nombre generado por `fileN
 
 - `*_user.json` — datos del usuario (name, email, avatarRes, avatarUri, esAdmin)
   - Campos adicionales importantes:
-    - `allowTutoring` (boolean): indica si el usuario acepta ser seleccionado como tutorizado por un tutor. Está persisitido junto al resto de datos del usuario en `*_user.json`.
+    - `allowTutoring` (boolean): indica si el usuario acepta ser seleccionado como tutorizado por un tutor. Está persistido junto al resto de datos del usuario en `*_user.json`.
 - `*_tasks.json` — lista de tareas: array de objetos {id, title, description, status}
 - `*_events.json` — lista de eventos: array de objetos {id, date (ISO), title, time}
 - `*_collections.json` — colecciones de vídeos: array con items (id, title, description, uriString)
@@ -39,11 +39,12 @@ Acceso y nombres de fichero
 - Los nombres se generan reemplazando caracteres no alfanuméricos por `_` en el email: por ejemplo `juan_example_com_user.json`.
 - `AppRepository` encapsula la lectura/escritura y devuelve listas vacías o null en caso de no existir el fichero.
 
-Migración y recomendaciones
----------------------------
+Propuestas de mejora (migración y robustez)
+-------------------------------------------
 - Migrar credenciales a `EncryptedSharedPreferences` y planificar migración de datos existente al primer inicio.
-- Nota sobre preferencias de usuario:
-  - Cuando el usuario cambia la opción "Función tutor" en Ajustes, `AppRepository.saveUser` debe actualizar el campo `allowTutoring` en el `*_user.json`.
-  - Al desactivar la opción la UI comprueba primero `AppRepository.isTutorizadoByAny(context, email)` para evitar inconsistencia si existe una relación tutor->tutorizado.
 - Considerar Room para consultas más complejas y relaciones entre entidades.
 - Añadir pruebas unitarias para la serialización/deserialización (JSON <-> modelos).
+
+Operaciones disponibles en el repositorio
+-----------------------------------------
+- `saveUser`, `loadUser`, `saveTasks`, `loadTasks`, `saveEvents`, `loadEvents`, `saveCollections`, `loadCollections`, `saveCredentials`, `loadCredentials`, `clearAllData`.

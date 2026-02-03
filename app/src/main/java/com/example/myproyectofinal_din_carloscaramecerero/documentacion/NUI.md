@@ -1,109 +1,85 @@
-# NUI (Natural User Interfaces) — propuestas para AutiCare(RA2)
+# NUI (Natural User Interfaces) — propuestas para AutiCare (RA2)
 
-Este documento recoge ideas y recomendaciones para incorporar interfaces naturales (NUI) en la aplicación, con foco en personas con Alzheimer y sus cuidadores. Incluye las herramientas posibles, ventajas para el usuario objetivo, consideraciones de diseño, privacidad y un roadmap de implementación.
+Documento informativo que recoge propuestas para incorporar interfaces naturales (NUI) en la aplicación, orientadas a usuarios con Alzheimer y sus cuidadores. Contiene herramientas potenciales, ventajas, consideraciones de diseño, privacidad y un roadmap de implementación.
 
-Resumen rápido
----------------
-- Las NUI facilitan la interacción reduciendo la dependencia del texto y de precisión motora. Para usuarios con Alzheimer pueden mejorar la accesibilidad, reducir la fricción del login, y permitir recordatorios más naturales.
-- Técnicamente, los datos biométricos (huella, cara) se consideran una forma de NUI cuando se usan para autenticación/entrada rápida.
+Resumen
+-------
+Las NUI facilitan la interacción reduciendo la dependencia del texto y de precisión motora. Para usuarios con Alzheimer pueden mejorar la accesibilidad, reducir la fricción del inicio de sesión y permitir recordatorios más naturales. Técnicamente, los datos biométricos (huella, cara) se consideran una forma de NUI cuando se usan para autenticación o inicio rápido.
 
-Qué entendemos por NUI
-----------------------
-NUI agrupa técnicas que permiten a la persona interactuar con la app mediante métodos más naturales que teclear: voz, gestos, biometría, detección facial/gestual, realidad aumentada (AR), haptics (vibraciones contextuales) y UIs conversacionales.
+Definición y categorías
+-----------------------
+NUI incluye técnicas que permiten al usuario interactuar mediante métodos diferentes a la escritura: voz, gestos, biometría, detección facial/gestual, AR, haptics (vibraciones) y UIs conversacionales.
 
-Relevancia para personas con Alzheimer
---------------------------------------
-- Menos fricción: reducir o eliminar la necesidad de recordar contraseñas (inicio rápido biométrico, autenticación por cuidador, inicio por selección de perfil + biometría).
-- Interacción sencilla: comandos de voz e indicaciones habladas (TTS) permiten operar sin recordar rutas o pulir puntería táctil.
-- Recordatorios más naturales: mensajes hablados, repeticiones y confirmaciones por voz.
-- Seguridad y control: biometría y consentimiento del cuidador para permisos críticos.
+Relevancia para la población objetivo
+-------------------------------------
+- Menor fricción en acciones frecuentes (inicio de sesión, confirmaciones).
+- Interacción simplificada mediante voz y TTS para reducir carga cognitiva.
+- Recordatorios multimodales (voz + vibración + visual) que aumentan la probabilidad de respuesta.
 
-Herramientas NUI relevantes y cómo aportarían valor
----------------------------------------------------
-1. Biometría (AndroidX Biometric / BiometricPrompt)
-   - Uso: inicio rápido, desbloqueo de funciones, confirmaciones sensibles (p. ej. eliminar datos).
-   - Valor: evita que el usuario recuerde contraseñas; arranque más seguro y cómodo.
-   - Observación: los datos biométricos no deben almacenarse por la app; usar el sistema (Keystore/Android Biometric API).
+Herramientas NUI identificadas y valor esperado
+-----------------------------------------------
+1. Biometría (`androidx.biometric:biometric` / `BiometricPrompt`)
+   - Uso: inicio rápido, desbloqueo de funciones y confirmaciones sensibles.
+   - Valor: evita que el usuario recuerde contraseñas.
+   - Nota: la plantilla biométrica no se almacena en la app; se delega al sistema.
 
 2. Voz (Speech-to-Text y Text-to-Speech)
-   - STT: para comandos simples ("añadir tarea", "recordarme a las 9").
-   - TTS: lectura de instrucciones, confirmar acciones, repetir recordatorios.
-   - Valor: reduce dependencia visual y motora; buen soporte para usuarios con deterioro cognitivo.
-   - Tecnologías: Android SpeechRecognizer (offline/online), Google Cloud Speech (si hay backend), Android TextToSpeech o TTS de Google.
+   - STT: para comandos simples (p. ej. crear recordatorio).
+   - TTS: lectura de instrucciones y confirmaciones.
+   - Valor: reduce dependencia visual y motora.
 
-3. Interfaces conversacionales (bot conversacional simple)
-   - Uso: flujo guiado por diálogo para crear tareas o eventos (p. ej. agente que pregunta "¿qué quieres recordar?").
-   - Valor: guía paso a paso; reduce errores de entrada.
+3. Interfaces conversacionales
+   - Uso: flujos guiados por diálogo para crear tareas/eventos.
+   - Valor: guía paso a paso y reducción de errores de entrada.
 
-4. Detección facial y de estado (ML Kit / MediaPipe / TensorFlow Lite)
-   - Uso: detectar atención (si la persona mira la pantalla) o emociones básicas (para adaptar mensajes) y para perfiles con foto; ayuda al cuidador.
-   - Valor: adaptar la experiencia según el estado del usuario (p. ej. simplificar la UI si el usuario está estresado).
-   - Consideraciones éticas: detección de emociones es sensible — usar con consentimiento explícito y mínimos datos.
+4. Detección facial / corporal (ML Kit / MediaPipe / TFLite)
+   - Uso: detección de atención o estados básicos para adaptar la UI.
+   - Consideraciones éticas y de consentimiento detalladas en la sección de privacidad.
 
-5. Reconocimiento de gestos (MediaPipe, sensores, acelerómetro)
-   - Uso: gestos sencillos para controlar pantallas (p. ej. pasar al siguiente elemento con gesto de mano) o atajos físicos.
-   - Valor: alternativa a toques pequeños; útil en tablets con cámara o dispositivos con sensores.
+5. Reconocimiento de gestos (MediaPipe, sensores)
+   - Uso: gestos sencillos para navegación o acciones rápidas.
 
-6. Realidad aumentada (ARCore) — propuestas ligeras
-   - Uso: superponer instrucciones grandes en objetos reales (por ejemplo recordar dónde está la medicación), marcadores visuales para contextualizar tareas.
-   - Valor: experiencia inmersiva y contextual, pero alto coste de implementación.
+6. Realidad aumentada (ARCore) — propuestas puntuales
+   - Uso: superposición contextual de instrucciones; alta complejidad de implementación.
 
 7. Haptics y feedback multimodal
-   - Uso: vibraciones sutiles para confirmar una acción o para llamar la atención en recordatorios.
-   - Valor: útil cuando audio no puede escucharse o para reforzar confirmaciones visuales.
+   - Uso: vibraciones y señales táctiles para confirmar acciones o recordatorios.
 
-8. Componentes predictivos / sugerencias (ML o heurísticos)
-   - Uso: sugerir tareas recurrentes, rellenado automático de horas frecuentes, recordatorios inteligentes basados en rutina.
-   - Valor: reduce necesidad de entrar datos manualmente.
+8. Componentes predictivos / sugerencias (ML heurístico)
+   - Uso: sugerencia de tareas recurrentes y relleno automático de datos.
 
-Requisitos técnicos y bibliotecas sugeridas
+Requisitos técnicos y dependencias sugeridas
 -------------------------------------------
-- Biometría: `androidx.biometric:biometric` (usar la versión estable disponible). Usar `BiometricPrompt` (no almacenar biométricos en la app).
-- Voz: Android SpeechRecognizer, `android.speech.tts.TextToSpeech`; para mayor fiabilidad, evaluar servicios en la nube (requiere backend y consentimiento).  
-- Visión / gestos: Google ML Kit (face detection), MediaPipe (gestures) o TensorFlow Lite para modelos custom.
-- Permisos: RECORD_AUDIO (STT), POST_NOTIFICATIONS (notifs), CAMERA (gestos / face), READ_EXTERNAL_STORAGE / READ_MEDIA_VIDEO (según Android), uso de `takePersistableUriPermission` para URIs persistentes.
-- Seguridad: Android Keystore, EncryptedSharedPreferences para datos sensibles, no almacenar biométricos.
+- Biometría: `androidx.biometric:biometric`.
+- Voz: `android.speech.SpeechRecognizer` y `TextToSpeech` (local), o servicios en la nube si se dispone de backend.
+- Visión/gestos: Google ML Kit (face detection), MediaPipe o TensorFlow Lite.
+- Permisos: `RECORD_AUDIO`, `POST_NOTIFICATIONS`, `CAMERA`, `READ_MEDIA_VIDEO` según versión de Android y funcionalidades empleadas.
+- Seguridad: uso de Keystore y `EncryptedSharedPreferences` para datos sensibles.
 
-Consideraciones de privacidad y seguridad
------------------------------------------
-- La biometría se gestiona siempre por el sistema; nunca exportar o almacenar plantillas biométricas.
-- Pedir consentimiento claro y registro por parte del cuidador para funcionalidades que procesen imagen/audio.
-- Registrar y controlar los permisos; proporcionar opción para revocar fácilmente y un modo "solo cuidador".
-- Logs y datos sensibles deben cifrarse (EncryptedSharedPreferences / Keystore); minimizar datos personales enviados a la nube.
+Privacidad y riesgos
+--------------------
+- Biometría: gestionada por el sistema; no almacenar plantillas en la app.
+- Procesamiento de audio e imagen: preferir procesamiento local; cuando se utilice la nube, obtener consentimiento explícito y minimizar datos enviados.
+- Registrar y permitir revocación de permisos por el usuario o cuidador.
 
-UX y diseño (guías específicas para Alzheimer)
----------------------------------------------
-- Simplicidad: comandos limitados y repetibles; evitar menús profundos.
-- Confirmación multimodal: combinar TTS + vibración + UI para confirmar acciones importantes.
-- Repetición y refuerzo: read-out loud de recordatorios y opción para repetir.
-- Fallbacks: si STT falla, ofrecer picker visual simple; si biometría no disponible, fallback a selección de cuenta + contraseña.
-- Consentimiento y control del cuidador: permitir que el cuidador registre la biometría o active modos asistidos.
-- Evitar automatismos peligrosos: no permitir borrar datos críticos sin confirmación del cuidador.
+UX y diseño (orientado a Alzheimer)
+----------------------------------
+- Interfaz simple y consistente: menús reducidos y confirmaciones claras.
+- Confirmaciones multimodales: combinar TTS, vibración y visual.
+- Fallbacks: mantener métodos tradicionales (contraseña) como alternativa.
 
-Riesgos y mitigaciones
------------------------
-- Falsos positivos/negativos (STT/face/gestos): usar confirmaciones y permitir deshacer.
-- Privacidad (audio/imágenes): procesar localmente cuando sea posible; si se usa la nube, cifrar y pedir consentimiento.
-- Dependencia excesiva: no eliminar completamente los flujos tradicionales (contraseña) — ofrecer siempre un fallback.
+Medición y validación
+---------------------
+Métricas propuestas:
+- Tiempo medio de inicio de sesión.
+- Número de errores en creación de tareas con STT vs UI tradicional.
+- Adopción del inicio rápido por biometría.
 
-Cómo medir éxito (KPIs)
------------------------
-- Reducción en tiempo para iniciar sesión (medir antes/después con usuarios).
-- Número de errores al crear/usar tareas con STT vs UI tradicional.
-- Tasa de adopción del inicio rápido por biometría.
-- Feedback cualitativo de cuidadores y usuarios (test de usabilidad con tareas concretas).
+Pruebas con usuarios
+--------------------
+- Sesiones de usabilidad cortas con usuarios y cuidadores (5–10 minutos) centradas en tareas concretas.
+- Métricas mixtas: tiempo, éxito, errores y feedback cualitativo.
 
-Pruebas y validación con usuarios
----------------------------------
-- Testear con cuidadores y usuarios objetivo en sesiones cortas (5–10 minutos) con tareas concretas.
-- Usar métricas mixtas: tiempo, éxito, errores, y escala de usabilidad adaptada (SUS simplificado + feedback cualitativo).
-
-Referencias y bibliografía
---------------------------
-- Android BiometricPrompt (AndroidX Biometric)
-- Android SpeechRecognizer y TextToSpeech
-- Google ML Kit (Face Detection)
-- MediaPipe (gestures)
-- TensorFlow Lite (models locales)
-- Buenas prácticas de privacidad biométrica (documentos regulatorios locales/UE)
-
+Referencias
+----------
+- Android BiometricPrompt, SpeechRecognizer, TextToSpeech, ML Kit, MediaPipe, TensorFlow Lite.
