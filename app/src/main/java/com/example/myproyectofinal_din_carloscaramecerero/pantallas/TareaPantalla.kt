@@ -9,7 +9,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,9 +21,7 @@ import androidx.compose.ui.platform.LocalContext
 import com.example.myproyectofinal_din_carloscaramecerero.repository.AppRepository
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.Dp
 import com.example.myproyectofinal_din_carloscaramecerero.model.Task
-import com.example.myproyectofinal_din_carloscaramecerero.model.TaskStatus
 import com.example.myproyectofinal_din_carloscaramecerero.utils.AddTaskDialog
 import com.example.myproyectofinal_din_carloscaramecerero.utils.TaskCard
 import androidx.compose.runtime.LaunchedEffect

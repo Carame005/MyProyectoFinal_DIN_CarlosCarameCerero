@@ -2,15 +2,11 @@ package com.example.myproyectofinal_din_carloscaramecerero.pantallas
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -19,7 +15,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import com.example.myproyectofinal_din_carloscaramecerero.repository.AppRepository // <-- nuevo
 import com.example.myproyectofinal_din_carloscaramecerero.model.Task
-import com.example.myproyectofinal_din_carloscaramecerero.model.TaskStatus
 import com.example.myproyectofinal_din_carloscaramecerero.model.User
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -28,13 +23,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.VideoLibrary
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.edit
-import java.net.URLDecoder
 import com.example.myproyectofinal_din_carloscaramecerero.utils.SummaryCard // <-- importar el componente
 
 private const val PREFS_TASKS = "tasks_prefs"

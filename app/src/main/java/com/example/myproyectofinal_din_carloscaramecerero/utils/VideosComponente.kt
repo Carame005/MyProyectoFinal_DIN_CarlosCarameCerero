@@ -40,9 +40,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.TextButton
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
-import com.example.myproyectofinal_din_carloscaramecerero.model.TimeBreakdown
-import com.example.myproyectofinal_din_carloscaramecerero.pantallas.VideoCollection
-import com.example.myproyectofinal_din_carloscaramecerero.pantallas.VideoItem
 
 /**
  * Elemento de progreso simple que muestra una barra coloreada y texto.

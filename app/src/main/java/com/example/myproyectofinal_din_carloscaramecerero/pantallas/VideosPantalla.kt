@@ -1,6 +1,5 @@
 package com.example.myproyectofinal_din_carloscaramecerero.pantallas
 
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -30,13 +29,9 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TextButton
 import androidx.compose.ui.unit.dp
-import androidx.core.content.edit
 import com.example.myproyectofinal_din_carloscaramecerero.utils.CollectionCard
 import com.example.myproyectofinal_din_carloscaramecerero.utils.VideoPlayerDialog
 import com.example.myproyectofinal_din_carloscaramecerero.model.User
-
-private const val PREFS_NAME_COLLECTIONS = "video_collections_prefs"
-private const val COLLECTIONS_KEY = "video_collections_serialized"
 
 /**
  * Representa un vídeo individual guardado en una colección.

@@ -27,7 +27,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBackIos
 import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -67,7 +66,6 @@ import android.content.pm.PackageManager
 import android.widget.Toast
 import android.util.Log
 import com.example.myproyectofinal_din_carloscaramecerero.model.CalendarEvent // <-- usar la data class del modelo
-import kotlin.random.Random
 import com.example.myproyectofinal_din_carloscaramecerero.model.User
 
 // Reusar helpers públicos para notificaciones/alarms

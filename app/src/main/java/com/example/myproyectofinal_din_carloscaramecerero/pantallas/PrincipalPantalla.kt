@@ -36,7 +36,6 @@ import com.example.myproyectofinal_din_carloscaramecerero.utils.AppTopBar
 import com.example.myproyectofinal_din_carloscaramecerero.utils.SettingsDrawer
 import com.example.myproyectofinal_din_carloscaramecerero.utils.SettingsScreen
 import com.example.myproyectofinal_din_carloscaramecerero.utils.defaultUser
-import com.example.myproyectofinal_din_carloscaramecerero.pantallas.LoginScreen // <-- nuevo import
 import com.example.myproyectofinal_din_carloscaramecerero.utils.AddButtonBlue
 import com.example.myproyectofinal_din_carloscaramecerero.utils.DarkBackground
 import com.example.myproyectofinal_din_carloscaramecerero.utils.LightFilterBackground

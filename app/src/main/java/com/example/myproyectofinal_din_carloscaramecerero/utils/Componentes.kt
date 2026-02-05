@@ -1,7 +1,6 @@
 package com.example.myproyectofinal_din_carloscaramecerero.utils
 
 import android.net.Uri
-import com.example.myproyectofinal_din_carloscaramecerero.model.User
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -31,7 +30,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.example.myproyectofinal_din_carloscaramecerero.model.BottomNavItem
 
 /**
  * Top bar principal con avatar, ajustes y botón de ayuda contextual.
