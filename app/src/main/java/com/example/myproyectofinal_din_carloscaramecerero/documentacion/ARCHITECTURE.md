@@ -18,7 +18,7 @@ Modelo user-admin
 La app soporta dos tipos de usuarios: normales y administradores (tutores). Los administradores pueden ver y gestionar datos de usuarios que han aceptado ser tutorizados (campo `allow
 Tutoring` en `User`). Los datos se guardan en ficheros JSON separados por usuario.
 
-En la carpeta `documentacion/capturas/` hay un concepto de como funciona el rol usuario-tutor hecho con lucidchart.
+En la carpeta `documentacion/capturas/` hay un concepto muy esquemático de como funciona el rol usuario-tutor hecho con lucidchart.
 
 Decisiones y justificación
 ---------------------------
