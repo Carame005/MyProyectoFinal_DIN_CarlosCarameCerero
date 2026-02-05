@@ -29,13 +29,6 @@ En la carpeta `app/src/main/java/.../documentacion/` encontrarás la documentaci
 - `TODO.md` — Mejoras propuestas y prioridades.
 - `USER_MANUAL.md` — Manual de usuario pensado para personas con Alzheimer y cuidadores.
 
-Importante — seguridad de credenciales
---------------------------------------
-Actualmente las credenciales se guardan en un fichero JSON en texto plano (`*_creds.json`). Esto es inseguro para producción. Recomendación inmediata:
-
-- No desplegar esta versión en producción sin migrar a `EncryptedSharedPreferences` o a un sistema seguro (Android Keystore).
-- Revisar `documentacion/SECURITY.md` para la propuesta de migración y el plan de acción.
-
 Cómo ejecutar y probar (PowerShell)
 ----------------------------------
 Abrir PowerShell en la raíz del proyecto (`.../MyProyectoFinal_DIN_CarlosCarameCerero`) y ejecutar:
@@ -66,15 +59,3 @@ Notas para cuidadores y usuarios
 -------------------------------
 - Para usuarios con Alzheimer, hay un `USER_MANUAL.md` diseñado con lenguaje sencillo y pasos claros. Está pensado para imprimirse o leerse con un cuidador.
 - Recomendación para cuidadores: mantener la contraseña en un lugar seguro y supervisar las primeras interacciones del usuario con la app.
-
-Pruebas y CI sugeridos
-----------------------
-- Añadir pruebas unitarias para `AppRepository` (serialización y lectura/escritura) y pruebas de integración para los flujos de Login y Calendario.
-- Configurar un workflow CI que ejecute `./gradlew build` y `./gradlew test` en cada PR.
-
-Siguientes pasos recomendados (priorizados)
--------------------------------------------
-1. Migrar almacenamiento de credenciales a `EncryptedSharedPreferences` (urgente).
-2. Añadir tests unitarios clave y un pipeline CI básico.
-3. Generar PDF imprimible del `USER_MANUAL.md` para cuidadores.
-4. Mejorar logging y evitar `catch` silenciosos en `AppRepository`.
