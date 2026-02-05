@@ -17,7 +17,7 @@ Estructura principal (dónde buscar)
   - `app/src/main/java/.../receivers/`  — Broadcast receivers (p.ej. `BootReceiver`).
 
 - Documentación (guías, decisiones y manuales):
-  - `app/src/main/java/.../documentacion/` contiene los MD generados/manuales:
+  - `app/src/main/java/.../documentacion/` contiene los MD con documentacion de distintos aspectos de la app:
     - `ARCHITECTURE.md`, `LIBRARIES.md`, `COMPONENTS.md`, `PERSISTENCE.md`, `SECURITY.md`, `DEV_SETUP.md`, `TESTS.md`, `USER_MANUAL.md`, `INFORMES.MD`, `NUI.md`, etc.
     - `capturas/` — captura de los tests hechos.
 
