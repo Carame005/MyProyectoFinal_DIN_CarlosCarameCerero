@@ -78,10 +78,3 @@ Siguientes pasos recomendados (priorizados)
 2. Añadir tests unitarios clave y un pipeline CI básico.
 3. Generar PDF imprimible del `USER_MANUAL.md` para cuidadores.
 4. Mejorar logging y evitar `catch` silenciosos en `AppRepository`.
-
-Contacto y soporte
-------------------
-Si necesitas ayuda para cualquiera de los pasos anteriores (migración de credenciales, añadir tests o generar el PDF del manual), dímelo y lo implemento.
-
---
-Archivo generado automáticamente por el asistente de documentación. Si quieres ajustes (más capturas, un índice con enlaces relativos o añadir versiones de dependencias), dime qué incorporar y lo añado.
