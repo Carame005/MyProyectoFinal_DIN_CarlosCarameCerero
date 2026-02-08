@@ -1,76 +1,115 @@
-# INFORMES (RA5) — Guía práctica para la app AutiCare
+# INFORMES (RA5) — Guía práctica para la app (actualizada)
 
-Este documento está dedicado exclusivamente al RA5 (Informes) y describe cómo está planteada la funcionalidad de generación, visualización y exportación de informes en la aplicación, así como propuestas de implementación y evidencia requerida para la evaluación.
+Este documento describe la funcionalidad de generación, visualización y exportación de informes en la aplicación (RA5). Incluye además el estado real de la implementación en el repositorio, instrucciones de uso, limitaciones conocidas y propuestas de pruebas y evidencia para la evaluación.
 
-Objetivo
---------
+## Objetivo
+
 Proveer la especificación mínima y ampliada de la funcionalidad de informes para tutores/cuidadores: generar resúmenes y exportaciones con los datos de un tutorizado (tareas, eventos y vídeos).
 
-Resumen funcional (qué hace la funcionalidad)
---------------------------------------------
-- Genera un informe por tutorizado con: nombre, correo, conteo de tareas por estado (pendiente/en proceso/hecho), lista de eventos (fecha/hora/título) y vídeos/colecciones.
-- Permite filtrar por rango de fechas y tipo de dato.
-- Exporta el informe en formatos TXT (resumen legible) y CSV (detalle). Opcional: PDF.
-- Guarda el fichero en almacenamiento interno y muestra la ruta al tutor (o permite compartirlo mediante `ACTION_SEND`).
+## Resumen funcional (qué hace la funcionalidad)
 
-Propuestas de implementación (MVP y extensiones)
-------------------------------------------------
-MVP:
-- `ReportService` (clase en `reports/ReportService.kt`): consulta `AppRepository` y calcula el `ReportSummary` y las filas de detalle.
-  - Funciones mínimas:
-    - `fun summary(ctx: Context, userEmail: String, from: LocalDate?, to: LocalDate?): ReportSummary`
-    - `fun rows(ctx: Context, userEmail: String, from: LocalDate?, to: LocalDate?): List<ReportRow>`
-    - `fun exportCsv(ctx: Context, userEmail: String, from: LocalDate?, to: LocalDate?): String` → devuelve ruta del fichero.
-- `ReportsScreen` (Compose): UI con filtros (usuario, fecha desde/hasta, tipo), tarjetas resumen y botón `Exportar CSV`.
-- Integración en `TutorPantalla`: botón "Exportar informe" por tutorizado; existe una función `generateTutorReport` para TXT que puede reutilizarse o unificarse con `ReportService`.
+- Genera un informe por tutorizado con: correo, conteo de tareas por estado (pendiente/en proceso/hecho), lista de eventos (fecha/hora/título) y recuento de vídeos/colecciones.
+- Permite filtrar por periodo (Última semana / Último mes) y por tipo de datos (tareas en estado X, eventos, vídeos).
+- Exporta el informe en TXT (resumen legible). Se propone CSV como extensión (ver secciones siguientes).
+- Guarda el fichero en almacenamiento interno y permite compartirlo mediante `Intent.ACTION_SEND`.
 
-Extensiones recomendadas:
-- Generación PDF a partir de HTML y uso de Print API o `PdfDocument`.
-- Visualización de gráficos (barras, pasteles) usando librerías de charts (por ejemplo `Vico` o `MPAndroidChart`).
+## Estado actual en el repositorio (implementado)
 
-Fuentes de datos y cálculos
---------------------------
-- Origen: `AppRepository` (métodos existentes): `loadTasks`, `loadEvents`, `loadCollections`.
-- Cálculos mínimos obligatorios:
-  - Totales: número de tareas totales, completadas, en proceso, pendientes.
-  - Recuento de eventos en el rango seleccionado.
-  - Recuento de colecciones y vídeos.
-  - % cumplimiento tareas = (tareas_completadas / tareas_totales) * 100 (si tareas_totales>0).
+Estas son las piezas que ya están desarrolladas y su ubicación (resumen práctico para el profesor):
 
-Filtros y formatos
-------------------
-- Filtros: usuario/tutorizado, rango de fechas (desde / hasta), tipo (tareas / eventos / vídeos / todos).
-- Formatos: TXT (resumen), CSV (detalle), PDF (opcional).
+- Generador de texto de informe:
+  - `app/src/main/java/.../utils/ReportGenerator.kt`
+    - Funciones implementadas relevantes:
+      - `buildReportText(context, targetEmail, filters): String` — genera el texto del informe (TXT).
+      - `buildReportSummary(context, targetEmail, filters): ReportSummary` — devuelve datos numéricos resumidos para gráficos.
+      - `saveReportToCache(context, filename, content): String?` y `getUriForFile(...)` — utilidades para exportar/compartir.
 
-Privacidad y almacenamiento
----------------------------
-- Almacenamiento por defecto: almacenamiento interno de la app (ctx.openFileOutput).
-- Compartición: mediante `Intent.ACTION_SEND` si se requiere compartir fuera de la app.
-- Recomendación de manejo: documentar ubicación de informes y política de retención en `INFORMES.MD`.
+- Modelo resumen para gráficos:
+  - `app/src/main/java/.../model/ReportSummary.kt` — `data class ReportSummary(tasksCompleted, tasksInProgress, tasksPending, eventsCount, totalVideos)`
 
-Pruebas y evidencias requeridas para RA5
----------------------------------------
-- `ReportServiceTest` (unitario): tests con `FakeRepository` y datos controlados para validar `summary` y `rows`.
-- UI tests (Robolectric + Compose): verificar que `ReportsScreen` muestra valores correctos para datos conocidos.
-- Instrumented test (opcional): generar CSV en emulador y comprobar existencia/consistencia del fichero.
-- Evidencias a incluir en la documentación:
-  - `documentacion/test-reports/sample-report.csv` (ejemplo generado).
-  - `documentacion/capturas/report_summary.png` (pantalla del informe).
-  - Resultados de tests (HTML/XML) copiados a `documentacion/test-reports/`.
+- Componente gráfico (básico, Compose):
+  - `app/src/main/java/.../utils/ReportChart.kt` — componente que dibuja un gráfico de barras horizontales (Completadas, En Progreso, Pendientes, Eventos, Vídeos). Se ha integrado en la pantalla `Home`.
 
-Comandos útiles (desarrollo)
----------------------------
+- Integración UI (Home y Tutor):
+  - `app/src/main/java/.../pantallas/HomePantalla.kt` — botón "Generar informe" que abre un diálogo de filtros y muestra el informe en pantalla junto con el gráfico generado.
+  - `app/src/main/java/.../pantallas/TutorPantalla.kt` — ya contiene un flujo para ver/generar informes por tutorizado (diálogo reutiliza `ReportGenerator`).
+
+- Visual y ergonomía:
+  - El bloque del informe y el área del gráfico usan un color de fondo uniforme (se estableció como `#35343A` por petición), separador y etiqueta "Gráfico" para mejorar legibilidad.
+  - El informe ahora se muestra completo en la pantalla (sin scroll interno); el scroll se asume en la pantalla principal para evitar anidamientos.
+
+> Nota: los ficheros de ejemplo y capturas propuestas (CSV, screenshots) se indican en la sección de pruebas/evidencias. Si deseas que genere muestras automáticas, puedo añadir generación de CSV/TXT de ejemplo y almacenarlas en `documentacion/`.
+
+## Uso en la app (cómo generar un informe)
+
+1. Abrir la app e iniciar sesión con un usuario.
+2. En la pantalla Home pulsar "Generar informe".
+3. Seleccionar el periodo (Última semana / Último mes) y los tipos a incluir (Completadas / En proceso / Pendientes / Eventos / Vídeos).
+4. Pulsar "Generar" — el texto del informe aparece en el bloque (completo) y debajo se muestra el gráfico resumen.
+5. Opciones del informe: "Copiar" (al portapapeles) y "Compartir" (abre selector con archivo TXT generado en cache y `ACTION_SEND`).
+
+## Exportación / formatos
+
+- Actual: exportación a TXT mediante `ReportGenerator.saveReportToCache` y uso de `getUriForFile` para compartir.
+- Propuesta (próximo paso): añadir `exportCsv(...)` en una clase `ReportService` para generar un CSV con filas detalladas y exportarlo a `documentacion/test-reports/` para evidencia.
+
+## Detalles técnicos importantes
+
+- Filtros:
+  - `ReportFilters` (modelo) controla `period` (LAST_WEEK, LAST_MONTH) y booleanos para incluir/computar tareas por estado, eventos y vídeos.
+- Fechas:
+  - El generador actual usa `java.time.LocalDate` (API 26+). En el código hay anotaciones y supresiones para compatibilidad, pero si se desea soporte total para minSdk < 26 es recomendable activar core library desugaring en Gradle (ver sección Limitaciones).
+- Recuento de tareas:
+  - Se cuentan por `TaskStatus` y en el texto del informe se muestra la descripción legible (`TaskStatus.desc`).
+- Gráfico:
+  - `ReportChart` calcula el máximo para escalar barras y muestra 5 ítems (Completadas, En Progreso, Pendientes, Eventos, Vídeos). Los colores usan el `colorScheme` del tema y el fondo del bloque se fijó a `#35343A` para coherencia visual.
+
+## Limitaciones y recomendaciones
+
+- API / java.time: el uso de `LocalDate` puede provocar advertencias en análisis estático si el minSdk < 26. Recomendaciones:
+  - Activar core library desugaring en Gradle para usar `java.time` en minSdk < 26.
+  - O alternativamente reescribir la lógica de filtrado por fecha a `Long` timestamps si no se desea tocar Gradle.
+
+- Contraste y accesibilidad: el fondo `#35343A` es oscuro; si el texto con `onSurface` no resulta legible, recomendamos forzar `Color.White` para el contenido textual del informe o ajustar la paleta del tema.
+
+## Pruebas y evidencias requeridas para RA5
+
+- Unit tests recomendados:
+  - `ReportGeneratorTest` / `ReportServiceTest` (si se implementa `ReportService`): validar `buildReportText` y `buildReportSummary` con repositorio falso (FakeRepository) con datos controlados.
+  - Verificar que el TXT contiene las líneas esperadas y que los contadores coinciden.
+
+- UI tests sugeridos (Robolectric + Compose):
+  - `ReportsScreen` muestra los valores correctos para datos de prueba; la acción "Compartir" crea un fichero en cache.
+
+- Evidencias para entregar:
+  - `documentacion/test-reports/sample-report.txt` (ejemplo generado) y opcional `sample-report.csv`.
+  - Captura: `documentacion/capturas/report_summary.png` (pantalla Home con informe + gráfico visible).
+  - Resultado de tests (HTML/XML) en `documentacion/test-reports/`.
+
+## Plan de implementación y prioridades (siguiente pasos)
+
+1. Implementar/extraer `ReportService` como capa que orquesta `AppRepository` y `ReportGenerator` (responsable de summary/rows/exportCsv).
+2. Crear `ReportsScreen` Compose (filtros avanzados y export CSV/PDF).
+3. Integrar botón "Exportar informe" en `TutorPantalla` para generar CSV por tutorizado y almacenarlo en `documentacion/test-reports/` para evidencia.
+4. Añadir tests unitarios para `ReportGenerator`/`ReportService` y tests UI.
+5. Habilitar desugaring si se quiere soporte `java.time` en minSdk < 26.
+
+## Comandos útiles
+
 ```powershell
-# Ejecutar tests unitarios relacionados con informes
-.\gradlew.bat :app:testDebugUnitTest --tests "com.example.tests.ReportServiceTest" --info
+# Ejecutar tests unitarios (ejemplo para ReportGenerator/ReportService cuando existan)
+.\gradlew.bat :app:testDebugUnitTest --tests "com.example.tests.ReportGeneratorTest" --info
 
-# Ejecutar todos los tests del módulo app
-.\gradlew.bat :app:testDebugUnitTest --info
+# Compilar el apk debug
+.\gradlew.bat :app:assembleDebug
 ```
 
-Plan de implementación — prioridades
------------------------------------
-1. Implementación de `ReportService` y `ReportServiceTest`.
-2. Creación de `ReportsScreen` mínimo con filtros y export CSV.
-3. Integración del botón de export en `TutorPantalla`.
-4. Añadir CSV de ejemplo y capturas en `documentacion/` y actualizar `TESTS.md` con instrucciones de ejecución.
+---
+
+Si quieres, aplico ahora alguna de las mejoras siguientes y actualizo el documento:
+
+- Añadir implementación mínima de `ReportService` y un test de ejemplo (unitario);
+- Generar un `sample-report.txt` y añadirlo a `documentacion/test-reports/`;
+- Cambiar el color del texto dentro del bloque de informe a blanco para garantizar contraste sobre `#35343A`.
+
+Indica qué prefieres y lo implemento inmediatamente (edito código y/o documento y ejecuto tests si procede).

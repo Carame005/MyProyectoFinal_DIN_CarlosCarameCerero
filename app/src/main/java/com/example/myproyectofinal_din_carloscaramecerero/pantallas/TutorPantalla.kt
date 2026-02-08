@@ -1,45 +1,35 @@
 package com.example.myproyectofinal_din_carloscaramecerero.pantallas
 
+import android.content.Intent
+import android.net.Uri
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
-import com.example.myproyectofinal_din_carloscaramecerero.model.User
-import com.example.myproyectofinal_din_carloscaramecerero.model.Task
-import com.example.myproyectofinal_din_carloscaramecerero.model.CalendarEvent
-import com.example.myproyectofinal_din_carloscaramecerero.repository.AppRepository
-import com.example.myproyectofinal_din_carloscaramecerero.utils.TaskCard
-import com.example.myproyectofinal_din_carloscaramecerero.utils.AddTaskDialog
-import com.example.myproyectofinal_din_carloscaramecerero.utils.TutorizadoCard
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.unit.dp
+import com.example.myproyectofinal_din_carloscaramecerero.model.*
+import com.example.myproyectofinal_din_carloscaramecerero.repository.AppRepository
+import com.example.myproyectofinal_din_carloscaramecerero.utils.*
 import java.time.LocalDate
 import kotlin.random.Random
-import com.example.myproyectofinal_din_carloscaramecerero.utils.CollectionCard
-import com.example.myproyectofinal_din_carloscaramecerero.utils.VideoPlayerDialog
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.IconButton
-import androidx.compose.foundation.layout.Row
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.runtime.remember
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.Alignment
-import androidx.compose.material3.Icon
-import android.content.Intent
-import android.net.Uri
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.material.icons.filled.MoreVert
 
 /**
  * Pantalla de gestión para tutores.
@@ -51,6 +41,7 @@ import androidx.compose.material.icons.filled.MoreVert
  * @param tutorEmail Email del usuario con rol de tutor (se usa para cargar su lista de tutorizados y guardar cambios).
  */
 
+@Suppress("NewApi")
 @Composable
 fun TutorScreen(
     tutorEmail: String
@@ -140,6 +131,12 @@ fun TutorScreen(
                         var playingUri by remember { mutableStateOf<String?>(null) }
                         var showAddVideoDialogForCollection by remember { mutableStateOf<Int?>(null) }
 
+                        // Informe states
+                        var showTutReportDialog by remember { mutableStateOf(false) }
+                        var showTutReportResult by remember { mutableStateOf<String?>(null) }
+                        var tutReportFilters by remember { mutableStateOf(ReportFilters()) }
+                        val clipboardManager = LocalClipboardManager.current
+
                         // Tareas
                         Text(text = "Tareas (${tasks.size})", style = MaterialTheme.typography.titleSmall)
                         Spacer(modifier = Modifier.height(6.dp))
@@ -171,13 +168,127 @@ fun TutorScreen(
                                         events = events.filterNot { it.id == ev.id }
                                         AppRepository.saveEvents(ctx, u.email, events)
                                     }) {
-                                        Icon(imageVector = Icons.Filled.Delete, contentDescription = "Eliminar evento", tint = Color(0xFFB00020))
+                                        Icon(Icons.Default.Delete, contentDescription = "Eliminar evento")
                                     }
                                 }
                             }
                         }
 
                         Spacer(modifier = Modifier.height(8.dp))
+
+                        // Mostrar informe si existe
+                        showTutReportResult?.let { reportText ->
+                            Column(modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(Color(0xFF35343A))
+                                .padding(8.dp)
+                            ) {
+                                Text("Informe generado", fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.padding(8.dp))
+
+                                // Mostrar el informe completo aquí (la pantalla principal controla el scroll)
+                                Box(modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(8.dp)
+                                ) {
+                                    Text(reportText, color = MaterialTheme.colorScheme.onSurface)
+                                }
+
+                                // Generar y mostrar gráfico resumen
+                                val tutSummary = remember { mutableStateOf<com.example.myproyectofinal_din_carloscaramecerero.model.ReportSummary?>(null) }
+                                LaunchedEffect(reportText) {
+                                    tutSummary.value = ReportGenerator.buildReportSummary(ctx, u.email, tutReportFilters)
+                                }
+                                tutSummary.value?.let { s ->
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    androidx.compose.material3.Divider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f), thickness = 1.dp)
+                                    Spacer(modifier = Modifier.height(6.dp))
+                                    Text(text = "Gráfico", color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.padding(start = 4.dp))
+                                    Spacer(modifier = Modifier.height(6.dp))
+                                    ReportChart(summary = s, filters = tutReportFilters, modifier = Modifier.fillMaxWidth())
+                                }
+
+                                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                                    TextButton(onClick = { clipboardManager.setText(AnnotatedString(reportText)) }) { Text("Copiar") }
+                                    TextButton(onClick = {
+                                        val filename = "report_${u.email}_${System.currentTimeMillis()}.txt"
+                                        val path = ReportGenerator.saveReportToCache(ctx, filename, reportText)
+                                        if (path != null) {
+                                            val uri = ReportGenerator.getUriForFile(ctx, path)
+                                            val share = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+                                                type = "text/plain"
+                                                putExtra(android.content.Intent.EXTRA_STREAM, uri)
+                                                addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                            }
+                                            ctx.startActivity(android.content.Intent.createChooser(share, "Compartir informe"))
+                                        }
+                                    }) { Text("Compartir") }
+                                }
+                            }
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
+
+                        // Dialogo de filtros para informes del tutorizado (cada opción en su propia fila para evitar deformaciones)
+                        if (showTutReportDialog) {
+                            AlertDialog(onDismissRequest = { showTutReportDialog = false },
+                                title = { Text("Generar informe de ${u.name}") },
+                                text = {
+                                    Column(modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(8.dp),
+                                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                                    ) {
+                                        Text("Periodo:")
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            RadioButton(selected = tutReportFilters.period == ReportPeriod.LAST_WEEK, onClick = { tutReportFilters = tutReportFilters.copy(period = ReportPeriod.LAST_WEEK) })
+                                            Spacer(modifier = Modifier.width(8.dp))
+                                            Text(ReportPeriod.LAST_WEEK.desc)
+                                        }
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            RadioButton(selected = tutReportFilters.period == ReportPeriod.LAST_MONTH, onClick = { tutReportFilters = tutReportFilters.copy(period = ReportPeriod.LAST_MONTH) })
+                                            Spacer(modifier = Modifier.width(8.dp))
+                                            Text(ReportPeriod.LAST_MONTH.desc)
+                                        }
+
+                                        Text("Incluir:")
+                                        // filas separadas para cada checkbox (evita que varias etiquetas queden en la misma línea y se deformen)
+                                        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(vertical = 4.dp)) {
+                                            Checkbox(checked = tutReportFilters.includeCompleted, onCheckedChange = { tutReportFilters = tutReportFilters.copy(includeCompleted = it) })
+                                            Spacer(modifier = Modifier.width(8.dp))
+                                            Text("Completadas")
+                                        }
+                                        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(vertical = 4.dp)) {
+                                            Checkbox(checked = tutReportFilters.includeInProgress, onCheckedChange = { tutReportFilters = tutReportFilters.copy(includeInProgress = it) })
+                                            Spacer(modifier = Modifier.width(8.dp))
+                                            Text("En proceso")
+                                        }
+                                        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(vertical = 4.dp)) {
+                                            Checkbox(checked = tutReportFilters.includePending, onCheckedChange = { tutReportFilters = tutReportFilters.copy(includePending = it) })
+                                            Spacer(modifier = Modifier.width(8.dp))
+                                            Text("Pendientes")
+                                        }
+                                        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(vertical = 4.dp)) {
+                                            Checkbox(checked = tutReportFilters.includeEvents, onCheckedChange = { tutReportFilters = tutReportFilters.copy(includeEvents = it) })
+                                            Spacer(modifier = Modifier.width(8.dp))
+                                            Text("Eventos")
+                                        }
+                                        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(vertical = 4.dp)) {
+                                            Checkbox(checked = tutReportFilters.includeVideos, onCheckedChange = { tutReportFilters = tutReportFilters.copy(includeVideos = it) })
+                                            Spacer(modifier = Modifier.width(8.dp))
+                                            Text("Videos")
+                                        }
+                                    }
+                                },
+                                confirmButton = {
+                                    TextButton(onClick = {
+                                        showTutReportResult = ReportGenerator.buildReportText(ctx, u.email, tutReportFilters)
+                                        showTutReportDialog = false
+                                    }) { Text("Generar") }
+                                },
+                                dismissButton = { TextButton(onClick = { showTutReportDialog = false }) { Text("Cancelar") } }
+                            )
+                        }
 
                         // Vídeos / colecciones gestionados por tutor
                         Text(text = "Colecciones de vídeo (${collections.size})", style = MaterialTheme.typography.titleSmall)
@@ -225,6 +336,11 @@ fun TutorScreen(
                                 }
                             } // cierre de collections.forEach
                         } // cierre del Column(verticalArrangement = ...)
+
+                        // Botón ver/generar informes (reubicado) debajo de las colecciones
+                        Button(onClick = { showTutReportDialog = true }, modifier = Modifier.fillMaxWidth()) {
+                            Text("Informe")
+                        }
 
                         Spacer(modifier = Modifier.height(8.dp))
 
@@ -387,7 +503,8 @@ fun TutorScreen(
                                 var showError by remember { mutableStateOf(false) }
                                 var errorMessage by remember { mutableStateOf("") }
 
-                                val pickLauncher = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri: Uri? ->
+                                val pickLauncher = rememberLauncherForActivityResult(
+                                    ActivityResultContracts.OpenDocument()) { uri: Uri? ->
                                     if (uri != null) {
                                         try { ctx.contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION) } catch (_: Exception) {}
                                         selectedUriLocal = uri
