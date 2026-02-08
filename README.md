@@ -1,42 +1,77 @@
 # TutorOrganiza — Módulo app (introducción y guía rápida)
 
-Este README es una introducción de alto nivel al módulo `app` del proyecto TutorOrganiza. Su objetivo es ayudar a desarrolladores y revisores a encontrar rápidamente las partes relevantes del proyecto (código, documentación y tests). La documentación detallada y las guías de uso están en la carpeta `documentacion` en la raíz del repositorio.
+Resumen ejecutivo
+-----------------
+TutorOrganiza es una aplicación móvil desarrollada con Jetpack Compose y Material3 cuyo propósito es facilitar la organización diaria de personas que requieren apoyo por parte de un tutor (usuarios asistidos). La aplicación proporciona mecanismos para que un tutor asigne y gestione tareas, eventos y colecciones de material audiovisual, y para que el usuario asistido vea y complete las actividades asignadas.
 
-Resumen rápido
---------------
-TutorOrganiza es una aplicación desarrollada con Jetpack Compose y Material3 pensada para ayudar a gestionar tareas, eventos y colecciones de vídeo, con especial foco en personas que necesitan que un tutor les lleve una organización diaria (usuarios asistidos) y en los tutores/cuidadores que los gestionan. Este módulo contiene la implementación de la app y la documentación técnica y de usuario.
+Objetivo de este README
+-----------------------
+Documento orientado a revisores y desarrolladores. Resume la estructura del código, la localización de la documentación y las evidencias relacionadas con los criterios de evaluación (RAs). Los enlaces concretos a evidencias (capturas, informes y secciones de la documentación) se insertarán posteriormente: en este README se indican las rutas y los archivos donde localizar dichas evidencias.
 
-Estructura principal (dónde buscar)
------------------------------------
-- Código fuente (pantallas, componentes, repositorio y modelos):
-  - `app/src/main/java/.../pantallas/`  — Todas las pantallas (Login, Home, Tareas, Calendario, Videos, Tutor, etc.).
-  - `app/src/main/java/.../utils/`      — Componentes Compose reutilizables (cards, barras, ajustes, etc.).
-  - `app/src/main/java/.../model/`      — Data classes y enums (`User`, `Task`, `CalendarEvent`, `TaskStatus`, ...).
-  - `app/src/main/java/.../repository/` — `AppRepository` (persistencia en ficheros JSON por usuario).
-  - `app/src/main/java/.../security/`   — Helpers de seguridad (p.ej. `BiometricHelper`).
-  - `app/src/main/java/.../receivers/`  — Broadcast receivers (p.ej. `BootReceiver`).
+Estructura principal del proyecto
+--------------------------------
+- Código fuente:
+  - `app/src/main/java/.../pantallas/`  — Implementación de pantallas (Login, Home, Tareas, Calendario, Vídeos, Tutor, etc.).
+  - `app/src/main/java/.../utils/`      — Componentes Compose reutilizables.
+  - `app/src/main/java/.../model/`      — Modelos de datos (`User`, `Task`, `CalendarEvent`, ...).
+  - `app/src/main/java/.../repository/` — Persistencia (`AppRepository`).
+  - `app/src/main/java/.../security/`   — Utilidades de seguridad y biometría.
+  - `app/src/main/java/.../receivers/`  — BroadcastReceivers y alarmas.
 
-- Documentación (guías, decisiones y manuales):
-  - `documentacion/` contiene los MD con documentación de distintos aspectos de la app:
-    - `ARCHITECTURE.md`, `LIBRARIES.md`, `COMPONENTS.md`, `PERSISTENCE.md`, `SECURITY.md`, `DEV_SETUP.md`, `TESTS.md`, `USER_MANUAL.md`, `INFORMES.MD`, `NUI.md`, etc.
-    - `capturas/` — capturas y evidencias (por ejemplo, pruebas y pantallas).
+- Documentación (carpeta `documentacion/`):
+  - `ARCHITECTURE.md` — Arquitectura y decisiones de diseño.
+  - `COMPONENTS.md`   — Componentes reutilizables y su API.
+  - `NUI.md`          — Propuestas de interfaces naturales (biometría, voz, gestos) y justificación.
+  - `USER_MANUAL.md`  — Manual de usuario orientado a tutores y usuarios asistidos.
+  - `TESTS.md`        — Resumen de pruebas existentes y cómo ejecutarlas.
+  - `PERSISTENCE.md`, `SECURITY.md`, `DEV_SETUP.md`, `INFORMES.MD` — Documentación técnica complementaria.
+  - `capturas/`       — Imágenes y capturas de pantalla que evidencian funcionalidades.
 
-- Tests (unitarios / robolectric / utilidades):
-  - [Tests](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/tree/master/app/src/test/kotlin/com/example/tests) — tests unitarios actuales (por ejemplo `AppRepositoryTest.kt`, `CalendarioAlarmsTest.kt`, `VolumeTests.kt`, ...).
-  - Informes de ejecución y reportes se generan en `app/build/reports/tests/` y resultados XML en `app/build/test-results/`.
+- Tests:
+  - `app/src/test/kotlin/com/example/tests/` — Tests unitarios y pruebas con Robolectric.
+  - Resultados de ejecución y reportes: `app/build/reports/tests/`, `app/build/test-results/`.
 
-Puntos importantes y notas rápidas
----------------------------------
-- Persistencia: el proyecto usa ficheros JSON por usuario gestionados por `AppRepository`. Revisa `documentacion/PERSISTENCE.md` para detalles sobre rutas y formatos.
-- Notificaciones y AlarmManager: la app programa alarmas para recordatorios; en Android modernos puede requerir permisos especiales (`SCHEDULE_EXACT_ALARM`) o manejo por canal. Revisa `pantallas/CalendarioAlarms.kt` (o el archivo de alarms correspondiente) y `documentacion/TESTS.md` para pruebas relacionadas.
-- Biometría y NUI: existe un helper `security/BiometricHelper.kt` y un documento `documentacion/NUI.md` que comenta ideas para interfaces naturales (biometría, voz, gestos) orientadas al nuevo público objetivo (login rápido y accesibilidad para usuarios asistidos).
+Evidencias por criterios (RAs) — localización y estado
+-----------------------------------------------------
+Este apartado señala en qué documentos o artefactos encontrar evidencia para cada RA. En algunos casos la evaluación se alcanza citando la posibilidad o proponiendo su integración; en otros casos existe implementación o tests automatizados.
 
-Comandos básicos (PowerShell)
------------------------------
+- RA1 (Interfaz y desarrollo):
+  - RA1.a (análisis herramientas/librerías): ver `LIBRARIES.md` y `ARCHITECTURE.md`. (Evidencia: análisis de dependencias y justificación de elecciones).
+  - RA1.b–d (interfaz, layouts, personalización): ver `COMPONENTS.md`, `USER_MANUAL.md` y capturas en `documentacion/capturas/` (Evidencia: pantallas y componentes, tarjetas y estados de tarea).
+  - RA1.e–f (análisis y modificaciones de código): ver `ARCHITECTURE.md` y `DEV_SETUP.md` (Evidencia: decisiones y cambios documentados).
+  - RA1.g (asociación de eventos): ver `COMPONENTS.md` y `pantallas/CalendarioPantalla.kt` (Evidencia: calendario y scheduling de eventos; notas sobre permisos en `PERSISTENCE.md` / `TESTS.md`).
+  - RA1.h (app integrada): evidencia en `USER_MANUAL.md` y en el conjunto de pantallas.
+
+- RA2 (NUI):
+  - RA2.a–f: ver `NUI.md`. El documento contiene propuestas (biometría, voz, detección gestual) y justificaciones para el público objetivo; la implantación concreta se identifica como posible mejora y no es necesaria su ejecución completa para la evidencia teórica.
+
+- RA3 (Componentes y reutilización):
+  - RA3.a–h: ver `COMPONENTS.md` y `pantallas/TutorPantalla.kt` (Evidencia: componentes reutilizables, parámetros y ejemplos de uso).
+
+- RA4 (Usabilidad y estándares):
+  - RA4.a–j: ver `USER_MANUAL.md`, `ARCHITECTURE.md` y `COMPONENTS.md` (Evidencia: decisiones de diseño, menús, distribución de acciones y controles). Documentación de pruebas de usabilidad y evaluación en `TESTS.md`.
+
+- RA5 (Informes):
+  - RA5.a–e: ver `INFORMES.MD` (documento específico que describe cómo se podrían generar informes a partir de los datos, filtros, cálculos y representación gráfica). En el repositorio hay una propuesta y ejemplo de exportación descritos; implementación completa es opcional y puede mencionarse en la documentación como solución viable.
+
+- RA6 (Ayudas y manuales):
+  - RA6.a–g: ver `USER_MANUAL.md`, `SECURITY.md` y `INFORMES.MD` (Evidencia: manual de usuario, propuestas de ayudas contextuales y documentación de persistencia y configuración técnica).
+
+- RA8 (Pruebas):
+  - RA8.a–g: ver `TESTS.md` y la carpeta de tests `app/src/test/kotlin/...`. `TESTS.md` describe la estrategia, pruebas unitarias presentes y áreas por cubrir (notificaciones en background, exact alarms, integración de biometría).
+
+Estado general sobre evidencia
+------------------------------
+- Documentación: completa y centralizada en `documentacion/`. Tono y orientación adaptados al público docente.
+- Implementación: la app contiene pantallas y componentes que sostienen la propuesta; varias funcionalidades (notificaciones exactas, test de background, exportes elaborados) están diseñadas y documentadas pero requieren trabajo adicional para producción.
+- Tests: existen tests unitarios ejecutables; algunos fallos y ajustes con Robolectric fueron resueltos durante el ciclo de pruebas (ver `TESTS.md`).
+
+Comandos de uso y compilación (PowerShell)
+------------------------------------------
 Abrir PowerShell en la raíz del proyecto y ejecutar:
 
 ```powershell
-# Compilar y construir
+# Limpiar y compilar
 .\gradlew.bat clean build
 
 # Generar APK debug
@@ -44,13 +79,14 @@ Abrir PowerShell en la raíz del proyecto y ejecutar:
 
 # Ejecutar tests unitarios
 .\gradlew.bat testDebugUnitTest
-
-# Ejecutar lint (si está configurado)
-.\gradlew.bat :app:lintDebug
 ```
 
-Dónde mirar si algo falla
--------------------------
-- Build fallido: revisar la salida de Gradle en la ventana de ejecución de Android Studio y el fichero `gradle.properties` / `build.gradle.kts`.
-- Tests fallando: `app/build/reports/tests/testDebugUnitTest/index.html` contiene el informe HTML con fallos y trazas.
-- Logs en ejecución: usar Logcat y filtrar por el `package` de la app.
+Notas finales para el revisor
+----------------------------
+- Este README tiene un propósito orientador: indica dónde localizar evidencia y artefactos. Los enlaces directos a capturas, informes y secciones internas se insertarán en las ubicaciones marcadas cuando sea necesario.
+- La documentación incluye propuestas de mejora señaladas como tal; la mención de una técnica o herramienta es válida para algunos criterios RA cuando se justifica teóricamente en la documentación.
+
+Ubicación de la documentación y contacto
+---------------------------------------
+- Carpeta de documentación: `documentacion/` (en la raíz del repositorio).
+- Para cualquier aclaración sobre la entrega o la evidencia, consulte los documentos referenciados o contacte al responsable del proyecto.
