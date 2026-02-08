@@ -28,7 +28,7 @@ Estructura principal del proyecto
   - `capturas/`       — Imágenes y capturas de pantalla que evidencian funcionalidades.
 
 - Tests:
-  - `app/src/test/kotlin/com/example/tests/` — Tests unitarios y pruebas con Robolectric.
+  - [Tests](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/tree/master/app/src/test/kotlin/com/example/tests) — Tests unitarios y pruebas con Robolectric.
   - Resultados de ejecución y reportes: `app/build/reports/tests/`, `app/build/test-results/`.
 
 Evidencias por criterios (RAs) — localización y estado
@@ -36,33 +36,33 @@ Evidencias por criterios (RAs) — localización y estado
 Este apartado señala en qué documentos o artefactos encontrar evidencia para cada RA. En algunos casos la evaluación se alcanza citando la posibilidad o proponiendo su integración; en otros casos existe implementación o tests automatizados.
 
 - RA1 (Interfaz y desarrollo):
-  - RA1.a (análisis herramientas/librerías): ver `LIBRARIES.md` y `ARCHITECTURE.md`. (Evidencia: análisis de dependencias y justificación de elecciones).
-  - RA1.b–d (interfaz, layouts, personalización): ver `COMPONENTS.md`, `USER_MANUAL.md` y capturas en `documentacion/capturas/` (Evidencia: pantallas y componentes, tarjetas y estados de tarea).
-  - RA1.e–f (análisis y modificaciones de código): ver `ARCHITECTURE.md` y `DEV_SETUP.md` (Evidencia: decisiones y cambios documentados).
-  - RA1.g (asociación de eventos): ver `COMPONENTS.md` y `pantallas/CalendarioPantalla.kt` (Evidencia: calendario y scheduling de eventos; notas sobre permisos en `PERSISTENCE.md` / `TESTS.md`).
-  - RA1.h (app integrada): evidencia en `USER_MANUAL.md` y en el conjunto de pantallas.
+  - RA1.a (análisis herramientas/librerías): ver [`LIBRARIES.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/LIBRARIES.md) y [`ARCHITECTURE.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/ARCHITECTURE.md). (Evidencia: análisis de dependencias y justificación de elecciones).
+  - RA1.b–d (interfaz, layouts, personalización): ver [`COMPONENTS.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/COMPONENTS.md), [`USER_MANUAL.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/USER_MANUAL.md).
+  - RA1.e–f (análisis y modificaciones de código): ver [`ARCHITECTURE.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/ARCHITECTURE.md) y [`DEV_SETUP.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/DEV_SETUP.md) (Evidencia: decisiones y cambios documentados).
+  - RA1.g (asociación de eventos): ver [`COMPONENTS.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/COMPONENTS.md) y [`pantallas/CalendarioPantalla.kt`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/app/src/main/java/com/example/myproyectofinal_din_carloscaramecerero/pantallas/CalendarioPantalla.kt) (Evidencia: calendario y scheduling de eventos; notas sobre permisos en [`PERSISTENCE.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/PERSISTENCE.md) / [`TESTS.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/PERSISTENCE.md)).
+  - RA1.h (app integrada): evidencia en [`USER_MANUAL.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/USER_MANUAL.md) y en el conjunto de pantallas.
 
 - RA2 (NUI):
-  - RA2.a–f: ver `NUI.md`. El documento contiene propuestas (biometría, voz, detección gestual) y justificaciones para el público objetivo; la implantación concreta se identifica como posible mejora y no es necesaria su ejecución completa para la evidencia teórica.
+  - RA2.a–f: ver [`NUI.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/NUI.md). El documento contiene propuestas (biometría, voz, detección gestual) y justificaciones para el público objetivo; la implantación concreta se identifica como posible mejora y no es necesaria su ejecución completa para la evidencia teórica.
 
 - RA3 (Componentes y reutilización):
-  - RA3.a–h: ver `COMPONENTS.md` y `pantallas/TutorPantalla.kt` (Evidencia: componentes reutilizables, parámetros y ejemplos de uso).
+  - RA3.a–h: ver [`COMPONENTS.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/COMPONENTS.md) y [`pantallas/TutorPantalla.kt`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/app/src/main/java/com/example/myproyectofinal_din_carloscaramecerero/pantallas/TutorPantalla.kt) (Evidencia: componentes reutilizables, parámetros y ejemplos de uso).
 
 - RA4 (Usabilidad y estándares):
-  - RA4.a–j: ver `USER_MANUAL.md`, `ARCHITECTURE.md` y `COMPONENTS.md` (Evidencia: decisiones de diseño, menús, distribución de acciones y controles). Documentación de pruebas de usabilidad y evaluación en `TESTS.md`.
+  - RA4.a–j: ver [`USER_MANUAL.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/USER_MANUAL.md), [`ARCHITECTURE.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/ARCHITECTURE.md) y [`COMPONENTS.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/COMPONENTS.md) (Evidencia: decisiones de diseño, menús, distribución de acciones y controles). Documentación de pruebas de usabilidad y evaluación en [`TESTS.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/TESTS.md).
 
 - RA5 (Informes):
-  - RA5.a–e: ver `INFORMES.MD` (documento específico que describe cómo se podrían generar informes a partir de los datos, filtros, cálculos y representación gráfica). En el repositorio hay una propuesta y ejemplo de exportación descritos; implementación completa es opcional y puede mencionarse en la documentación como solución viable.
+  - RA5.a–e: ver [`INFORMES.MD`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/INFORMES.MD) (documento específico que describe cómo se podrían generar informes a partir de los datos, filtros, cálculos y representación gráfica). En el repositorio hay una propuesta y ejemplo de exportación descritos; implementación completa es opcional y puede mencionarse en la documentación como solución viable.
 
 - RA6 (Ayudas y manuales):
-  - RA6.a–g: ver `USER_MANUAL.md`, `SECURITY.md` y `INFORMES.MD` (Evidencia: manual de usuario, propuestas de ayudas contextuales y documentación de persistencia y configuración técnica).
+  - RA6.a–g: ver [`USER_MANUAL.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/USER_MANUAL.md), [`SECURITY.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/SECURITY.md) y [`INFORMES.MD`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/INFORMES.MD) (Evidencia: manual de usuario, propuestas de ayudas contextuales y documentación de persistencia y configuración técnica).
 
 - RA8 (Pruebas):
-  - RA8.a–g: ver `TESTS.md` y la carpeta de tests `app/src/test/kotlin/...`. `TESTS.md` describe la estrategia, pruebas unitarias presentes y áreas por cubrir (notificaciones en background, exact alarms, integración de biometría).
+  - RA8.a–g: ver [`TESTS.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/TESTS.md) y la carpeta de tests [`app/src/test/kotlin/...`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/tree/master/app/src/test/kotlin/com/example/tests). [`TESTS.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/TESTS.md) describe la estrategia, pruebas unitarias presentes y áreas por cubrir (notificaciones en background, exact alarms, integración de biometría).
 
 Estado general sobre evidencia
 ------------------------------
-- Documentación: completa y centralizada en `documentacion/`. Tono y orientación adaptados al público docente.
+- Documentación: completa y centralizada en [`documentacion/`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/tree/master/documentacion). Tono y orientación adaptados al público docente.
 - Implementación: la app contiene pantallas y componentes que sostienen la propuesta; varias funcionalidades (notificaciones exactas, test de background, exportes elaborados) están diseñadas y documentadas pero requieren trabajo adicional para producción.
 - Tests: existen tests unitarios ejecutables; algunos fallos y ajustes con Robolectric fueron resueltos durante el ciclo de pruebas (ver `TESTS.md`).
 
