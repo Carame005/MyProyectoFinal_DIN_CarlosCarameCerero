@@ -22,7 +22,7 @@ Estructura principal (dónde buscar)
     - `capturas/` — capturas y evidencias (por ejemplo, pruebas y pantallas).
 
 - Tests (unitarios / robolectric / utilidades):
-  - `app/src/test/kotlin/com/example/tests/` — tests unitarios actuales (por ejemplo `AppRepositoryTest.kt`, `CalendarioAlarmsTest.kt`, `VolumeTests.kt`, ...).
+  - [Tests](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/tree/master/app/src/test/kotlin/com/example/tests) — tests unitarios actuales (por ejemplo `AppRepositoryTest.kt`, `CalendarioAlarmsTest.kt`, `VolumeTests.kt`, ...).
   - Informes de ejecución y reportes se generan en `app/build/reports/tests/` y resultados XML en `app/build/test-results/`.
 
 Puntos importantes y notas rápidas
