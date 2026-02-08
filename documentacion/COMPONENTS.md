@@ -36,9 +36,9 @@ Resumen de componentes clave
 
 - `TutorizadosListPreview(userList, onSelectTutorizado)`
   - Ubicación: `pantallas/TutorPantalla.kt`
-  - Descripción: Componente que muestra la lista de usuarios disponibles con rol `tutorizado`. Muestra nombre y foto de perfil en una card mínima; si la lista está vacía muestra el mensaje "Aún no hay".
+  - Descripción: Componente que muestra la lista de usuarios con rol `tutorizado` en formato de vista previa. Muestra nombre y foto de perfil en una card mínima; si la lista está vacía muestra el mensaje "Aún no hay".
   - Uso: en la pantalla de Tutor permite previsualizar tutorizados.
-  - Comportamiento actual: la gestión de tutorizados (agregar/eliminar) se realiza de forma centralizada en la pantalla de Tutor; la preview solo muestra y permite navegación.
+  - Comportamiento actual: la gestión de tutorizados (agregar/eliminar) está centralizada en la pantalla de Tutor; la preview solo muestra y permite navegación.
 
 - `TutorizadoCard(user, expanded, onExpandChange, expandedContent)`
   - Ubicación: `utils/TutorComponente.kt`

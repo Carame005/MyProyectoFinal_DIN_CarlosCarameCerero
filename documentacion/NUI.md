@@ -1,10 +1,10 @@
 # NUI (Natural User Interfaces) — propuestas para AutiCare (RA2)
 
-Documento informativo que recoge propuestas para incorporar interfaces naturales (NUI) en la aplicación, orientadas a usuarios con Alzheimer y sus cuidadores. Contiene herramientas potenciales, ventajas, consideraciones de diseño, privacidad y un roadmap de implementación.
+Documento informativo que recoge propuestas para incorporar interfaces naturales (NUI) en la aplicación, orientadas a personas que necesitan que un tutor les lleve una organización diaria y a sus tutores. Contiene herramientas potenciales, ventajas, consideraciones de diseño, privacidad y un roadmap de implementación.
 
 Resumen
 -------
-Las NUI facilitan la interacción reduciendo la dependencia del texto y de precisión motora. Para usuarios con Alzheimer pueden mejorar la accesibilidad, reducir la fricción del inicio de sesión y permitir recordatorios más naturales. Técnicamente, los datos biométricos (huella, cara) se consideran una forma de NUI cuando se usan para autenticación o inicio rápido.
+Las NUI facilitan la interacción reduciendo la dependencia del texto y de precisión motora. Para personas que requieren apoyo en la organización diaria pueden mejorar la accesibilidad, reducir la fricción del inicio de sesión y permitir recordatorios más naturales. Técnicamente, los datos biométricos (huella, cara) se consideran una forma de NUI cuando se usan para autenticación o inicio rápido.
 
 Definición y categorías
 -----------------------
@@ -26,14 +26,14 @@ Herramientas NUI identificadas y valor esperado
 2. Voz (Speech-to-Text y Text-to-Speech)
    - STT: para comandos simples (p. ej. crear recordatorio).
    - TTS: lectura de instrucciones y confirmaciones.
-   - Valor: reduce dependencia visual y motora.
+   - Valor: reduce dependencia visual y motora; útil para guiar rutinas diarias.
 
 3. Interfaces conversacionales
    - Uso: flujos guiados por diálogo para crear tareas/eventos.
    - Valor: guía paso a paso y reducción de errores de entrada.
 
 4. Detección facial / corporal (ML Kit / MediaPipe / TFLite)
-   - Uso: detección de atención o estados básicos para adaptar la UI.
+   - Uso: detección de atención o estados básicos para adaptar la UI (p. ej. repetir una instrucción si el usuario no presta atención).
    - Consideraciones éticas y de consentimiento detalladas en la sección de privacidad.
 
 5. Reconocimiento de gestos (MediaPipe, sensores)
@@ -60,12 +60,10 @@ Privacidad y riesgos
 --------------------
 - Biometría: gestionada por el sistema; no almacenar plantillas en la app.
 - Procesamiento de audio e imagen: preferir procesamiento local; cuando se utilice la nube, obtener consentimiento explícito y minimizar datos enviados.
-- Registrar y permitir revocación de permisos por el usuario o cuidador.
 
-UX y diseño (orientado a Alzheimer)
-----------------------------------
+UX y diseño (orientado a personas con apoyo diario)
+--------------------------------------------------
 - Interfaz simple y consistente: menús reducidos y confirmaciones claras.
-- Confirmaciones multimodales: combinar TTS, vibración y visual.
 - Fallbacks: mantener métodos tradicionales (contraseña) como alternativa.
 
 Medición y validación
@@ -77,7 +75,7 @@ Métricas propuestas:
 
 Pruebas con usuarios
 --------------------
-- Sesiones de usabilidad cortas con usuarios y cuidadores (5–10 minutos) centradas en tareas concretas.
+- Sesiones de usabilidad cortas con tutores y usuarios asistidos (5–10 minutos) centradas en tareas concretas.
 - Métricas mixtas: tiempo, éxito, errores y feedback cualitativo.
 
 Referencias

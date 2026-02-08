@@ -1,10 +1,10 @@
-# AutiCare — Módulo app (introducción y guía rápida)
+# TutorOrganiza — Módulo app (introducción y guía rápida)
 
-Este README es una introducción de alto nivel al módulo `app` del proyecto AutiCare. Su objetivo es ayudar a desarrolladores y revisores a encontrar rápidamente las partes relevantes del proyecto (código, documentación y tests). La documentación detallada y las guías de uso están en la carpeta `documentacion` dentro del código fuente.
+Este README es una introducción de alto nivel al módulo `app` del proyecto TutorOrganiza. Su objetivo es ayudar a desarrolladores y revisores a encontrar rápidamente las partes relevantes del proyecto (código, documentación y tests). La documentación detallada y las guías de uso están en la carpeta `documentacion` en la raíz del repositorio.
 
 Resumen rápido
 --------------
-AutiCare es una aplicación desarrollada con Jetpack Compose y Material3 pensada para ayudar a gestionar tareas, eventos y colecciones de vídeo, con especial foco en usuarios con problemas de memoria (Alzheimer). Este módulo contiene la implementación de la app y la documentación técnica y de usuario.
+TutorOrganiza es una aplicación desarrollada con Jetpack Compose y Material3 pensada para ayudar a gestionar tareas, eventos y colecciones de vídeo, con especial foco en personas que necesitan que un tutor les lleve una organización diaria (usuarios asistidos) y en los tutores/cuidadores que los gestionan. Este módulo contiene la implementación de la app y la documentación técnica y de usuario.
 
 Estructura principal (dónde buscar)
 -----------------------------------
@@ -17,9 +17,9 @@ Estructura principal (dónde buscar)
   - `app/src/main/java/.../receivers/`  — Broadcast receivers (p.ej. `BootReceiver`).
 
 - Documentación (guías, decisiones y manuales):
-  - `app/src/main/java/.../documentacion/` contiene los MD con documentacion de distintos aspectos de la app:
+  - `documentacion/` contiene los MD con documentación de distintos aspectos de la app:
     - `ARCHITECTURE.md`, `LIBRARIES.md`, `COMPONENTS.md`, `PERSISTENCE.md`, `SECURITY.md`, `DEV_SETUP.md`, `TESTS.md`, `USER_MANUAL.md`, `INFORMES.MD`, `NUI.md`, etc.
-    - `capturas/` — captura de los tests hechos.
+    - `capturas/` — capturas y evidencias (por ejemplo, pruebas y pantallas).
 
 - Tests (unitarios / robolectric / utilidades):
   - `app/src/test/kotlin/com/example/tests/` — tests unitarios actuales (por ejemplo `AppRepositoryTest.kt`, `CalendarioAlarmsTest.kt`, `VolumeTests.kt`, ...).
@@ -28,8 +28,8 @@ Estructura principal (dónde buscar)
 Puntos importantes y notas rápidas
 ---------------------------------
 - Persistencia: el proyecto usa ficheros JSON por usuario gestionados por `AppRepository`. Revisa `documentacion/PERSISTENCE.md` para detalles sobre rutas y formatos.
-- Notificaciones y AlarmManager: la app programa alarmas para recordatorios; en Android modernos puede requerir permisos especiales (`SCHEDULE_EXACT_ALARM`) o manejo por canal. Revisa `pantallas/CalendarioAlarms.kt` y `documentacion/TESTS.md` para pruebas relacionadas.
-- Biometría y NUI: hay un helper `security/BiometricHelper.kt` y un documento `documentacion/NUI.md` que comenta ideas para interfaces naturales (biometría, voz, gestos) enfocadas a usuarios con Alzheimer.
+- Notificaciones y AlarmManager: la app programa alarmas para recordatorios; en Android modernos puede requerir permisos especiales (`SCHEDULE_EXACT_ALARM`) o manejo por canal. Revisa `pantallas/CalendarioAlarms.kt` (o el archivo de alarms correspondiente) y `documentacion/TESTS.md` para pruebas relacionadas.
+- Biometría y NUI: existe un helper `security/BiometricHelper.kt` y un documento `documentacion/NUI.md` que comenta ideas para interfaces naturales (biometría, voz, gestos) orientadas al nuevo público objetivo (login rápido y accesibilidad para usuarios asistidos).
 
 Comandos básicos (PowerShell)
 -----------------------------

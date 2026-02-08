@@ -1,6 +1,6 @@
 # Manual de Usuario — AutiCare (versión básica)
 
-Manual dirigido a usuarios con Alzheimer y a sus cuidadores; describe de forma clara y paso a paso el uso de la aplicación en su versión documentada.
+Manual dirigido a personas que necesitan que un tutor les lleve una organización diaria y a sus tutores; describe de forma clara y paso a paso el uso de la aplicación en su versión documentada.
 
 Tabla de contenido
 - Introducción rápida
@@ -14,13 +14,13 @@ Tabla de contenido
 - Colecciones de vídeos (añadir y reproducir)
 - Perfil y ajustes (cambiar nombre, foto y cerrar sesión)
 - Notificaciones y recordatorios
-- Buenas prácticas para cuidadores
+- Buenas prácticas para tutores
 - Preguntas frecuentes (solución de problemas)
 
 Introducción rápida
 -------------------
 - Funcionalidad principal: organizar tareas, eventos y colecciones de vídeo; programación de recordatorios; visualización de contenido de forma accesible.
-- Público objetivo: personas con dificultades de memoria y sus cuidadores.
+- Público objetivo: personas que requieren apoyo en la organización diaria y sus tutores.
 
 Conceptos básicos (pantallas principales)
 -----------------------------------------
@@ -90,14 +90,14 @@ Notificaciones y recordatorios
 - Para recibir recordatorios el dispositivo debe permitir notificaciones para la app.
 - Verificación en caso de ausencia de notificaciones: comprobar ajustes del dispositivo y la hora de los eventos.
 
-Buenas prácticas para cuidadores
+Buenas prácticas para tutores
 -------------------------------
-- Mantener la contraseña anotada en un lugar seguro y accesible para el cuidador.
+- Mantener la contraseña anotada en un lugar seguro y accesible para el tutor.
 - Revisar periódicamente que los recordatorios y alarmas están activos.
 - Supervisar las primeras interacciones del usuario con la app para evitar confusiones.
 
 Preguntas frecuentes (solución de problemas)
 --------------------------------------------
-- No puedo iniciar sesión: comprobar correo/usuario y contraseña; si persiste el problema solicitar restablecimiento de contraseña al cuidador.
+- No puedo iniciar sesión: comprobar correo/usuario y contraseña; si persiste el problema solicitar restablecimiento de contraseña al tutor.
 - Vídeos no aparecen: revisar permisos de acceso a archivos y volver a seleccionar el recurso si es necesario.
 - No recibo recordatorios: comprobar que el evento incluye una hora y que la hora no está en el pasado.

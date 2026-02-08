@@ -13,12 +13,11 @@ Capas principales
 - Notificaciones: `receivers/NotificationReceiver.kt` para gestionar alarmas y notificaciones.
 - Activity: `MainActivity` monta el theme y el `MainScaffold` con navegación.
 
-Modelo user-admin
------------------
-La app soporta dos tipos de usuarios: normales y administradores (tutores). Los administradores pueden ver y gestionar datos de usuarios que han aceptado ser tutorizados (campo `allow
-Tutoring` en `User`). Los datos se guardan en ficheros JSON separados por usuario.
+Modelo user-admin y acceso tutor
+-------------------------------
+La app soporta dos tipos de usuarios: normales (usuarios asistidos) y administradores (tutores). Los tutores pueden ver y gestionar datos de los usuarios a su cargo. En la versión documentada la gestión de acceso se basa en el rol (`isAdmin`) y en políticas que determinan qué acciones son permitidas para cada rol (p. ej. tutorizados no pueden eliminar contenidos asignados por un tutor).
 
-En la carpeta `documentacion/capturas/` hay un concepto muy esquemático de como funciona el rol usuario-tutor hecho con lucidchart.
+Las decisiones de diseño se orientan a facilitar que un tutor organice el día del usuario asistido: asignar tareas, programar eventos con recordatorios, y crear colecciones de material audiovisual instructivo.
 
 Decisiones y justificación
 ---------------------------
