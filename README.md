@@ -63,8 +63,6 @@ Nota: además de la documentación y los tests listados a continuación, existe 
   - [graficogenerado.jpeg](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/capturas/graficogenerado.jpeg) — gráfico generado por `ReportChart` en el informe.
   - [informeGenerado.jpeg](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/capturas/informeGenerado.jpeg) — vista completa del informe (texto + gráfico).
 
-  Para ver todas las capturas organizadas y con descripciones consulte [documentacion/CAPTURAS_INDEX.md](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/CAPTURAS_INDEX.md).
-
 - RA2 (NUI - Interfaces naturales):
   - RA2.a (herramientas NUI): ver [`NUI.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/NUI.md) y [BiometricUtils.kt](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/app/src/main/java/com/example/myproyectofinal_din_carloscaramecerero/security/BiometricUtils.kt). (Evidencia: identificación de biometría, voz y detección como opciones y referencias a APIs.)
   - RA2.b (diseño conceptual NUI): ver [`NUI.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/NUI.md) y [`DESIGN_JUSTIFICATION.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/DESIGN_JUSTIFICATION.md). (Evidencia: propuesta de flujos multimodales y justificación para el público objetivo.)
