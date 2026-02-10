@@ -11,21 +11,21 @@ Documento orientado a revisores y desarrolladores. Resume la estructura del cód
 Estructura principal del proyecto
 --------------------------------
 - Código fuente:
-  - `app/src/main/java/.../pantallas/`  — Implementación de pantallas (Login, Home, Tareas, Calendario, Vídeos, Tutor, etc.).
-  - `app/src/main/java/.../utils/`      — Componentes Compose reutilizables.
-  - `app/src/main/java/.../model/`      — Modelos de datos (`User`, `Task`, `CalendarEvent`, ...).
-  - `app/src/main/java/.../repository/` — Persistencia (`AppRepository`).
-  - `app/src/main/java/.../security/`   — Utilidades de seguridad y biometría.
-  - `app/src/main/java/.../receivers/`  — BroadcastReceivers y alarmas.
+  - [app/src/main/java/.../pantallas/](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/tree/master/app/src/main/java/com/example/myproyectofinal_din_carloscaramecerero/pantallas)  — Implementación de pantallas (Login, Home, Tareas, Calendario, Vídeos, Tutor, etc.).
+  - [app/src/main/java/.../utils/](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/tree/master/app/src/main/java/com/example/myproyectofinal_din_carloscaramecerero/utils)      — Componentes Compose reutilizables.
+  - [app/src/main/java/.../model/](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/tree/master/app/src/main/java/com/example/myproyectofinal_din_carloscaramecerero/model)      — Modelos de datos (`User`, `Task`, `CalendarEvent`, ...).
+  - [app/src/main/java/.../repository/](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/tree/master/app/src/main/java/com/example/myproyectofinal_din_carloscaramecerero/repository) — Persistencia (`AppRepository`).
+  - [app/src/main/java/.../security/](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/tree/master/app/src/main/java/com/example/myproyectofinal_din_carloscaramecerero/security)   — Utilidades de seguridad y biometría.
+  - [app/src/main/java/.../receivers/](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/tree/master/app/src/main/java/com/example/myproyectofinal_din_carloscaramecerero/receivers)  — BroadcastReceivers y alarmas.
 
-- Documentación (carpeta `documentacion/`):
-  - `ARCHITECTURE.md` — Arquitectura y decisiones de diseño.
-  - `COMPONENTS.md`   — Componentes reutilizables y su API.
-  - `NUI.md`          — Propuestas de interfaces naturales (biometría, voz, gestos) y justificación.
-  - `USER_MANUAL.md`  — Manual de usuario orientado a tutores y usuarios asistidos.
-  - `TESTS.md`        — Resumen de pruebas existentes y cómo ejecutarlas.
-  - `PERSISTENCE.md`, `SECURITY.md`, `DEV_SETUP.md`, `INFORMES.MD` — Documentación técnica complementaria.
-  - `capturas/`       — Imágenes y capturas de pantalla.
+- Documentación (carpeta [documentacion/](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/tree/master/documentacion)):
+  - [ARCHITECTURE.md](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/ARCHITECTURE.md) — Arquitectura y decisiones de diseño.
+  - [COMPONENTS.md](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/COMPONENTS.md) — Componentes reutilizables y su API.
+  - [NUI.md](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/NUI.md) — Propuestas de interfaces naturales (biometría, voz, gestos) y justificación.
+  - [USER_MANUAL.md](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/USER_MANUAL.md) — Manual de usuario orientado a tutores y usuarios asistidos.
+  - [TESTS.md](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/TESTS.md) — Resumen de pruebas existentes y cómo ejecutarlas.
+  - [PERSISTENCE.md](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/PERSISTENCE.md), [SECURITY.md](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/SECURITY.md), [DEV_SETUP.md](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/DEV_SETUP.md), [INFORMES.MD](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/INFORMES.MD) — Documentación técnica complementaria.
+  - [capturas/](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/tree/master/documentacion/capturas)       — Imágenes y capturas de pantalla.
 
 - Tests:
   - [Tests](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/tree/master/app/src/test/kotlin/com/example/tests) — Tests unitarios y pruebas con Robolectric.
@@ -90,10 +90,10 @@ Nota: además de la documentación y los tests listados a continuación, existe 
   - RA4.g (diseño visual): ver `USER_MANUAL.md` y `capturas/` (capturas de pantalla). (Evidencia: apariencia y contraste en las pantallas principales.)
   
   Capturas de diseño y contraste:
-  - `documentacion/capturas/menuHome.jpeg` (Home)
-  - `documentacion/capturas/MenuVideos.jpeg` (Vídeos / interfaz de reproducción)
-  - `documentacion/capturas/MenuLateralAjustes.jpeg` (Drawer de ajustes)
-  - `documentacion/capturas/ConceptoUserAdmin.png` (esquema usuario/tutor)
+  - [menuHome.jpeg](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/capturas/menuHome.jpeg) (Home)
+  - [MenuVideos.jpeg](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/capturas/MenuVideos.jpeg) (Vídeos / interfaz de reproducción)
+  - [MenuLateralAjustes.jpeg](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/capturas/MenuLateralAjustes.jpeg) (Drawer de ajustes)
+  - [ConceptoUserAdmin.png](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/capturas/ConceptoUserAdmin.png) (esquema usuario/tutor)
 
   - RA4.h (claridad de mensajes): ver [`USER_MANUAL.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/USER_MANUAL.md) (mensajes y textos) y [`DESIGN_JUSTIFICATION.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/DESIGN_JUSTIFICATION.md). (Evidencia: redacción de mensajes y feedback al usuario.)
   - RA4.i–j (pruebas de usabilidad y evaluación en dispositivos): ver [`TESTS.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/TESTS.md) y [`DEV_SETUP.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/DEV_SETUP.md) (instrucciones para pruebas), además del vídeo. (Evidencia: plan de pruebas y notas sobre pruebas en dispositivos/emuladores y pruebas en un dispositivo real.)
@@ -138,7 +138,7 @@ Nota: además de la documentación y los tests listados a continuación, existe 
   - RA8.b (pruebas de integración): ver [`TESTS.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/TESTS.md) y los tests en [app/src/test/kotlin/...](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/tree/master/app/src/test/kotlin/com/example/tests) (Robolectric/unit tests). (Evidencia: tests unitarios y de integración parcial; logs y reportes generados.)
 
   Evidencias visuales de ejecución de tests:
-  - `documentacion/capturas/TestSalida.png` — captura de la ejecución de tests (build/tests) y salida de Gradle.
+  - [TestSalida.png](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/capturas/TestSalida.png) — captura de la ejecución de tests (build/tests) y salida de Gradle.
 
   Nota: el vídeo incluye una demostración de algunos flujos que se usan en los tests (por ejemplo creación de tareas y programación de alarmas), lo que puede ayudar a reproducir manualmente los casos de prueba si el revisor desea verificarlos en dispositivo.
 
