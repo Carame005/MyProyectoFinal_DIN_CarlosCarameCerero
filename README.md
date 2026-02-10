@@ -4,6 +4,15 @@ Resumen ejecutivo
 -----------------
 TutorOrganiza es una aplicación móvil desarrollada con Jetpack Compose y Material3 cuyo propósito es facilitar la organización diaria de personas que requieren apoyo por parte de un tutor (usuarios asistidos). La aplicación proporciona mecanismos para que un tutor asigne y gestione tareas, eventos y colecciones de material audiovisual, y para que el usuario asistido vea y complete las actividades asignadas.
 
+Motivación y relación con los ODS
+--------------------------------
+La aplicación surge de la necesidad real de ofrecer una herramienta sencilla y accesible para personas que requieren que un tutor les acompañe en la organización de sus actividades diarias (recordatorios, tareas, eventos y material de apoyo). Está diseñada para reducir la carga cognitiva del usuario asistido y facilitar el trabajo de seguimiento del tutor, mejorando la autonomía y la calidad de vida.
+
+Relación con los Objetivos de Desarrollo Sostenible (ODS):
+- ODS 3 (Salud y bienestar): contribuye a mejorar el bienestar físico y mental de personas con necesidades de apoyo mediante recordatorios y seguimiento de actividades de salud y rutina.
+- ODS 4 (Educación de calidad): facilita el acceso a material educativo/audiovisual y contenidos guiados por un tutor, favoreciendo el aprendizaje y la continuidad de hábitos.
+- ODS 10 (Reducción de las desigualdades): proporciona soporte específico a colectivos con necesidades, ayudando a reducir barreras de acceso a recursos organizativos y de cuidado.
+
 Objetivo de este README
 -----------------------
 Documento orientado a revisores y desarrolladores. Resume la estructura del código, la localización de la documentación y las evidencias relacionadas con los criterios de evaluación (RAs). Los enlaces concretos a evidencias (capturas, informes y secciones de la documentación) se insertarán posteriormente: en este README se indican las rutas y los archivos donde localizar dichas evidencias.
