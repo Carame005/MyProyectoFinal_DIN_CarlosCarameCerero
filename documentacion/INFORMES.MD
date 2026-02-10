@@ -48,6 +48,14 @@ Estas son las piezas que ya están desarrolladas y su ubicación (resumen práct
 4. Pulsar "Generar" — el texto del informe aparece en el bloque (completo) y debajo se muestra el gráfico resumen.
 5. Opciones del informe: "Copiar" (al portapapeles) y "Compartir" (abre selector con archivo TXT generado en caché y `ACTION_SEND`).
 
+
+## Capturas relacionadas
+Para facilitar la evaluación visual, se incluyen capturas que muestran la ubicación del botón y la integración del UI de informes:
+
+- `documentacion/capturas/menuHome.jpeg` — muestra la pantalla Home y la ubicación del botón "Generar informe".
+- `documentacion/capturas/menuTutor.jpeg` — muestra la vista del Tutor con la lista de tutorizados y acceso a generación de informes por tutorizado.
+- `documentacion/capturas/TestSalida.png` — captura de la ejecución de tests (build/tests) útil como evidencia complementaria.
+
 ## Exportación / formatos
 
 - Actual: exportación a TXT mediante `ReportGenerator.saveReportToCache` y uso de `getUriForFile` para compartir.

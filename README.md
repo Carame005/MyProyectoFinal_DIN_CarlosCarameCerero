@@ -45,9 +45,25 @@ Nota: además de la documentación y los tests listados a continuación, existe 
   - RA1.e (análisis del código): ver [`ARCHITECTURE.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/ARCHITECTURE.md) y [`DESIGN_JUSTIFICATION.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/DESIGN_JUSTIFICATION.md). (Evidencia: decisiones arquitectónicas, trade-offs y justificación técnica.)
   - RA1.f (modificación del código): ver historial de cambios y [`DEV_SETUP.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/DEV_SETUP.md) para instrucciones de desarrollo; además referencias en `documentacion/` que describen cambios relevantes. (Evidencia: descripción de cambios y puntos de integración.)
   - RA1.g (asociación de eventos): ver [CalendarioPantalla.kt](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/app/src/main/java/com/example/myproyectofinal_din_carloscaramecerero/pantallas/CalendarioPantalla.kt), [CalendarioAlarms.kt](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/app/src/main/java/com/example/myproyectofinal_din_carloscaramecerero/pantallas/CalendarioAlarms.kt) y [`COMPONENTS.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/COMPONENTS.md). (Evidencia: creación/edición de eventos, scheduling y manejo de callbacks/acciones.)
-  - RA1.h (app integrada): ver [`USER_MANUAL.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/USER_MANUAL.md) y conjunto de pantallas ([`pantallas/`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/tree/master/app/src/main/java/com/example/myproyectofinal_din_carloscaramecerero/pantallas)). (Evidencia: flujos integrados que muestran uso real de la app.)
+  - RA1.h (app integrada): ver [`USER_MANUAL.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/USER_MANUAL.md) y conjunto de pantallas (`pantallas/`). (Evidencia: flujos integrados que muestran uso real de la app.)
   
   Nota: el vídeo de demostración muestra un recorrido completo por la aplicación (tutor ↔ usuario), lo que facilita validar la integración de pantallas y flujos descritos en la documentación.
+
+  Capturas relevantes (evidencia visual):
+  - `documentacion/capturas/menuHome.jpeg` — pantalla Home (resumen y acceso a informes).
+  - `documentacion/capturas/menuTareas.jpeg` — lista de tareas.
+  - `documentacion/capturas/menuEventos.jpeg` — calendario / eventos.
+  - `documentacion/capturas/MenuVideos.jpeg` — colecciones y reproductor.
+  - `documentacion/capturas/menuTutor.jpeg` — pantalla Tutor (lista de tutorizados).
+  - `documentacion/capturas/menuTutorInforme.jpeg` — generación de informe desde pantalla Tutor.
+  - `documentacion/capturas/MenuLogin.jpeg`, `documentacion/capturas/MenuLoginRapido.jpeg`, `documentacion/capturas/MenuRegistro.jpeg` — flujos de login/registro.
+  - `documentacion/capturas/MenuLateralAjustes.jpeg` — panel de ajustes y guía rápida.
+  - `documentacion/capturas/ConceptoUserAdmin.png` — esquema conceptual usuario/tutor.
+  - `documentacion/capturas/filtroInforme.jpeg` — diálogo de filtros para generación de informes.
+  - `documentacion/capturas/graficogenerado.jpeg` — gráfico generado por `ReportChart` en el informe.
+  - `documentacion/capturas/informeGenerado.jpeg` — vista completa del informe (texto + gráfico).
+
+  Para ver todas las capturas organizadas y con descripciones consulte `documentacion/CAPTURAS_INDEX.md`.
 
 - RA2 (NUI - Interfaces naturales):
   - RA2.a (herramientas NUI): ver [`NUI.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/NUI.md) y [BiometricUtils.kt](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/app/src/main/java/com/example/myproyectofinal_din_carloscaramecerero/security/BiometricUtils.kt). (Evidencia: identificación de biometría, voz y detección como opciones y referencias a APIs.)
@@ -71,7 +87,14 @@ Nota: además de la documentación y los tests listados a continuación, existe 
   - RA4.c (menús): ver [utils/Componentes.kt](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/app/src/main/java/com/example/myproyectofinal_din_carloscaramecerero/utils/Componentes.kt) (`AppTopBar` / `SettingsDrawer`) y [`COMPONENTS.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/COMPONENTS.md). (Evidencia: estructura de menús y accesos.)
   - RA4.d–e (distribución de acciones y controles): ver [`USER_MANUAL.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/USER_MANUAL.md) y [`COMPONENTS.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/COMPONENTS.md). (Evidencia: distribución en la UI, jerarquía de acciones y controles en pantallas principales.)
   - RA4.f (elección de controles): ver `DESIGN_JUSTIFICATION.md` y [`COMPONENTS.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/COMPONENTS.md). (Evidencia: justificación de tipos de control y su adecuación.)
-  - RA4.g (diseño visual): ver [`USER_MANUAL.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/USER_MANUAL.md). (Evidencia: apariencia y contraste en las pantallas principales.)
+  - RA4.g (diseño visual): ver `USER_MANUAL.md` y `capturas/` (capturas de pantalla). (Evidencia: apariencia y contraste en las pantallas principales.)
+  
+  Capturas de diseño y contraste:
+  - `documentacion/capturas/menuHome.jpeg` (Home)
+  - `documentacion/capturas/MenuVideos.jpeg` (Vídeos / interfaz de reproducción)
+  - `documentacion/capturas/MenuLateralAjustes.jpeg` (Drawer de ajustes)
+  - `documentacion/capturas/ConceptoUserAdmin.png` (esquema usuario/tutor)
+
   - RA4.h (claridad de mensajes): ver [`USER_MANUAL.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/USER_MANUAL.md) (mensajes y textos) y [`DESIGN_JUSTIFICATION.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/DESIGN_JUSTIFICATION.md). (Evidencia: redacción de mensajes y feedback al usuario.)
   - RA4.i–j (pruebas de usabilidad y evaluación en dispositivos): ver [`TESTS.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/TESTS.md) y [`DEV_SETUP.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/DEV_SETUP.md) (instrucciones para pruebas), además del vídeo. (Evidencia: plan de pruebas y notas sobre pruebas en dispositivos/emuladores y pruebas en un dispositivo real.)
 
@@ -80,6 +103,13 @@ Nota: además de la documentación y los tests listados a continuación, existe 
 - RA5 (Informes):
   - RA5.a (estructura del informe): ver [`INFORMES.MD`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/INFORMES.MD). (Evidencia: definición del contenido del informe y su estructura.)
   - RA5.b (generación de informes): ver [ReportGenerator.kt](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/app/src/main/java/com/example/myproyectofinal_din_carloscaramecerero/utils/ReportGenerator.kt) y [pantallas/Reports](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/tree/master/app/src/main/java/com/example/myproyectofinal_din_carloscaramecerero/pantallas). (Evidencia: funciones que construyen texto de informe y resumen numérico.)
+
+  Capturas relacionadas con informes (UI):
+  - `documentacion/capturas/menuHome.jpeg` — muestra la ubicación del botón "Generar informe" en Home.
+  - `documentacion/capturas/menuTutorInforme.jpeg` — muestra la vista del tutor donde se puede generar informes por tutorizado.
+  - `documentacion/capturas/filtroInforme.jpeg` — ejemplo del diálogo de filtros para el informe.
+  - `documentacion/capturas/graficogenerado.jpeg` — ejemplo del gráfico mostrado en el informe.
+  - `documentacion/capturas/informeGenerado.jpeg` — captura del informe ya generado (texto y resumen gráfico).
 
   Nota: en el vídeo de demostración se muestra la generación de informes y el uso de filtros, lo que ayuda a verificar visualmente que los datos y gráficos se corresponden con la documentación escrita.
 
@@ -106,6 +136,9 @@ Nota: además de la documentación y los tests listados a continuación, existe 
 - RA8 (Pruebas avanzadas):
   - RA8.a (estrategia de pruebas): ver [`TESTS.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/TESTS.md). (Evidencia: estrategia general y mapeo a RA8.)
   - RA8.b (pruebas de integración): ver [`TESTS.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/TESTS.md) y los tests en [app/src/test/kotlin/...](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/tree/master/app/src/test/kotlin/com/example/tests) (Robolectric/unit tests). (Evidencia: tests unitarios y de integración parcial; logs y reportes generados.)
+
+  Evidencias visuales de ejecución de tests:
+  - `documentacion/capturas/TestSalida.png` — captura de la ejecución de tests (build/tests) y salida de Gradle.
 
   Nota: el vídeo incluye una demostración de algunos flujos que se usan en los tests (por ejemplo creación de tareas y programación de alarmas), lo que puede ayudar a reproducir manualmente los casos de prueba si el revisor desea verificarlos en dispositivo.
 
