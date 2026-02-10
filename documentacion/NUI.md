@@ -81,3 +81,4 @@ Pruebas con usuarios
 Referencias
 ----------
 - Android BiometricPrompt, SpeechRecognizer, TextToSpeech, ML Kit, MediaPipe, TensorFlow Lite.
+

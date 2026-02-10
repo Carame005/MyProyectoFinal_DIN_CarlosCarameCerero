@@ -32,3 +32,4 @@ Observaciones
 -------------
 - Las versiones exactas de las dependencias se gestionan en `build.gradle.kts` (raíz y `app/`) o en `gradle/libs.versions.toml`.
 - Para análisis de calidad y seguridad de código pueden usarse herramientas adicionales como `Detekt`, `ktlint` y `SpotBugs` (no integradas en el repositorio actual por defecto).
+

@@ -48,3 +48,4 @@ Propuestas de mejora (migración y robustez)
 Operaciones disponibles en el repositorio
 -----------------------------------------
 - `saveUser`, `loadUser`, `saveTasks`, `loadTasks`, `saveEvents`, `loadEvents`, `saveCollections`, `loadCollections`, `saveCredentials`, `loadCredentials`, `clearAllData`.
+

@@ -80,3 +80,4 @@ Ver: `SECURITY.md`, `ARCHITECTURE.md`
 - Recomendaciones prioritarias: pruebas de notificaciones en background, persistencia de sesión y flujo tutor→añadir tarea (instrumented/Espresso).
 
 Ver: `TESTS.md`
+

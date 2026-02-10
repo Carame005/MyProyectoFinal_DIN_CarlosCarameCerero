@@ -161,3 +161,4 @@ Checklist mínimo para un dev nuevo
 - [ ] Añadir `sdk.dir` en `local.properties` apuntando al SDK.
 - [ ] Crear y arrancar un AVD API >= 26 para pruebas instrumentadas.
 - [ ] Ejecutar `.\gradlew.bat clean build` para verificar configuración.
+

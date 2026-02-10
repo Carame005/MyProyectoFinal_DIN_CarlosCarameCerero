@@ -40,3 +40,4 @@ Estructura de carpetas (relevante)
 - `app/src/main/java/.../documentacion/` — documentación (esta carpeta).
 - `app/src/main/java/.../receivers/` — BroadcastReceiver para notificaciones.
 - `app/src/main/java/.../security/` — utilidades de seguridad (Biometria).
+

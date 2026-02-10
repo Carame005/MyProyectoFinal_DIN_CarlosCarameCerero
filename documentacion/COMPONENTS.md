@@ -58,3 +58,4 @@ Notas sobre `SettingsDrawer` / Ajustes
 ------------------------------------
 - El interruptor "Función tutor" fue eliminado del drawer de ajustes en la versión documentada. La aplicación determina el acceso a funciones de tutor mediante el rol y políticas centralizadas.
 - El interruptor de notificaciones también fue eliminado ya que no es relevante.
+

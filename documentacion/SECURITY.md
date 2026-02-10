@@ -47,3 +47,4 @@ Prioridad de acciones
 - Alta prioridad: migración de credenciales y corrección de catches silenciosos.
 - Media prioridad: manejo de permisos de notificación y URIs persistentes.
 - Baja prioridad: integración de herramientas de análisis avanzado.
+

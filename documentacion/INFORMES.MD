@@ -113,3 +113,4 @@ Si quieres, aplico ahora alguna de las mejoras siguientes y actualizo el documen
 - Cambiar el color del texto dentro del bloque de informe a blanco para garantizar contraste sobre `#35343A`.
 
 Indica qué prefieres y lo implemento inmediatamente (edito código y/o documento y ejecuto tests si procede).
+
