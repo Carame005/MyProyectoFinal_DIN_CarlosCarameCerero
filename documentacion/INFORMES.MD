@@ -46,7 +46,7 @@ Estas son las piezas que ya están desarrolladas y su ubicación (resumen práct
 2. En la pantalla Home pulsar "Generar informe".
 3. Seleccionar el periodo (Última semana / Último mes) y los tipos a incluir (Completadas / En proceso / Pendientes / Eventos / Vídeos).
 4. Pulsar "Generar" — el texto del informe aparece en el bloque (completo) y debajo se muestra el gráfico resumen.
-5. Opciones del informe: "Copiar" (al portapapeles) y "Compartir" (abre selector con archivo TXT generado en cache y `ACTION_SEND`).
+5. Opciones del informe: "Copiar" (al portapapeles) y "Compartir" (abre selector con archivo TXT generado en caché y `ACTION_SEND`).
 
 ## Exportación / formatos
 
@@ -79,7 +79,7 @@ Estas son las piezas que ya están desarrolladas y su ubicación (resumen práct
   - Verificar que el TXT contiene las líneas esperadas y que los contadores coinciden.
 
 - UI tests sugeridos (Robolectric + Compose):
-  - `ReportsScreen` muestra los valores correctos para datos de prueba; la acción "Compartir" crea un fichero en cache.
+  - `ReportsScreen` muestra los valores correctos para datos de prueba; la acción "Compartir" crea un fichero en caché.
 
 - Evidencias para entregar:
   - `documentacion/test-reports/sample-report.txt` (ejemplo generado) y opcional `sample-report.csv`.
@@ -114,3 +114,4 @@ Si quieres, aplico ahora alguna de las mejoras siguientes y actualizo el documen
 
 Indica qué prefieres y lo implemento inmediatamente (edito código y/o documento y ejecuto tests si procede).
 
+- RA5.b (generación de informes): ver [ReportGenerator.kt](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/app/src/main/java/com/example/myproyectofinal_din_carloscaramecerero/utils/ReportGenerator.kt) y [pantallas/Reports](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/tree/master/app/src/main/java/com/example/myproyectofinal_din_carloscaramecerero/pantallas). (Evidencia: funciones que construyen texto de informe y resumen numérico.)

@@ -8,7 +8,7 @@ Las NUI facilitan la interacción reduciendo la dependencia del texto y de preci
 
 Definición y categorías
 -----------------------
-NUI incluye técnicas que permiten al usuario interactuar mediante métodos diferentes a la escritura: voz, gestos, biometría, detección facial/gestual, AR, haptics (vibraciones) y UIs conversacionales.
+NUI incluye técnicas que permiten al usuario interactuar mediante métodos diferentes a la escritura: voz, gestos, biometría, detección facial/gestual, AR, háptica (vibraciones) y interfaces conversacionales.
 
 Relevancia para la población objetivo
 -------------------------------------
@@ -42,7 +42,7 @@ Herramientas NUI identificadas y valor esperado
 6. Realidad aumentada (ARCore) — propuestas puntuales
    - Uso: superposición contextual de instrucciones; alta complejidad de implementación.
 
-7. Haptics y feedback multimodal
+7. Háptica y feedback multimodal
    - Uso: vibraciones y señales táctiles para confirmar acciones o recordatorios.
 
 8. Componentes predictivos / sugerencias (ML heurístico)
@@ -64,7 +64,7 @@ Privacidad y riesgos
 UX y diseño (orientado a personas con apoyo diario)
 --------------------------------------------------
 - Interfaz simple y consistente: menús reducidos y confirmaciones claras.
-- Fallbacks: mantener métodos tradicionales (contraseña) como alternativa.
+- Alternativas: mantener métodos tradicionales (contraseña) como alternativa.
 
 Medición y validación
 ---------------------
@@ -81,4 +81,3 @@ Pruebas con usuarios
 Referencias
 ----------
 - Android BiometricPrompt, SpeechRecognizer, TextToSpeech, ML Kit, MediaPipe, TensorFlow Lite.
-

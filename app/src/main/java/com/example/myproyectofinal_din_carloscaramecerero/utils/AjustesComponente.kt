@@ -287,6 +287,10 @@ fun SettingsDrawer(
                         Text("- Calendario: añadir eventos y programar recordatorios.")
                         Text("- Progreso: colecciones de vídeos para facilitar recuerdos.")
                         Spacer(modifier = Modifier.height(6.dp))
+                        Text("- Informes: desde la pantalla Home (y desde Tutor) puede generar un informe resumido por usuario. Seleccione el periodo (última semana/último mes), aplique filtros de tipo (tareas, eventos, vídeos) y pulse 'Generar'. El informe se muestra en pantalla y puede copiarse o compartirse como fichero TXT.")
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Text("- Exportación: el informe generado se guarda temporalmente en caché y se puede compartir mediante el selector del sistema. El tutor puede generar informes de sus tutorizados y descargarlos/compartirlos.")
+                        Spacer(modifier = Modifier.height(6.dp))
                         Text("Use el botón '+' en cada pantalla para añadir contenido. Puede cambiar su nombre y contraseña desde este panel.")
                     }
                 }

@@ -35,7 +35,7 @@ Evidencias por criterios (RAs) — localización y estado
 -----------------------------------------------------
 Este apartado señala en qué documentos o artefactos encontrar evidencia para cada RA. En algunos casos la evaluación se alcanza citando la posibilidad o proponiendo su integración; en otros casos existe implementación o tests automatizados.
 
-Nota: además de la documentación y los tests listados a continuación, existe un vídeo demo grabado que muestra la aplicación en funcionamiento y explica flujos clave (login, gestión de tareas/eventos, generación de informes).
+Nota: además de la documentación y los tests listados a continuación, existe un vídeo de demostración grabado que muestra la aplicación en funcionamiento y explica flujos clave (login, gestión de tareas/eventos, generación de informes). Este vídeo puede añadirse como evidencia visual y es útil para justificar decisiones de diseño y resultados de pruebas.
 
 - RA1 (Interfaz y desarrollo):
   - RA1.a (análisis herramientas/librerías): ver [`LIBRARIES.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/LIBRARIES.md) y [`ARCHITECTURE.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/ARCHITECTURE.md). (Evidencia: lista de dependencias, justificación técnica y elección de tecnologías.)
@@ -47,7 +47,7 @@ Nota: además de la documentación y los tests listados a continuación, existe 
   - RA1.g (asociación de eventos): ver [CalendarioPantalla.kt](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/app/src/main/java/com/example/myproyectofinal_din_carloscaramecerero/pantallas/CalendarioPantalla.kt), [CalendarioAlarms.kt](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/app/src/main/java/com/example/myproyectofinal_din_carloscaramecerero/pantallas/CalendarioAlarms.kt) y [`COMPONENTS.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/COMPONENTS.md). (Evidencia: creación/edición de eventos, scheduling y manejo de callbacks/acciones.)
   - RA1.h (app integrada): ver [`USER_MANUAL.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/USER_MANUAL.md) y conjunto de pantallas (`pantallas/`). (Evidencia: flujos integrados que muestran uso real de la app.)
   
-  Nota: el vídeo demo muestra un recorrido completo por la aplicación (tutor ↔ usuario), lo que facilita validar la integración de pantallas y flujos descritos en la documentación.
+  Nota: el vídeo de demostración muestra un recorrido completo por la aplicación (tutor ↔ usuario), lo que facilita validar la integración de pantallas y flujos descritos en la documentación.
 
 - RA2 (NUI - Interfaces naturales):
   - RA2.a (herramientas NUI): ver [`NUI.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/NUI.md) y [BiometricUtils.kt](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/app/src/main/java/com/example/myproyectofinal_din_carloscaramecerero/security/BiometricUtils.kt). (Evidencia: identificación de biometría, voz y detección como opciones y referencias a APIs.)
@@ -75,13 +75,13 @@ Nota: además de la documentación y los tests listados a continuación, existe 
   - RA4.h (claridad de mensajes): ver `USER_MANUAL.md` (mensajes y textos) y `DESIGN_JUSTIFICATION.md`. (Evidencia: redacción de mensajes y feedback al usuario.)
   - RA4.i–j (pruebas de usabilidad y evaluación en dispositivos): ver `TESTS.md` y `DEV_SETUP.md` (instrucciones para pruebas), además del vídeo. (Evidencia: plan de pruebas y notas sobre pruebas en dispositivos/emuladores y pruebas en un dispositivo real.)
 
-  Nota: el vídeo demo incluye ejemplos de interacción y ciertos escenarios de usabilidad que complementan las capturas y permiten al evaluador observar tiempos, transiciones y respuestas de la UI.
+  Nota: el vídeo de demostración incluye ejemplos de interacción y ciertos escenarios de usabilidad que complementan las capturas y permiten al evaluador observar tiempos, transiciones y respuestas de la UI.
 
 - RA5 (Informes):
   - RA5.a (estructura del informe): ver [`INFORMES.MD`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/INFORMES.MD). (Evidencia: definición del contenido del informe y su estructura.)
   - RA5.b (generación de informes): ver [ReportGenerator.kt](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/app/src/main/java/com/example/myproyectofinal_din_carloscaramecerero/utils/ReportGenerator.kt) y [pantallas/Reports](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/tree/master/app/src/main/java/com/example/myproyectofinal_din_carloscaramecerero/pantallas). (Evidencia: funciones que construyen texto de informe y resumen numérico.)
 
-  Nota: en el vídeo se muestra la generación de informes y el uso de filtros, lo que ayuda a verificar visualmente que los datos y gráficos se corresponden con la documentación escrita.
+  Nota: en el vídeo de demostración se muestra la generación de informes y el uso de filtros, lo que ayuda a verificar visualmente que los datos y gráficos se corresponden con la documentación escrita.
 
   - RA5.c (filtros sobre valores): ver [`INFORMES.MD`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/INFORMES.MD) y la implementación de `ReportFilters` en `model/` or `utils`. (Evidencia: modelo de filtros y uso en UI.)
   - RA5.d (valores calculados/recuentos): ver [model/ReportSummary.kt](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/app/src/main/java/com/example/myproyectofinal_din_carloscaramecerero/model/ReportSummary.kt) y [ReportGenerator.kt](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/app/src/main/java/com/example/myproyectofinal_din_carloscaramecerero/utils/ReportGenerator.kt). (Evidencia: cálculos de totales y recuentos por estado.)

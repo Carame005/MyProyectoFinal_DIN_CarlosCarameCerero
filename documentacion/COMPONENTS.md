@@ -28,7 +28,7 @@ Resumen de componentes clave
 - `CollectionCard`, `VideoItemCard`, `VideoPlayerDialog`
   - Ubicación: `utils/VideosComponente.kt`
   - Uso: gestionar colecciones y reproducir vídeos seleccionados.
-  - Nota: la reproducción de vídeos embed (YouTube) puede requerir ajustes de `WebView` y permisos; existe un issue conocido relativo a la carga.
+  - Nota: la reproducción de vídeos embebidos (YouTube) puede requerir ajustes de `WebView` y permisos; existe un issue conocido relativo a la carga.
 
 - `CalendarioGrid(currentMonth, selectedDate, today, events, onDateSelected)`
   - Ubicación: `utils/CalendarioComponente.kt`
@@ -58,4 +58,3 @@ Notas sobre `SettingsDrawer` / Ajustes
 ------------------------------------
 - El interruptor "Función tutor" fue eliminado del drawer de ajustes en la versión documentada. La aplicación determina el acceso a funciones de tutor mediante el rol y políticas centralizadas.
 - El interruptor de notificaciones también fue eliminado ya que no es relevante.
-

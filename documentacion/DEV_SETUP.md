@@ -91,7 +91,7 @@ Consejos para Robolectric y JDK
 Notas CI / Firma
 ----------------
 - No subir el keystore al repositorio. Para publicar en Play Store configurar `signingConfigs` en Gradle y usar secretos en CI (GitHub Actions / GitLab CI) para inyectar el keystore y las contraseñas.
-- Flujo sugerido en CI: checkout → setup Java 17 and Android SDK → `./gradlew :app:bundleRelease` → subir `app-release.aab`.
+- Flujo sugerido en CI: checkout → configurar Java 17 y Android SDK → `./gradlew :app:bundleRelease` → subir `app-release.aab`.
 
 Problemas frecuentes y soluciones rápidas
 ----------------------------------------
@@ -161,4 +161,3 @@ Checklist mínimo para un dev nuevo
 - [ ] Añadir `sdk.dir` en `local.properties` apuntando al SDK.
 - [ ] Crear y arrancar un AVD API >= 26 para pruebas instrumentadas.
 - [ ] Ejecutar `.\gradlew.bat clean build` para verificar configuración.
-

@@ -12,6 +12,7 @@ Tabla de contenido
 - Tareas (añadir, marcar)
 - Calendario y eventos (añadir recordatorio)
 - Colecciones de vídeos (añadir y reproducir)
+- Informes (generar, filtrar y exportar)
 - Perfil y ajustes (cambiar nombre, foto y cerrar sesión)
 - Notificaciones y recordatorios
 - Buenas prácticas para tutores
@@ -54,6 +55,7 @@ Pantalla principal
   - Nombre del usuario en la parte superior.
   - Fecha del día.
   - Tarjetas de resumen: Tareas, Eventos, Colecciones (cada tarjeta muestra el número correspondiente).
+  - Botón "Generar informe": localizado bajo la tarjeta de Vídeos/Resumen (en Home). Permite crear un informe con resumen de actividades y gráficos.
 - Interacción: pulsar una tarjeta para acceder a su contenido detallado.
 
 Tareas (añadir, marcar)
@@ -78,6 +80,33 @@ Colecciones de vídeos (añadir y reproducir)
 - Reproducción: pulsar el icono de reproducir; el reproductor permite expandir a pantalla completa.
 - Eliminación: restricción para usuarios sin rol administrador en contenidos asignados por tutor.
 
+Informes (generar, filtrar y exportar)
+--------------------------------------
+La aplicación incluye una funcionalidad para generar informes resumidos que ayudan al tutor y al usuario a visualizar el estado de las actividades y eventos.
+
+Dónde encontrar el botón
+- En la pantalla `Home` hay un botón "Generar informe" ubicado bajo la tarjeta de Vídeos/Resumen.
+- En la pantalla `Tutor` también hay opción para generar informes por cada tutorizado (desde la card expandida del usuario o el panel de la lista de tutorizados).
+
+Cómo generar un informe (paso a paso)
+1. Pulsar "Generar informe" en la pantalla `Home` o en la `TutorPantalla` sobre el tutorizado deseado.
+2. Seleccionar el periodo: "Última semana" o "Último mes".
+3. Marcar los tipos de datos a incluir: Tareas (Completadas / En proceso / Pendientes), Eventos, Vídeos.
+4. Pulsar "Generar".
+
+Qué muestra el informe
+- Resumen numérico: conteo de tareas por estado (Completadas, En proceso, Pendientes), número de eventos en el periodo y número total de vídeos/colecciones añadidos.
+- Gráfico: barras que representan visualmente los recuentos seleccionados.
+- Texto detallado: listado legible con las entradas relevantes (títulos y fechas de eventos; recuentos de tareas).
+
+Exportación y compartir
+- Después de generar el informe puede copiarse al portapapeles o compartirse mediante el botón "Compartir".
+- El fichero se genera como TXT y se guarda temporalmente en caché; el sistema abrirá el selector para que puedas elegir la app con la que compartir o exportar (por ejemplo, correo, Drive, etc.).
+- Los tutores pueden generar informes de sus tutorizados y descargar/compartir el fichero resultante.
+
+Comportamiento cuando no hay datos
+- Si no existen elementos para el filtro seleccionado, en vez de dejar espacios en blanco el informe mostrará mensajes claros: "No hay tareas", "No hay eventos" o "No hay vídeos" según corresponda.
+
 Perfil y ajustes (cambiar nombre, foto y cerrar sesión)
 -------------------------------------------------------
 - Abrir perfil: pulsar el avatar en la barra superior.
@@ -95,6 +124,7 @@ Buenas prácticas para tutores
 - Mantener la contraseña anotada en un lugar seguro y accesible para el tutor.
 - Revisar periódicamente que los recordatorios y alarmas están activos.
 - Supervisar las primeras interacciones del usuario con la app para evitar confusiones.
+- Informes: use la funcionalidad de informes para revisar la actividad semanal o mensual de sus tutorizados y descargue el archivo TXT si necesita archivarlo o compartirlo con familiares/profesionales.
 
 Preguntas frecuentes (solución de problemas)
 --------------------------------------------

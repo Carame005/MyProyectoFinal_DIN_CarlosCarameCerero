@@ -111,11 +111,12 @@ fun AppTopBar(
 
     // Dialogo de ayuda/mini guía contextual según currentRoute
     if (helpExpanded) {
-        val helpText = when (currentRoute) {
-            "tasks" , "Tareas", "Tareas" -> "Esta pantalla muestra sus tareas. Puede marcar como completadas o eliminar tareas. Use el botón '+' para añadir una nueva tarea."
-            "calendar", "Calendar", "Calendario" -> "Calendario mensual: pulse un día para ver o añadir eventos. Puede fijar una hora para recibir un recordatorio."
-            "home", "Home", "Inicio" -> "Pantalla inicial: resumen rápido de tareas, eventos y colecciones. Toque una tarjeta para expandir más detalles."
-            "stats", "Stats", "Progreso" -> "Colecciones de vídeo: agrupe vídeos para recordar momentos. Pulse una colección para ver y reproducir los vídeos."
+        val helpText = when (currentRoute?.lowercase()) {
+            "tasks", "tareas" -> "Esta pantalla muestra sus tareas. Puede marcar como completadas o eliminar tareas. Use el botón '+' para añadir una nueva tarea."
+            "calendar", "calendario" -> "Calendario mensual: pulse un día para ver o añadir eventos. Puede fijar una hora para recibir un recordatorio."
+            "home", "inicio" -> "Pantalla inicial: resumen rápido de tareas, eventos y colecciones. Toque una tarjeta para expandir más detalles. Para generar un informe con resumen y gráfico, pulse el botón 'Generar informe' situado bajo la tarjeta de Vídeos; seleccione periodo y filtros, y pulse 'Generar'. El informe se mostrará en pantalla y podrá copiarlo o compartirlo como fichero TXT."
+            "stats", "progreso", "videos" -> "Colecciones de vídeo: agrupe vídeos para recordar momentos. Pulse una colección para ver y reproducir los vídeos."
+            "tutor", "tutorpantalla", "tutor_pantalla" -> "Pantalla de Tutor: listado de tutorizados en cards expandibles. Pulse la card de un tutorizado para ver sus tareas, eventos y acciones disponibles. Desde esa vista puede generar un informe específico del tutorizado usando 'Generar informe' y exportarlo/compartir si lo desea."
             else -> "Esta es una mini guía: toque elementos en pantalla para ver más opciones. Use el botón '+' para añadir contenido donde proceda."
         }
 
