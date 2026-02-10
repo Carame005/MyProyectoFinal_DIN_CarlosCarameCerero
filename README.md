@@ -50,20 +50,20 @@ Nota: además de la documentación y los tests listados a continuación, existe 
   Nota: el vídeo de demostración muestra un recorrido completo por la aplicación (tutor ↔ usuario), lo que facilita validar la integración de pantallas y flujos descritos en la documentación.
 
   Capturas relevantes (evidencia visual):
-  - `documentacion/capturas/menuHome.jpeg` — pantalla Home (resumen y acceso a informes).
-  - `documentacion/capturas/menuTareas.jpeg` — lista de tareas.
-  - `documentacion/capturas/menuEventos.jpeg` — calendario / eventos.
-  - `documentacion/capturas/MenuVideos.jpeg` — colecciones y reproductor.
-  - `documentacion/capturas/menuTutor.jpeg` — pantalla Tutor (lista de tutorizados).
-  - `documentacion/capturas/menuTutorInforme.jpeg` — generación de informe desde pantalla Tutor.
-  - `documentacion/capturas/MenuLogin.jpeg`, `documentacion/capturas/MenuLoginRapido.jpeg`, `documentacion/capturas/MenuRegistro.jpeg` — flujos de login/registro.
-  - `documentacion/capturas/MenuLateralAjustes.jpeg` — panel de ajustes y guía rápida.
-  - `documentacion/capturas/ConceptoUserAdmin.png` — esquema conceptual usuario/tutor.
-  - `documentacion/capturas/filtroInforme.jpeg` — diálogo de filtros para generación de informes.
-  - `documentacion/capturas/graficogenerado.jpeg` — gráfico generado por `ReportChart` en el informe.
-  - `documentacion/capturas/informeGenerado.jpeg` — vista completa del informe (texto + gráfico).
+  - [menuHome.jpeg](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/capturas/menuHome.jpeg) — pantalla Home (resumen y acceso a informes).
+  - [menuTareas.jpeg](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/capturas/menuTareas.jpeg) — lista de tareas.
+  - [menuEventos.jpeg](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/capturas/menuEventos.jpeg) — calendario / eventos.
+  - [MenuVideos.jpeg](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/capturas/MenuVideos.jpeg) — colecciones y reproductor.
+  - [menuTutor.jpeg](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/capturas/menuTutor.jpeg) — pantalla Tutor (lista de tutorizados).
+  - [menuTutorInforme.jpeg](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/capturas/menuTutorInforme.jpeg) — generación de informe desde pantalla Tutor.
+  - [MenuLogin.jpeg](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/capturas/MenuLogin.jpeg), [MenuLoginRapido.jpeg](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/capturas/MenuLoginRapido.jpeg), [MenuRegistro.jpeg](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/capturas/MenuRegistro.jpeg) — flujos de login/registro.
+  - [MenuLateralAjustes.jpeg](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/capturas/MenuLateralAjustes.jpeg) — panel de ajustes y guía rápida.
+  - [ConceptoUserAdmin.png](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/capturas/ConceptoUserAdmin.png) — esquema conceptual usuario/tutor.
+  - [filtroInforme.jpeg](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/capturas/filtroInforme.jpeg) — diálogo de filtros para generación de informes.
+  - [graficogenerado.jpeg](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/capturas/graficogenerado.jpeg) — gráfico generado por `ReportChart` en el informe.
+  - [informeGenerado.jpeg](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/capturas/informeGenerado.jpeg) — vista completa del informe (texto + gráfico).
 
-  Para ver todas las capturas organizadas y con descripciones consulte `documentacion/CAPTURAS_INDEX.md`.
+  Para ver todas las capturas organizadas y con descripciones consulte [documentacion/CAPTURAS_INDEX.md](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/CAPTURAS_INDEX.md).
 
 - RA2 (NUI - Interfaces naturales):
   - RA2.a (herramientas NUI): ver [`NUI.md`](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/NUI.md) y [BiometricUtils.kt](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/app/src/main/java/com/example/myproyectofinal_din_carloscaramecerero/security/BiometricUtils.kt). (Evidencia: identificación de biometría, voz y detección como opciones y referencias a APIs.)
@@ -105,11 +105,11 @@ Nota: además de la documentación y los tests listados a continuación, existe 
   - RA5.b (generación de informes): ver [ReportGenerator.kt](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/app/src/main/java/com/example/myproyectofinal_din_carloscaramecerero/utils/ReportGenerator.kt) y [pantallas/Reports](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/tree/master/app/src/main/java/com/example/myproyectofinal_din_carloscaramecerero/pantallas). (Evidencia: funciones que construyen texto de informe y resumen numérico.)
 
   Capturas relacionadas con informes (UI):
-  - `documentacion/capturas/menuHome.jpeg` — muestra la ubicación del botón "Generar informe" en Home.
-  - `documentacion/capturas/menuTutorInforme.jpeg` — muestra la vista del tutor donde se puede generar informes por tutorizado.
-  - `documentacion/capturas/filtroInforme.jpeg` — ejemplo del diálogo de filtros para el informe.
-  - `documentacion/capturas/graficogenerado.jpeg` — ejemplo del gráfico mostrado en el informe.
-  - `documentacion/capturas/informeGenerado.jpeg` — captura del informe ya generado (texto y resumen gráfico).
+  - [menuHome.jpeg](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/capturas/menuHome.jpeg) — muestra la ubicación del botón "Generar informe" en Home.
+  - [menuTutorInforme.jpeg](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/capturas/menuTutorInforme.jpeg) — muestra la vista del tutor donde se puede generar informes por tutorizado.
+  - [filtroInforme.jpeg](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/capturas/filtroInforme.jpeg) — ejemplo del diálogo de filtros para el informe.
+  - [graficogenerado.jpeg](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/capturas/graficogenerado.jpeg) — ejemplo del gráfico mostrado en el informe.
+  - [informeGenerado.jpeg](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/blob/master/documentacion/capturas/informeGenerado.jpeg) — captura del informe ya generado (texto y resumen gráfico).
 
   Nota: en el vídeo de demostración se muestra la generación de informes y el uso de filtros, lo que ayuda a verificar visualmente que los datos y gráficos se corresponden con la documentación escrita.
 
