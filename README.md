@@ -29,7 +29,7 @@ Estructura principal del proyecto
 
 - Tests:
   - [Tests](https://github.com/Carame005/MyProyectoFinal_DIN_CarlosCarameCerero/tree/master/app/src/test/kotlin/com/example/tests) — Tests unitarios y pruebas con Robolectric.
-  - Resultados de ejecución y reportes: `app/build/reports/tests/`, `app/build/test-results/`.
+  - Resultados de ejecución y reportes: `app/build/reports/tests/`, `app/build/test-results/`(Solo disponibles para ver desde el IDE).
 
 Evidencias por criterios (RAs) — localización y estado
 -----------------------------------------------------
