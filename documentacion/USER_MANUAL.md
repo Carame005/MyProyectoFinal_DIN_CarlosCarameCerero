@@ -55,7 +55,7 @@ Tabla de contenido
 ### Inicio rápido (selección por foto + biometría)
 - Vista rápida con cuentas registradas (foto, nombre y correo). Al pulsar sobre un usuario, si el dispositivo tiene biometría registrada se solicitará verificación biométrica y, si la verificación es correcta, se iniciará sesión.
 - Si el dispositivo no dispone de biometría configurada, la selección inicia sesión sin verificación adicional.
-- Registro de biometría: se gestiona desde `Ajustes > Seguridad > Registrar biometría`.
+- Habilitar biometría: se gestiona desde `Ajustes > Switch biometria`.
 
 ### Pantalla principal
 - Elementos visibles tras iniciar sesión:
@@ -89,10 +89,9 @@ La aplicación incluye una funcionalidad para generar informes resumidos que ayu
 
 #### Dónde encontrar el botón
 - En la pantalla `Home` hay un botón "Generar informe" ubicado bajo la tarjeta de Vídeos/Resumen.
-- En la pantalla `Tutor` también hay opción para generar informes por cada tutorizado (desde la card expandida del usuario o el panel de la lista de tutorizados).
 
 #### Cómo generar un informe (paso a paso)
-1. Pulsar "Generar informe" en la pantalla `Home` o en la `TutorPantalla` sobre el tutorizado deseado.
+1. Pulsar "Generar informe" en la pantalla `Home`.
 2. Seleccionar el periodo: "Última semana" o "Último mes".
 3. Marcar los tipos de datos a incluir: Tareas (Completadas / En proceso / Pendientes), Eventos, Vídeos.
 4. Pulsar "Generar".
@@ -105,7 +104,6 @@ La aplicación incluye una funcionalidad para generar informes resumidos que ayu
 #### Exportación y compartir
 - Después de generar el informe puede copiarse al portapapeles o compartirse mediante el botón "Compartir".
 - El fichero se genera como TXT y se guarda temporalmente en caché; el sistema abrirá el selector para que puedas elegir la app con la que compartir o exportar (por ejemplo, correo, Drive, etc.).
-- Los tutores pueden generar informes de sus tutorizados y descargar/compartir el fichero resultante.
 
 #### Comportamiento cuando no hay datos
 - Si no existen elementos para el filtro seleccionado, en vez de dejar espacios en blanco el informe mostrará mensajes claros: "No hay tareas", "No hay eventos" o "No hay vídeos" según corresponda.
@@ -113,7 +111,7 @@ La aplicación incluye una funcionalidad para generar informes resumidos que ayu
 ### Perfil y ajustes (cambiar nombre, foto y cerrar sesión)
 - Abrir perfil: pulsar el avatar en la barra superior.
 - Cambiar foto: pulsar la foto y seleccionar una nueva desde la galería.
-- Ajustes: abrir el panel lateral para cambiar nombre, contraseña, tema o registrar biometría.
+- Ajustes: abrir el panel lateral para cambiar nombre, contraseña, tema o activar biometría.
 - Cerrar sesión: opción disponible en ajustes.
 
 ### Notificaciones y recordatorios
@@ -143,16 +141,12 @@ Esta sección explica las funciones adicionales que los tutores tienen disponibl
 ### Gestión de tareas/eventos/videos para tutorizados
 - Añadir tarea/evento/video: dentro de la vista expandida del tutorizado, utilizar el botón "+" o el control correspondiente para crear nuevos items asignados al tutorizado.
 - Al crear un vídeo puede adjuntarse un archivo local o una URL (no ambos). Si no se adjunta ninguno se muestra un error y no se crea el registro.
-- Los tutorizados no podrán eliminar tareas, eventos o vídeos que haya añadido el tutor.
+- Puedes eliminar cualquier tarea, evento o video del tutorizado.
 
 ### Generación y exportación de informes por tutorizado
 - Desde la card del tutorizado (o desde la lista del Tutor) el tutor puede pulsar "Generar informe".
 - Seleccionar periodo y tipos de datos a incluir; generar.
 - El informe puede visualizarse en pantalla y exportarse como TXT mediante la opción "Compartir".
-
-### Restricciones y consideraciones
-- Si un tutorizado intenta desactivar opciones que le permiten ser asignado por un tutor (opción previamente disponible), el sistema mostrará un error indicando que debe pedir al tutor que lo elimine de su lista.
-- Los tutorizados no ven el icono de eliminación para elementos asignados por el tutor.
 
 ### Buenas prácticas para tutores
 - Mantener un registro seguro de credenciales.
