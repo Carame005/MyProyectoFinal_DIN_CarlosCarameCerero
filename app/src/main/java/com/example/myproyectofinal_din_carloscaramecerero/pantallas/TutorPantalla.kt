@@ -44,7 +44,8 @@ import kotlin.random.Random
 @Suppress("NewApi")
 @Composable
 fun TutorScreen(
-    tutorEmail: String
+    tutorEmail: String,
+    isLightFilter: Boolean = false
 ) {
     val ctx = LocalContext.current
 
@@ -178,11 +179,12 @@ fun TutorScreen(
 
                         // Mostrar informe si existe
                         showTutReportResult?.let { reportText ->
+                            val cardGray = if (isLightFilter) Color(0xFFE6E1E8) else Color(0xFF35343A)
                             Column(modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(8.dp)
                                 .clip(RoundedCornerShape(8.dp))
-                                .background(Color(0xFF35343A))
+                                .background(cardGray)
                                 .padding(8.dp)
                             ) {
                                 Text("Informe generado", fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.padding(8.dp))
@@ -201,13 +203,13 @@ fun TutorScreen(
                                     tutSummary.value = ReportGenerator.buildReportSummary(ctx, u.email, tutReportFilters)
                                 }
                                 tutSummary.value?.let { s ->
-                                    Spacer(modifier = Modifier.height(8.dp))
-                                    androidx.compose.material3.Divider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f), thickness = 1.dp)
-                                    Spacer(modifier = Modifier.height(6.dp))
-                                    Text(text = "Gráfico", color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.padding(start = 4.dp))
-                                    Spacer(modifier = Modifier.height(6.dp))
-                                    ReportChart(summary = s, filters = tutReportFilters, modifier = Modifier.fillMaxWidth())
-                                }
+                                     Spacer(modifier = Modifier.height(8.dp))
+                                     androidx.compose.material3.Divider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f), thickness = 1.dp)
+                                     Spacer(modifier = Modifier.height(6.dp))
+                                     Text(text = "Gráfico", color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.padding(start = 4.dp))
+                                     Spacer(modifier = Modifier.height(6.dp))
+                                    ReportChart(summary = s, filters = tutReportFilters, isLightFilter = isLightFilter, modifier = Modifier.fillMaxWidth())
+                                 }
 
                                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                                     TextButton(onClick = { clipboardManager.setText(AnnotatedString(reportText)) }) { Text("Copiar") }

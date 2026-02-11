@@ -56,7 +56,7 @@ import androidx.compose.ui.graphics.lerp
  */
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun HomeScreen(user: User) { // <-- ahora recibe el usuario
+fun HomeScreen(user: User, isLightFilter: Boolean = false) { // <-- ahora recibe el usuario y el estado del filtro claro
     val ctx = LocalContext.current
     val today = remember { LocalDate.now() }
     var tasks by remember { mutableStateOf(listOf<Task>()) }
@@ -239,8 +239,8 @@ fun HomeScreen(user: User) { // <-- ahora recibe el usuario
 
         // ------------------ BLOQUE DEL INFORME: colocado bajo las cards/expandables ------------------
         showReportResult?.let { reportText ->
-            // usar color fijo HEX #35343A para el fondo del informe (coincide con ReportChart)
-            val cardGray = Color(0xFF35343A)
+            // elegir color del fondo según filtro claro
+            val cardGray = if (isLightFilter) Color(0xFFE6E1E8) else Color(0xFF35343A)
 
             Column(modifier = Modifier
                 .fillMaxWidth()
@@ -270,7 +270,7 @@ fun HomeScreen(user: User) { // <-- ahora recibe el usuario
                     Spacer(modifier = Modifier.height(6.dp))
                     Text(text = "Gráfico", color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.padding(start = 4.dp))
                     Spacer(modifier = Modifier.height(6.dp))
-                    ReportChart(summary = s, filters = reportFilters, modifier = Modifier.fillMaxWidth())
+                    ReportChart(summary = s, filters = reportFilters, isLightFilter = isLightFilter, modifier = Modifier.fillMaxWidth())
                 }
 
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {

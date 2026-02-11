@@ -221,7 +221,7 @@ fun MainScaffold(
                     modifier = Modifier.padding(padding)
                 ) {
                     composable(AppRoute.Home.route) {
-                        HomeScreen(user)
+                        HomeScreen(user, isLightFilter)
                     }
 
                     composable(AppRoute.Tasks.route) {
@@ -240,8 +240,8 @@ fun MainScaffold(
                         CalendarioScreen(user.email) // <-- pasar email
                     }
                     composable(AppRoute.Tutor.route) {
-                        TutorScreen(user.email)
-                    }
+                        TutorScreen(user.email, isLightFilter)
+                     }
                  }
              }
 
