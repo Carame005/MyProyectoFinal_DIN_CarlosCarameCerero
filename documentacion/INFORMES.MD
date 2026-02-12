@@ -38,7 +38,7 @@ Estas son las piezas que ya están desarrolladas y su ubicación (resumen práct
   - El bloque del informe y el área del gráfico usan un color de fondo uniforme (se estableció como `#35343A` por petición), separador y etiqueta "Gráfico" para mejorar legibilidad.
   - El informe ahora se muestra completo en la pantalla (sin scroll interno); el scroll se asume en la pantalla principal para evitar anidamientos.
 
-> Nota: los ficheros de ejemplo y capturas propuestas (CSV, screenshots) se indican en la sección de pruebas/evidencias. Si deseas que genere muestras automáticas, puedo añadir generación de CSV/TXT de ejemplo y almacenarlas en `documentacion/`.
+> Nota: los ficheros de ejemplo y capturas propuestas (CSV, screenshots) se indican en la sección de pruebas/evidencias. Si deseas que genere muestras automáticas, puedo añadir generación de CSV/TXT de ejemplo y almacenarlas en `documentacion/test-reports/`.
 
 ## Uso en la app (cómo generar un informe)
 

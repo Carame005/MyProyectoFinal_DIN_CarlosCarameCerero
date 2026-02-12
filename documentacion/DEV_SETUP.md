@@ -93,11 +93,14 @@ Notas CI / Firma
 - No subir el keystore al repositorio. Para publicar en Play Store configurar `signingConfigs` en Gradle y usar secretos en CI (GitHub Actions / GitLab CI) para inyectar el keystore y las contraseñas.
 - Flujo sugerido en CI: checkout → configurar Java 17 y Android SDK → `./gradlew :app:bundleRelease` → subir `app-release.aab`.
 
-Problemas frecuentes y soluciones rápidas
-----------------------------------------
-- Robolectric falla por versión de JDK: usar JDK 17 en la sesión.
-- Error por dependencia no encontrada: comprobar `google()` y `mavenCentral()` en `settings.gradle.kts`.
-- Instrumented tests fallan por no haber emulador: ejecutar `emulator -avd <name>` y comprobar `adb devices` antes.
+SDK y permisos especiales 
+--------------------------------------------------------------------
+- Exact alarms: a partir de Android S (API 31) establecer alarmas exactas puede requerir permisos específicos o que el usuario habilite "Allow exact alarms" para la app en ajustes. En el código se intenta programar alarmas exactas cuando es posible; si la plataforma deniega la operación el scheduler hace fallback a alarmas inexactas.
+  - Archivo relevante: `app/src/main/java/.../pantallas/CalendarioAlarms.kt`
+  - Recomendación para pruebas: si se necesita comportamiento exacto, declarar `<uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />` en `AndroidManifest.xml` y documentar en `DEV_SETUP.md` la necesidad de habilitar esta opción en el dispositivo/emulador.
+
+- Notificaciones en Android 13+: recordar pedir `POST_NOTIFICATIONS` en tiempo de ejecución antes de programar alarmas para eventos que deben mostrar notificación.
+  - Archivo relevante: `app/src/main/java/.../pantallas/CalendarioPantalla.kt` (se solicita permiso con `rememberLauncherForActivityResult`).
 
 Distribución (RA7) — empaquetado, firma y publicación
 ----------------------------------------------------

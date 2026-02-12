@@ -21,6 +21,7 @@ Herramientas NUI identificadas y valor esperado
 1. Biometría (`androidx.biometric:biometric` / `BiometricPrompt`)
    - Uso: inicio rápido, desbloqueo de funciones y confirmaciones sensibles.
    - Valor: evita que el usuario recuerde contraseñas.
+   - Implementación actual: hay soporte en `security/BiometricHelper.kt` y en `pantallas/LoginPantalla.kt` (inicio rápido). Ver también la opción de habilitar biometría en `utils/AjustesComponente.kt`.
    - Nota: la plantilla biométrica no se almacena en la app; se delega al sistema.
 
 2. Voz (Speech-to-Text y Text-to-Speech)
@@ -81,3 +82,9 @@ Pruebas con usuarios
 Referencias
 ----------
 - Android BiometricPrompt, SpeechRecognizer, TextToSpeech, ML Kit, MediaPipe, TensorFlow Lite.
+
+Recomendación para RA2 (qué documentar y dónde)
+-----------------------------------------------
+- Incluir en `documentacion/NUI.md` las referencias a los ficheros que ya tocan biometría y su uso: `security/BiometricHelper.kt`, `pantallas/LoginPantalla.kt`, `utils/AjustesComponente.kt`.
+- Documentar en el `README.md` que los datos biométricos se usan como NUI y que la implementación delega en BiometricPrompt (no se almacenan plantillas en la app).
+- Para cumplir RA2 con puntuación alta, además de mencionar herramientas, incluir un pequeño diseño conceptual por cada opción (cómo se integraría en la app, riesgos y permisos) — ya hay contenidos previos; puedo ampliar con diagramas o mockups si lo desea.

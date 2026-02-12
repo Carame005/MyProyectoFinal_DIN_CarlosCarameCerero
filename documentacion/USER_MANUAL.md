@@ -62,7 +62,7 @@ Tabla de contenido
   - Nombre del usuario en la parte superior.
   - Fecha del día.
   - Tarjetas de resumen: Tareas, Eventos, Colecciones (cada tarjeta muestra el número correspondiente).
-  - Botón "Generar informe": localizado bajo la tarjeta de Vídeos/Resumen (en Home). Permite crear un informe con resumen de actividades y gráficos.
+  - Botón "Generar informe": localizado bajo la tarjeta de Vídeos/Resumen (en Home).
 - Interacción: pulsar una tarjeta para acceder a su contenido detallado.
 
 ### Tareas (añadir, marcar)
