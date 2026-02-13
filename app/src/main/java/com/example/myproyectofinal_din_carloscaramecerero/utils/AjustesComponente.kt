@@ -79,6 +79,7 @@ fun SettingsDrawer(
     var newPass by remember { mutableStateOf("") }
     var showGuide by remember { mutableStateOf(false) }
     var showLogoutConfirm by remember { mutableStateOf(false) } // <-- nuevo estado para confirmación
+    var showDeleteAccountConfirm by remember { mutableStateOf(false) }
     val ctx = LocalContext.current
 
     // elegir colores según filtro claro
@@ -267,7 +268,55 @@ fun SettingsDrawer(
                         Text("Cerrar sesión", color = Color.Red)
                     }
                 }
+
+                // Si el usuario es tutor (esAdmin == true) mostrar opción para eliminar la cuenta
+                if (user.esAdmin) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                        TextButton(onClick = { showDeleteAccountConfirm = true }, colors = androidx.compose.material3.ButtonDefaults.textButtonColors(contentColor = Color.Red)) {
+                            Text("Eliminar cuenta", color = Color.Red)
+                        }
+                    }
+                }
             }
+        }
+
+        // Diálogo de confirmación de cierre de sesión
+        if (showLogoutConfirm) {
+            AlertDialog(
+                onDismissRequest = { showLogoutConfirm = false },
+                title = { Text("Confirmar cierre de sesión") },
+                text = { Text("¿Desea cerrar sesión y volver a la pantalla de inicio de sesión?") },
+                confirmButton = {
+                    TextButton(onClick = {
+                        showLogoutConfirm = false
+                        onLogout()
+                    }) { Text("Sí") }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showLogoutConfirm = false }) { Text("Cancelar") }
+                }
+            )
+        }
+
+        // Diálogo de confirmación de eliminación de cuenta (visible solo para tutores)
+        if (user.esAdmin && showDeleteAccountConfirm) {
+            AlertDialog(
+                onDismissRequest = { showDeleteAccountConfirm = false },
+                title = { Text("Eliminar cuenta") },
+                text = { Text("¿Está seguro que desea eliminar esta cuenta y todos sus datos? Esta acción no se puede deshacer.") },
+                confirmButton = {
+                    TextButton(onClick = {
+                        showDeleteAccountConfirm = false
+                        // eliminar la cuenta del tutor y salir
+                        try {
+                            AppRepository.deleteUser(ctx, user.email)
+                        } catch (_: Exception) { /* ignore */ }
+                        onLogout()
+                    }) { Text("Eliminar", color = Color.Red) }
+                },
+                dismissButton = { TextButton(onClick = { showDeleteAccountConfirm = false }) { Text("Cancelar") } }
+            )
         }
 
         // diálogo de guía si se solicita
@@ -296,25 +345,5 @@ fun SettingsDrawer(
                 }
             )
         }
-
-        // Diálogo de confirmación de cierre de sesión
-        if (showLogoutConfirm) {
-            AlertDialog(
-                onDismissRequest = { showLogoutConfirm = false },
-                title = { Text("Confirmar cierre de sesión") },
-                text = { Text("¿Desea cerrar sesión y volver a la pantalla de inicio de sesión?") },
-                confirmButton = {
-                    TextButton(onClick = {
-                        showLogoutConfirm = false
-                        onLogout()
-                    }) { Text("Sí") }
-                },
-                dismissButton = {
-                    TextButton(onClick = { showLogoutConfirm = false }) { Text("Cancelar") }
-                }
-            )
-        }
-
-        // (anteriormente se mostraba un diálogo de error al intentar desactivar la función tutor)
     }
 }

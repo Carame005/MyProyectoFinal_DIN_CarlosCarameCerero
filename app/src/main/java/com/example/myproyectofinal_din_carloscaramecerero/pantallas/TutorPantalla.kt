@@ -353,6 +353,9 @@ fun TutorScreen(
                         var showResetPasswordDialog by remember { mutableStateOf(false) }
                         var resetResultMsg by remember { mutableStateOf("") }
 
+                        // estado para confirmar borrado de un tutorizado (debe declararse antes de usarlo en el menú)
+                        var showDeleteTutConfirm by remember { mutableStateOf(false) }
+
                         var actionsExpanded by remember { mutableStateOf(false) }
 
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
@@ -364,6 +367,28 @@ fun TutorScreen(
                                 DropdownMenuItem(text = { Text("Añadir tarea") }, onClick = { actionsExpanded = false; showAddTaskDialog = true })
                                 DropdownMenuItem(text = { Text("Añadir evento") }, onClick = { actionsExpanded = false; showAddEventDialog = true })
                                 DropdownMenuItem(text = { Text("Añadir colección de vídeos") }, onClick = { actionsExpanded = false; showAddCollectionDialog = true })
+                                // eliminar cuenta del tutorizado (solo tutor)
+                                DropdownMenuItem(text = { Text("Eliminar cuenta") }, onClick = { actionsExpanded = false; showDeleteTutConfirm = true })
+                            }
+
+                            // Confirmación de eliminación del tutorizado
+                            if (showDeleteTutConfirm) {
+                                AlertDialog(
+                                    onDismissRequest = { showDeleteTutConfirm = false },
+                                    title = { Text("Eliminar cuenta") },
+                                    text = { Text("¿Eliminar la cuenta de ${u.name} y todos sus datos? Esta acción no se puede deshacer.") },
+                                    confirmButton = {
+                                        TextButton(onClick = {
+                                            showDeleteTutConfirm = false
+                                            try {
+                                                AppRepository.deleteUser(ctx, u.email)
+                                            } catch (_: Exception) { }
+                                            // actualizar lista local para ocultar al usuario eliminado
+                                            users = users.filterNot { it.email == u.email }
+                                        }) { Text("Eliminar", color = Color.Red) }
+                                    },
+                                    dismissButton = { TextButton(onClick = { showDeleteTutConfirm = false }) { Text("Cancelar") } }
+                                )
                             }
 
                             // Diálogos asociados (mismos que antes, se abren por el menú)

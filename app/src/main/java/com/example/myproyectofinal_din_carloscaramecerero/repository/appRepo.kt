@@ -490,6 +490,61 @@ object AppRepository {
         try { ctx.deleteFile(fileNameFor(userEmail, SUFFIX_COLLECTIONS)) } catch (ex: Exception) { Log.e("AppRepository", "clearUserData: error deleting collections for $userEmail", ex) }
     }
 
+    /**
+     * Elimina por completo una cuenta de usuario y referencias a la misma.
+     * - Borra ficheros asociados (perfil, tasks, events, collections, credentials).
+     * - Elimina la referencia en listas de tutorizados de otros tutores.
+     * - Si la cuenta era la última usada para autologin, elimina esa referencia.
+     */
+    fun deleteUser(ctx: Context, userEmail: String) {
+        try {
+            // borrar datos principales
+            clearUserData(ctx, userEmail)
+
+            // borrar credenciales
+            try { ctx.deleteFile(fileNameFor(userEmail, SUFFIX_CREDS)) } catch (ex: Exception) { Log.e("AppRepository", "deleteUser: error deleting creds for $userEmail", ex) }
+
+            // eliminar de listas de tutorizados de otros tutores
+            try {
+                val files = ctx.fileList()
+                files.forEach { f ->
+                    if (f.endsWith(SUFFIX_TUTORIZADOS)) {
+                        try {
+                            val text = ctx.openFileInput(f).bufferedReader().use { it.readText() }
+                            val arr = JSONArray(text)
+                            val list = mutableListOf<String>()
+                            for (i in 0 until arr.length()) {
+                                val e = arr.optString(i, "").ifBlank { null }
+                                if (e != null && e != userEmail) list.add(e)
+                            }
+                            val owner = f.removeSuffix("_$SUFFIX_TUTORIZADOS")
+                            // reescribir o eliminar fichero según corresponda
+                            if (list.isEmpty()) {
+                                try { ctx.deleteFile(f) } catch (_: Exception) { /* ignore */ }
+                            } else {
+                                val outArr = JSONArray()
+                                list.forEach { outArr.put(it) }
+                                try { ctx.openFileOutput(f, Context.MODE_PRIVATE).use { it.write(outArr.toString().toByteArray()) } } catch (_: Exception) { /* ignore */ }
+                            }
+                        } catch (ex: Exception) {
+                            Log.e("AppRepository", "deleteUser: error cleaning tutorizados file $f", ex)
+                        }
+                    }
+                }
+            } catch (ex: Exception) { Log.e("AppRepository", "deleteUser: error listing files for tutorizados cleanup", ex) }
+
+            // limpiar last_user_email si apuntaba a este usuario
+            try {
+                val appPrefs = ctx.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+                val last = appPrefs.getString("last_user_email", null)
+                if (last == userEmail) appPrefs.edit().remove("last_user_email").apply()
+            } catch (ex: Exception) { Log.e("AppRepository", "deleteUser: error clearing last_user_email", ex) }
+
+        } catch (ex: Exception) {
+            Log.e("AppRepository", "deleteUser: general error for $userEmail", ex)
+        }
+    }
+
     // --- Borrar todos los datos/credenciales del repo (para pruebas) ---
     /**
      * Elimina todos los ficheros gestionados por AppRepository (usuario, tasks, events, collections,
